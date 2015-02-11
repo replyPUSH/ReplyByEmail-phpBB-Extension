@@ -3,7 +3,8 @@ namespace replyPUSH\reply_by_email\notification\type;
 use phpbb\notification\type\pm as pm_base;
 use replyPUSH\reply_by_email\notification\type\reply_push_interface;
 
-class pm extends pm_base implements reply_push_interface{
+class pm extends pm_base implements reply_push_interface
+{
     
     protected $utility;
     
@@ -13,7 +14,8 @@ class pm extends pm_base implements reply_push_interface{
         parent::__construct($user_loader, $db, $cache, $user, $auth, $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table);
     }
     
-    public function subject_id(){
+    public function subject_id()
+    {
         return $this->item_id;
     }
     

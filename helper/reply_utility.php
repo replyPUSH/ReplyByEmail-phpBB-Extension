@@ -20,7 +20,8 @@ class reply_utility
     
     private $credentials = null;
     
-    function __construct(\phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\factory $db, \phpbb\request\request $request,  $phpbb_root_path, $php_ext){
+    function __construct(\phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\factory $db, \phpbb\request\request $request,  $phpbb_root_path, $php_ext)
+    {
         $this->user = $user;
         $this->auth = $auth;
         $this->config = $config;
@@ -30,31 +31,38 @@ class reply_utility
         $this->php_ext = $php_ext;
     }
     
-    private function cnst($type, $suffix = '_REQ'){
+    private function cnst($type, $suffix = '_REQ')
+    {
         return constant('self::'.$type.$suffix);
     }
     
-    public function rq_vals($type = 'POST'){
+    public function rq_vals($type = 'POST')
+    {
         $type = $this->cnst($type);
         return $this->request->get_super_global($type);
     }
     
-    public function rq_val($key, $type = 'POST'){
+    public function rq_val($key, $type = 'POST')
+    {
         $type = $this->cnst($type);
         return $this->request->variable($key, '', true, $type);
     }
     
-    public function set_rq_val($key, $value, $type = 'POST'){
+    public function set_rq_val($key, $value, $type = 'POST')
+    {
         $request = in_array($type,array('POST', 'GET')) ? true : false;
         $type = $this->cnst($type);
         $this->request->overwrite($key, $value, $type);
-        if($request)
+        if ($request)
+        {
             $this->set_rq_val($key, $value, 'REQUEST');
+        }
         
         
     }
     
-    protected function special_include($file){
+    protected function special_include($file)
+    {
         // have to use global for this hack to exclude common.php
         // it is dirty but the only other alternatives
         // are eval or a session proxy which aren't the best
@@ -65,39 +73,47 @@ class reply_utility
         include($file);
     }
     
-    protected function prime_request($file, $post_data){
-        if(strpos($file, '?')!==false){
+    protected function prime_request($file, $post_data)
+    {
+        if (strpos($file, '?')!==false)
+        {
             list($file,$get_str) = explode('?',$file);
             $get_data = array();
             parse_str($get_str, $get_data);
-            foreach ($get_data as $key => $val){
+            foreach ($get_data as $key => $val)
+            {
                 $this->set_rq_val($key, $val, 'GET');
             }
             
         }
-        foreach ($post_data as $key => $val){
+        foreach ($post_data as $key => $val)
+        {
             $this->set_rq_val($key, $val);
         }
         return $file;
     }
     
-    public function sub_request($file, $post_data){
+    public function sub_request($file, $post_data)
+    {
         $file = $this->prime_request($file, $post_data);
         $this->special_include($this->phpbb_root_path.$file);
         exit();
     }
     
     
-    public function sub_request_module($file, $post_data){
+    public function sub_request_module($file, $post_data)
+    {
         $section = $this->prime_request($file, $post_data);
 
         $section = preg_replace('`\.' . $this->php_ext . '$`', '', $section);
         
-        if (!function_exists('user_get_id_name')){
+        if (!function_exists('user_get_id_name'))
+        {
             require($this->phpbb_root_path  . 'includes/functions_user.' . $this->php_ext);
         }
         
-        if(!class_exists('p_master')){
+        if (!class_exists('p_master'))
+        {
             require($this->phpbb_root_path . 'includes/functions_module.' . $this->php_ext);
         }
         
@@ -114,12 +130,12 @@ class reply_utility
     {
         $prefix = 'reply_push_';
         
-        if($this->credentials !== null)
+        if ($this->credentials !== null)
         {
             return $this->credentials;
         }
 
-        if(!isset($this->config[$prefix . 'account_no']) 
+        if (!isset($this->config[$prefix . 'account_no']) 
             || !isset($this->config[$prefix . 'secret_id']) 
             || !isset($this->config[$prefix . 'secret_key']))
         {
@@ -131,7 +147,7 @@ class reply_utility
         $creds = array(
             'account_no' => html_entity_decode($this->config[$prefix . 'account_no']),
             'secret_id'  => html_entity_decode($this->config[$prefix . 'secret_id']),
-            'secret_key' => html_entity_decode($this->config[$prefix . 'secret_key'])
+            'secret_key' => html_entity_decode($this->config[$prefix . 'secret_key']),
         );
         
         try
@@ -149,7 +165,8 @@ class reply_utility
         catch(\Exception $ex)
         {
             //sometimes above is not sufficient as instance is wrong
-            if (get_class($ex) == 'replyPUSH\reply_by_email\vendor\ReplyPushError'){
+            if (get_class($ex) == 'replyPUSH\reply_by_email\vendor\ReplyPushError')
+            {
                 return false;
             }
             
@@ -160,11 +177,13 @@ class reply_utility
         return $this->credentials = $creds;
     }
     
-    public function check_uri($uri){
+    public function check_uri($uri)
+    {
         return $this->config['reply_push_notify_uri'] == $uri;
     }
     
-    public function get_user_id_by_email($email){
+    public function get_user_id_by_email($email)
+    {
         $sql = "SELECT user_id FROM " . USERS_TABLE . " WHERE user_email = '".$this->db->sql_escape($email)."'";
         
         $result = $this->db->sql_query($sql);
@@ -174,7 +193,8 @@ class reply_utility
         return $member['user_id'];
     }
     
-    public function start_session($user_id){
+    public function start_session($user_id)
+    {
         
         // start session
         $this->user->session_create($user_id);
@@ -188,7 +208,8 @@ class reply_utility
         $this->set_rq_val($this->config['cookie_name'] . '_sid', $this->user->session_id, 'COOKIE');
     }
     
-    public function parse_message($data){
+    public function parse_message($data)
+    {
         
         if (!class_exists('parse_message'))
         {
@@ -211,7 +232,8 @@ class reply_utility
         
     }
     
-    public function pre_format_html_content($content){
+    public function pre_format_html_content($content)
+    {
         return trim(
             strip_tags(
                 preg_replace(
@@ -219,7 +241,7 @@ class reply_utility
                         '`\n`',
                         '`<br\s*/>`i',
                         '`<p(\s[^>]+)?>(.*?)</\s*p(\s[^>]+)?>`i',
-                        '`<div(\s[^>]+)?>(.*?)</\s*div(\s[^>]+)?>`i'
+                        '`<div(\s[^>]+)?>(.*?)</\s*div(\s[^>]+)?>`i',
                     ),
                     array(
                     '',
@@ -233,23 +255,28 @@ class reply_utility
         );
     }
     
-    public function pre_format_text_content($content){
+    public function pre_format_text_content($content)
+    {
         return trim($content);
     }
     
-    public function subject_stripped($subject){
+    public function subject_stripped($subject)
+    {
         return preg_replace('`^Re:\s*`','',$subject);
     }
     
-    public function subject_code($subject){
+    public function subject_code($subject)
+    {
         return hexdec(substr(md5($this->subject_stripped($subject)), 0, 8));
     }
     
-    public function service_email(){
+    public function service_email()
+    {
         return defined('REPLY_PUSH_EMAIL') ? REPLY_PUSH_EMAIL : 'post@replypush.com';
     }
     
-    public function encode_email_name($name, $email = null){
+    public function encode_email_name($name, $email = null)
+    {
         return sprintf('=?UTF-8?B?%s?= <%s>', base64_encode($name), $email ? $email : $this->service_email());
     }
     

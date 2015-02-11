@@ -26,7 +26,7 @@ class acp_listener implements EventSubscriberInterface
     {
         return array(
             'core.acp_board_config_edit_add' => 'reply_by_email_config',
-            'core.validate_config_variable'  => 'reply_by_email_config_validate'
+            'core.validate_config_variable'  => 'reply_by_email_config_validate',
         );
     }
     
@@ -39,20 +39,26 @@ class acp_listener implements EventSubscriberInterface
         $this->user->lang['REPLY_PUSH_URI_BLURB'];
     }
     
-    public function reply_by_email_config($event){
+    public function reply_by_email_config($event)
+    {
 
-        if($event['mode'] == 'email')
+        if ($event['mode'] == 'email')
         {
             // if notify_uri doesn't exist create it
-            if(!isset($this->config['reply_push_notify_uri']))
+            if (!isset($this->config['reply_push_notify_uri']))
+            {
                 $this->config->set('reply_push_notify_uri', uniqid());
+            }
             
             $display_vars = $event['display_vars'];
             $x = 0;
-            while(true){
+            while (true)
+            {
                 $x++;
-                if(!isset($display_vars['vars']['legend'.$x]))
+                if (!isset($display_vars['vars']['legend'.$x]))
+                {
                     break;
+                }
             }
             
             $display_vars['vars']['legend'.($x-1)] = 'REPLY_BY_EMAIL_SETTINGS';
@@ -71,28 +77,31 @@ class acp_listener implements EventSubscriberInterface
         }
     }
     
-    public function reply_by_email_config_validate($event){
-        if(!$this->validate_reply_push || $this->validation_failed)
+    public function reply_by_email_config_validate($event)
+    {
+        if (!$this->validate_reply_push || $this->validation_failed)
+        {
             return;
-
+        }
+        
         $error = $event['error'];
         $cfg_array = $event['cfg_array'];
         
-        if(!isset($cfg_array['reply_push_account_no']))
+        if (!isset($cfg_array['reply_push_account_no']))
         {
             $error[] = $this->user->lang['REPLY_PUSH_ACCOUNT_NO_MISSING'];
         }
-        if(!isset($cfg_array['reply_push_secret_id']))
+        if (!isset($cfg_array['reply_push_secret_id']))
         {
             $error[] = $this->user->lang['REPLY_PUSH_SECRET_ID_MISSING'];
         }
         
-        if(!isset($cfg_array['reply_push_secret_key']))
+        if (!isset($cfg_array['reply_push_secret_key']))
         {
             $error[] = $this->user->lang['REPLY_PUSH_SECRET_KEY_MISSING'];
         }
         
-        if(count($error)>0)
+        if (sizeof($error)>0)
         {
             $event['error'] = $error;
             $event['cfg_array'] = $cfg_array;
@@ -115,7 +124,7 @@ class acp_listener implements EventSubscriberInterface
             $error[] = $this->user->lang['REPLY_PUSH_'.$item.'_INVALID'];
         }
         
-        if(count($error)>0)
+        if (sizeof($error)>0)
         {
             $event['error'] = $error;
             $event['cfg_array'] = $cfg_array;

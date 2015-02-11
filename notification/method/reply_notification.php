@@ -4,7 +4,8 @@ namespace replyPUSH\reply_by_email\notification\method;
 use \phpbb\notification\method\email;
 use replyPUSH\reply_by_email\vendor\ReplyPush;
 
-class reply_notification extends email{
+class reply_notification extends email
+{
     
     protected $messenger;
     protected $rp_model;
@@ -20,7 +21,7 @@ class reply_notification extends email{
 
     protected function notify_using_messenger($notify_method, $template_dir_prefix = '')
     {
-        if(!$this->utility->credentials())
+        if (!$this->utility->credentials())
         {
             parent::notify_using_messenger($notify_method, $template_dir_prefix);
             return;
@@ -79,7 +80,7 @@ class reply_notification extends email{
             $type_class = get_class($notification);
             
             // is replyPUSH notification?
-            if(constant("{$type_class}::REPLY_PUSH"))
+            if (constant("{$type_class}::REPLY_PUSH"))
             {     
                 $this->messenger->assign_vars(array_merge(array(
                     'USERNAME'                  => $user['username'],
@@ -87,13 +88,13 @@ class reply_notification extends email{
                     'MESSAGE'                   => $notification->message,
                     'SUBJECT_ID'                => $notification->subject_id(),
                     'SUBJECT_STRIPPED'          => $this->utility->subject_stripped($notification->get_reference()),
-                    'RP_EMAIL_SIG'              => str_replace('{RP_SIG_ID}', mt_rand(), $this->user->lang['REPLY_PUSH_EMAIL_SIG'])
+                    'RP_EMAIL_SIG'              => str_replace('{RP_SIG_ID}', mt_rand(), $this->user->lang['REPLY_PUSH_EMAIL_SIG']),
                 ), $notification->get_email_template_variables()));
                 
                 $this->messenger->template($template_dir_prefix . $notification->get_email_template(), $user['user_lang'], '', 'reply_by_email');
 
                 $from_users  =  $notification->users_to_query();
-                if(count($from_users))
+                if (sizeof($from_users))
                 {
                     $from_user_id   =  $from_users[0];
                     $record_id      =  $notification->item_id;
@@ -118,7 +119,8 @@ class reply_notification extends email{
                     $ref = $this->rp_model->get_ref($ref_hash);
                     
                     // add headers if historic references
-                    if($ref){
+                    if ($ref)
+                    {
                         $this->messenger->header("References", $ref);
                         $this->messenger->header("In-Reply-To", $ref);
                     }
@@ -128,7 +130,7 @@ class reply_notification extends email{
                     
                     $this->messenger->replyto($this->utility->encode_email_name($this->user->lang('REPLY_PUSH_FROM_NAME',$user['username'], $this->config['server_name'])));
                     
-                    if($this->config['board_contact'] == $user['user_email'])
+                    if ($this->config['board_contact'] == $user['user_email'])
                     {
                         $this->messenger->from($this->utility->encode_email_name(htmlspecialchars_decode($this->config['sitename'])));
                     }
@@ -160,8 +162,10 @@ class reply_notification extends email{
     
     public function clear_messages($notified_ids)
     {
-        if(empty($notified_ids))
+        if (empty($notified_ids))
+        {
             return;
+        }
         $sql = 'UPDATE ' . NOTIFICATIONS_TABLE . 
                 ' SET ' . $this->db->sql_build_array('UPDATE', array('message'=>'')).
                 ' WHERE ' . $this->db->sql_in_set('item_id', $notified_ids);

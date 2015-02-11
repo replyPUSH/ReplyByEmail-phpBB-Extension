@@ -75,5 +75,6 @@ replacing any <code>/forum</code> text to reflect the relative location of the f
 <p>Thank You.</b></p>
 <br>
 <p><small>{RP_SIG_ID}</small></p>',
-    'REPLY_PUSH_FROM_NAME'           => '%s [at] %s'
+    'REPLY_PUSH_FROM_NAME'           => '%s [at] %s',
+
 ));

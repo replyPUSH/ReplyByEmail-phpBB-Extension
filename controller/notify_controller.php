@@ -15,7 +15,8 @@ class notify_controller
      
     protected $notification_types = array();
     
-    function __construct(\phpbb\user $user, \phpbb\config\config $config, \phpbb\db\driver\factory $db, $utility, $messenger, $rp_model, $notification_types_table, $phpbb_root_path, $php_ext){
+    function __construct(\phpbb\user $user, \phpbb\config\config $config, \phpbb\db\driver\factory $db, $utility, $messenger, $rp_model, $notification_types_table, $phpbb_root_path, $php_ext)
+    {
         $this->user = $user;
         $this->config = $config;
         $this->db = $db;
@@ -27,14 +28,18 @@ class notify_controller
         $this->php_ext = $php_ext;
     }
     
-    protected function denied($denied_msg = null){
+    protected function denied($denied_msg = null)
+    {
         header("HTTP/1.0 403 Denied");
         exit($denied_msg);
     }
     
-    public function ping($uri = null){
-        if(!$this->utility->check_uri($uri))
+    public function ping($uri = null)
+    {
+        if (!$this->utility->check_uri($uri))
+        {
             $this->denied('DENIED');
+        }
         // I'm here ...
         exit("OK");
     }
@@ -42,25 +47,35 @@ class notify_controller
     public function process_incoming_notification($uri = null)
     {
         // no credentials can't process
-        if(!$this->utility->credentials())
+        if (!$this->utility->credentials())
+        {
             $this->denied();
+        }
         
         // spoofed
-        if(!$this->utility->check_uri($uri))
+        if (!$this->utility->check_uri($uri))
+        {
             $this->denied();
+        }
             
         $notification = $this->utility->rq_vals();
         
-        if(empty($notification))
+        if (empty($notification))
+        {
             exit(); // do nothing.
-            
+        }
+        
         // is valid?
-        if(!$this->rp_model->has_required($notification))
+        if (!$this->rp_model->has_required($notification))
+        {
             $this->denied();
+        }
             
         //check for duplicate message id
-        if($this->rp_model->get_transaction($notification['msg_id']))
+        if ($this->rp_model->get_transaction($notification['msg_id']))
+        {
             exit(); //ignore
+        }
         
         // add optional
         $this->rp_model->populate_schema($notification);
@@ -71,14 +86,17 @@ class notify_controller
         // authenticate 
         $reply_push = new ReplyPush($account_no, $secret_id, $secret_key, $this->user->data['user_email'], $notification['in_reply_to']);
         
-        if($reply_push->hashCheck()){
+        if ($reply_push->hashCheck())
+        {
             
             // find user
             $user_id = $this->utility->get_user_id_by_email($notification['from']);
             
             // don't know you go away
-            if(!$user_id)
+            if (!$user_id)
+            {
                 $this->denied();
+            }
             
             // start session
             $this->utility->start_session($user_id);
@@ -101,22 +119,26 @@ class notify_controller
             $this->rp_model->save_ref($ref_hash, $notification['from_msg_id']);
             
             // handle error notifications without inserting anything.
-            if(isset($notification['error'])){
+            if (isset($notification['error']))
+            {
                 $this->process_incoming_error($notification['error'], $this->user, $notification['subject'], $ref);
                 exit();
             }
             
             // don't know what you are talking about
-            if(!isset($this->notification_types[$type_id]))
+            if (!isset($this->notification_types[$type_id]))
+            {
                 exit();
-                
+            }
+               
             $type = $this->notification_types[$type_id];
             
             // valid function name
             $type_process = 'process_'.preg_replace('`notification\.type\.|[^a-z_]`', '', $type).'_notification';
             
             // better than switch statement
-            if(is_callable(array($this, $type_process))){
+            if (is_callable(array($this, $type_process)))
+            {
                 // process
                 $this->$type_process(
                     $from_user_id,
@@ -140,7 +162,8 @@ class notify_controller
         exit();
     }
     
-    protected function process_topic_notification($from_user_id, $topic_id, $forum_id, $message){
+    protected function process_topic_notification($from_user_id, $topic_id, $forum_id, $message)
+    {
         $sql = "SELECT topic_title FROM ". TOPICS_TABLE. 
                 " WHERE topic_id = ". (int) $topic_id .
                 " AND forum_id = ". (int) $forum_id .
@@ -150,8 +173,10 @@ class notify_controller
         
         // can't match all the meta so leave
         // better safe than sorry
-        if(!$result)
+        if (!$result)
+        {
             return;
+        }
             
         $row = $this->db->sql_fetchrow($result);
         
@@ -162,7 +187,8 @@ class notify_controller
         $this->process_topic_reply($topic_id, $forum_id, $message, $subject);
     }
     
-    protected function process_post_notification($from_user_id, $post_id, $topic_id, $message){
+    protected function process_post_notification($from_user_id, $post_id, $topic_id, $message)
+    {
         $sql = "SELECT p.post_subject, t.forum_id FROM ". POSTS_TABLE. " p, " . TOPICS_TABLE . " t" .
                 " WHERE p.topic_id = t.topic_id" .
                 " AND p.post_id = ". (int) $post_id .
@@ -173,9 +199,11 @@ class notify_controller
         
         // can't match all the meta so leave
         // better safe than sorry
-        if(!$result)
+        if (!$result)
+        {
             return;
-            
+        }
+           
         $row = $this->db->sql_fetchrow($result);
         
         $this->db->sql_freeresult($result);
@@ -186,15 +214,18 @@ class notify_controller
         $this->process_topic_reply($topic_id, $forum_id, $message, $subject); 
     }
     
-    protected function process_bookmark_notification($from_user_id, $post_id, $topic_id, $message){
+    protected function process_bookmark_notification($from_user_id, $post_id, $topic_id, $message)
+    {
         $this->process_post_notification($from_user_id, $post_id, $topic_id, $message);
     }
     
-    protected function process_quote_notification($from_user_id, $post_id, $topic_id, $message){
+    protected function process_quote_notification($from_user_id, $post_id, $topic_id, $message)
+    {
         $this->process_post_notification($from_user_id, $post_id, $topic_id, $message);
     }
     
-    protected function process_pm_notification($from_user_id, $message_id, $content_id, $message){
+    protected function process_pm_notification($from_user_id, $message_id, $content_id, $message)
+    {
         $sql = "SELECT pm.message_subject, pmt.user_id FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TO_TABLE . " pmt". 
                 " WHERE pm.msg_id = pmt.msg_id" .
                 " AND pm.msg_id = ". (int) $message_id .
@@ -209,23 +240,29 @@ class notify_controller
         
         $subject = null;
         
-        while($row = $this->db->sql_fetchrow($result)){
+        while ($row = $this->db->sql_fetchrow($result))
+        {
             $to[] = $row['user_id'];
-            if(!$subject)
+            if (!$subject)
+            {
                 $subject = $row['message_subject'];
+            }
         }
         
         // can't match all the meta so leave
         // better safe than sorry
-        if(!empty($row))
+        if (!empty($row))
+        {
             return;
+        }
         
         $this->db->sql_freeresult($result);
 
         $this->process_pm_reply($message_id, $message, $subject, $to);
     }
     
-    protected function process_topic_reply($topic_id, $forum_id, $message, $subject){
+    protected function process_topic_reply($topic_id, $forum_id, $message, $subject)
+    {
         
         // post the reply
         
@@ -238,7 +275,7 @@ class notify_controller
             'post' => 'Submit',
             'creation_time' => $time,
             'lastclick' => $time,
-            'form_token' => sha1($time . $this->user->data['user_form_salt'] . 'posting')
+            'form_token' => sha1($time . $this->user->data['user_form_salt'] . 'posting'),
         );
 
         // special method devised to deal with the problem of 
@@ -248,12 +285,15 @@ class notify_controller
         
     }
     
-    protected function process_pm_reply($message_id, $message, $subject, $to){
+    protected function process_pm_reply($message_id, $message, $subject, $to)
+    {
         
-        if(!is_array($to))
+        if (!is_array($to))
+        {
             $to = array($to);
-            
-        $address_list = array('u' => array_combine($to, array_fill(0,count($to), 'to')));
+        }
+        
+        $address_list = array('u' => array_combine($to, array_fill(0,sizeof($to), 'to')));
 
         $time = strtotime('-10 seconds');
 
@@ -265,7 +305,7 @@ class notify_controller
             'creation_time' => $time,
             'lastclick' => $time,
             'address_list' => $address_list,
-            'form_token' => sha1($time . $this->user->data['user_form_salt'] . 'ucp_pm_compose')
+            'form_token' => sha1($time . $this->user->data['user_form_salt'] . 'ucp_pm_compose'),
         );
         
         // special method that calls a module as if handling a request
@@ -274,25 +314,29 @@ class notify_controller
     
     
     
-    protected function process_incoming_error($error, $user, $subject, $ref=''){
+    protected function process_incoming_error($error, $user, $subject, $ref='')
+    {
         $error_msg = isset($user->lang['REPLY_PUSH_ERROR_'.strtoupper($error)]) ? $user->lang['REPLY_PUSH_ERROR_'.strtoupper($error)] : $user->lang['REPLY_PUSH_ERROR_GENERAL'];
-        if($error_msg)
+        if ($error_msg)
+        {
             $this->send_reply_error($user, $error_msg, $subject);
+        }
     }
     
-    protected function send_reply_error($user, $error_msg, $subject, $ref=''){
+    protected function send_reply_error($user, $error_msg, $subject, $ref='')
+    {
         $lang = $user->lang;
         $user = $user->data;
             
         $this->messenger->set_addresses($user);
         $this->messenger->subject($subject ? $subject : $lang['REPLY_PUSH_ERROR_SUBJECT']);
         $this->messenger->header('Content-Type', 'text/html; charset=UTF-8');
-        if($this->config['board_contact'] == $user['user_email'])
+        if ($this->config['board_contact'] == $user['user_email'])
         {
             $this->messenger->from($this->utility->service_email());
         }
         
-        if($ref){
+        if ($ref){
             $this->messenger->header("References","{$ref}");
             $this->messenger->header("In-Reply-To","{$ref}");
         }
@@ -301,7 +345,7 @@ class notify_controller
         
         $this->messenger->assign_vars(array(
             'USERNAME'  => $user['username'],
-            'MESSAGE'   => $error_msg
+            'MESSAGE'   => $error_msg,
         ));
         
         $this->messenger->template('error', $user['user_lang'], '', 'reply_by_email');

@@ -26,8 +26,10 @@ class reply_push_model
     
     public function get_ref($ref_hash)
     {
-        if(array_key_exists($ref_hash,self::$ref))
+        if (array_key_exists($ref_hash,self::$ref))
+        {
             return self::$ref[$ref_hash];
+        }
             
         $sql = "SELECT ref FROM {$this->table_prefix}reply_push_ref".
                 " WHERE ref_hash = '". $this->db->sql_escape($ref_hash). "'";
@@ -36,18 +38,23 @@ class reply_push_model
             
         $row = $this->db->sql_fetchrow($result);
         
-        if(!$row)
+        if (!$row)
+        {
             return '';
+        }
             
         return $row['ref'];
     }
     
     public function save_ref($ref_hash, $ref)
     {
-        if(!$ref_hash || !$ref)
+        if (!$ref_hash || !$ref)
+        {
             return;
+        }
             
-        if($this->get_ref($ref_hash)){
+        if ($this->get_ref($ref_hash))
+        {
             $sql = "UPDATE {$this->table_prefix}reply_push_ref SET " .
                 $this->db->sql_build_array('UPDATE',
                     array(
@@ -59,13 +66,15 @@ class reply_push_model
             $result = $this->db->sql_query($sql);
             
             self::$ref[$ref_hash] = $ref;
-        }else{
+        }
+        else
+        {
             
             $sql = "INSERT INTO {$this->table_prefix}reply_push_ref " .
                 $this->db->sql_build_array('INSERT',
                     array(
                         'ref' => $ref,
-                        'ref_hash' => $ref_hash
+                        'ref_hash' => $ref_hash,
                     )
                 );
                 
@@ -85,11 +94,12 @@ class reply_push_model
     
     public function log_transaction($notification)
     {
-        try{
+        try
+        {
             $this->db->sql_transaction('begin');
             "INSERT INTO {$this->table_prefix}reply_push_log " . $this->db->sql_build_array('INSERT', array(
                 'message_id'    => $notification['msg_id'],
-                'notification'  => serialize($notification)
+                'notification'  => serialize($notification),
             ));
             $this->db->sql_query($sql);
             $this->db->sql_transaction('commit');
@@ -103,8 +113,10 @@ class reply_push_model
     
     public function get_notification_types(){
         
-        if($this->notification_types)
+        if ($this->notification_types)
+        {
             return $this->notification_types;
+        }
         
         $sql = "SELECT notification_type_id, notification_type_name 
                 FROM " . $this->notification_types_table;
@@ -124,17 +136,22 @@ class reply_push_model
         return $notification_types;        
     }
     
-    public function get_reference_key($type_id, $record_id, $content_id, $email){
+    public function get_reference_key($type_id, $record_id, $content_id, $email)
+    {
         
         $this->get_notification_types();
         
-        if(!isset($this->notification_types[$type_id]))
+        if (!isset($this->notification_types[$type_id]))
+        {
             return '';
+        }
             
         $type = $this->notification_types[$type_id];
         
-        foreach($this->collate_types as $collate_parent => $collate_children){
-            if(in_array($type, $collate_children)){
+        foreach ($this->collate_types as $collate_parent => $collate_children)
+        {
+            if (in_array($type, $collate_children))
+            {
                 $record_id = $content_id;
                 $type = $collate_parent;
                 break;
@@ -144,15 +161,23 @@ class reply_push_model
         return md5($type.$record_id.$email);
     }
     
-    public function has_required($data, $schema = NULL){
-        if(!$schema)
+    public function has_required($data, $schema = NULL)
+    {
+        if (!$schema)
+        {
             $schema = $this->required_schema;
+        }
+        
         $return = true;
-        foreach($schema as $key => $value){
-            if(is_array($value)){
+        foreach ($schema as $key => $value)
+        {
+            if (is_array($value))
+            {
                 $this->has_required($data, array($key));
                 $this->has_required($data[$key], $value);
-            }else if(!isset($data[$value])){
+            }
+            else if (!isset($data[$value]))
+            {
                 $return = false;
                 break;
             }
@@ -161,14 +186,22 @@ class reply_push_model
         return $return;
     }
     
-    public function populate_schema(&$data, $schema = NULL){
-        if(!$schema)
+    public function populate_schema(&$data, $schema = NULL)
+    {
+        if (!$schema)
+        {
             $schema = $this->optional_schema;
-        foreach($schema as $key => $value){
-            if(is_array($value)){
+        }
+        
+        foreach ($schema as $key => $value)
+        {
+            if (is_array($value))
+            {
                 $this->populate_schema($data, array($key));
                 $this->populate_schema($data[$key], $value);
-            }else if(!isset($data[$value])){
+            }
+            else if (!isset($data[$value]))
+            {
                 $data[$value] = null;
             }
         }

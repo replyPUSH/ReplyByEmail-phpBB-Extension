@@ -1,7 +1,8 @@
 <?php
 namespace replyPUSH\reply_by_email\helper;
 
-if (!class_exists('messenger')){
+if (!class_exists('messenger'))
+{
     global $phpbb_root_path, $phpEx;
     require $phpbb_root_path . 'includes/functions_messenger.' . $phpEx;
 }
@@ -62,7 +63,8 @@ class reply_messenger extends \messenger
 
             $template_paths = array();
             
-            if(file_exists($template_path)){
+            if (file_exists($template_path))
+            {
                 $template_paths[] = $template_path;
             }
             
@@ -78,7 +80,8 @@ class reply_messenger extends \messenger
                 $fallback_template_path_ext = $this->phpbb_root_path . 'ext/replyPUSH/reply_by_email/language/';
                 $fallback_template_path_ext .= basename($this->config['default_lang']) . '/'. $name_space;
                 
-                if(file_exists($fallback_template_path)){
+                if (file_exists($fallback_template_path))
+                {
                     $template_paths[] = $fallback_template_path;
                 }
 
@@ -90,7 +93,7 @@ class reply_messenger extends \messenger
         $this->set_template_paths(array(
             array(
                 'name' => $template_lang . '_email',
-                'ext_path'=> $this->phpbb_root_path . 'language/' . $template_lang . '/'. $name_space
+                'ext_path'=> $this->phpbb_root_path . 'language/' . $template_lang . '/'. $name_space,
             ),
         ), $template_paths);
 
@@ -171,7 +174,7 @@ class reply_messenger extends \messenger
 
         $raw_headers = array();
         
-        foreach($headers as $key => $value)
+        foreach ($headers as $key => $value)
             $raw_headers[] = $key.': '.$value;
         return $raw_headers;
     }

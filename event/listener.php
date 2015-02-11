@@ -37,7 +37,7 @@ class listener implements EventSubscriberInterface
             'core.submit_pm_after'                   => 'submit_post',
             'core.user_setup'                        => 'load_language',
             'core.page_header'                       => 'set_up',
-            'core.adm_page_header'                   => 'set_up'
+            'core.adm_page_header'                   => 'set_up',
         );
     }
     
@@ -45,8 +45,10 @@ class listener implements EventSubscriberInterface
     {
         $route = $this->request->attributes->get('_route');
         // if in reply_push exit without output
-        if(strpos($route, 'reply_push') !== false)
+        if (strpos($route, 'reply_push') !== false)
+        {
             exit();
+        }
     }
     
     public function load_language($event)
@@ -61,7 +63,8 @@ class listener implements EventSubscriberInterface
     
     public function set_up($event)
     {   
-        if($this->auth->acl_get('a_board')){
+        if ($this->auth->acl_get('a_board'))
+        {
             // link jump to settings
             $url = generate_board_url().'/'.append_sid("{$this->phpbb_admin_path}index.{$this->php_ext}", "i=acp_board&amp;mode=email#rp_settings", true, $this->user->session_id);
             
