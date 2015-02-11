@@ -1,10 +1,10 @@
 <?php
+namespace replyPUSH\replybyemail\helper;
+
 if (!defined('IN_PHPBB'))
 {
     exit;
 }
-
-namespace replyPUSH\replybyemail\helper;
 
 if (!class_exists('messenger'))
 {
