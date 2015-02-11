@@ -44,10 +44,10 @@ class listener implements EventSubscriberInterface
     public function submit_post($event)
     {
         $route = $this->request->attributes->get('_route');
-        // if in reply_push die without output
+        // if in reply_push $this->utility->kill() without output
         if (strpos($route, 'reply_push') !== false)
         {
-            die();
+            $this->utility->kill();
         }
     }
     
