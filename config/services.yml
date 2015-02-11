@@ -1,8 +1,8 @@
 services:
-    replyPUSH.reply_by_email.api:
+    replyPUSH.replybyemail.api:
         class: replyPUSH\replybyemail\vendor\ReplyPush
         
-    replyPUSH.reply_by_email.model:
+    replyPUSH.replybyemail.model:
         class: replyPUSH\replybyemail\model\reply_push_model
         arguments:
             - @dbal.conn
@@ -15,14 +15,14 @@ services:
             - @user
             - @config
             - @dbal.conn
-            - @replyPUSH.reply_by_email.utility
+            - @replyPUSH.replybyemail.utility
             - @notification.helper.messenger
-            - @replyPUSH.reply_by_email.model
+            - @replyPUSH.replybyemail.model
             - %tables.notification_types%
             - %core.root_path%
             - %core.php_ext%
             
-    replyPUSH.reply_by_email.utility:
+    replyPUSH.replybyemail.utility:
         class: replyPUSH\replybyemail\helper\reply_utility
         arguments:
             - @user
@@ -53,8 +53,8 @@ services:
             - @auth
             - @config
             - @notification.helper.messenger
-            - @replyPUSH.reply_by_email.model
-            - @replyPUSH.reply_by_email.utility
+            - @replyPUSH.replybyemail.model
+            - @replyPUSH.replybyemail.utility
             - %core.root_path%
             - %core.php_ext%
             
@@ -76,7 +76,7 @@ services:
             - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
-            - @replyPUSH.reply_by_email.utility
+            - @replyPUSH.replybyemail.utility
         tags:
             - { name: notification.type }
             
@@ -95,7 +95,7 @@ services:
             - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
-            - @replyPUSH.reply_by_email.utility
+            - @replyPUSH.replybyemail.utility
         tags:
             - { name: notification.type }
             
@@ -114,7 +114,7 @@ services:
             - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
-            - @replyPUSH.reply_by_email.utility
+            - @replyPUSH.replybyemail.utility
         tags:
             - { name: notification.type }
             
@@ -133,7 +133,7 @@ services:
             - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
-            - @replyPUSH.reply_by_email.utility
+            - @replyPUSH.replybyemail.utility
         tags:
             - { name: notification.type }
             
@@ -152,25 +152,25 @@ services:
             - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
-            - @replyPUSH.reply_by_email.utility
+            - @replyPUSH.replybyemail.utility
         tags:
             - { name: notification.type }
             
-    replyPUSH.reply_by_email.listener:
+    replyPUSH.replybyemail.listener:
         class: replyPUSH\replybyemail\event\listener
         arguments:
             - @config
             - @template
             - @user
             - @auth
-            - @replyPUSH.reply_by_email.utility
+            - @replyPUSH.replybyemail.utility
             - @symfony_request
             - %core.adm_relative_path%
             - %core.php_ext%
         tags:
             - { name: event.listener }
             
-    replyPUSH.reply_by_email.acp_listener:
+    replyPUSH.replybyemail.acp_listener:
         class: replyPUSH\replybyemail\event\acp_listener
         arguments:
             - @config
