@@ -97,7 +97,7 @@ class reply_utility
     {
         $file = $this->prime_request($file, $post_data);
         $this->special_include($this->phpbb_root_path.$file);
-        die();
+        $this->kill();
     }
     
     
@@ -123,7 +123,7 @@ class reply_utility
         $this->user->setup($section);
         
         $module->load($section, $module_name, $mode);
-        die();
+        $this->kill();
     }
     
     public function credentials()
@@ -278,6 +278,10 @@ class reply_utility
     public function encode_email_name($name, $email = null)
     {
         return sprintf('=?UTF-8?B?%s?= <%s>', base64_encode($name), $email ? $email : $this->service_email());
+    }
+    
+    public function kill(){
+        return call_user_func_array("exit", func_get_args());
     }
     
 }

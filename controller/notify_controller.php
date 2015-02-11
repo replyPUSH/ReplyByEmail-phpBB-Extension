@@ -2,6 +2,8 @@
 namespace replyPUSH\replybyemail\controller;
 use replyPUSH\replybyemail\vendor\ReplyPush;
 
+
+
 class notify_controller
 {    
     protected $user;
@@ -31,7 +33,7 @@ class notify_controller
     protected function denied($denied_msg = null)
     {
         header("HTTP/1.0 403 Denied");
-        die($denied_msg);
+        $this->utility->kill($denied_msg);
     }
     
     public function ping($uri = null)
@@ -41,7 +43,7 @@ class notify_controller
             $this->denied('DENIED');
         }
         // I'm here ...
-        die("OK");
+        $this->utility->kill("OK");
     }
     
     public function process_incoming_notification($uri = null)
@@ -62,7 +64,7 @@ class notify_controller
         
         if (empty($notification))
         {
-            die(); // do nothing.
+            $this->utility->kill(); // do nothing.
         }
         
         // is valid?
@@ -74,7 +76,7 @@ class notify_controller
         //check for duplicate message id
         if ($this->rp_model->get_transaction($notification['msg_id']))
         {
-            die(); //ignore
+            $this->utility->kill(); //ignore
         }
         
         // add optional
@@ -122,13 +124,13 @@ class notify_controller
             if (isset($notification['error']))
             {
                 $this->process_incoming_error($notification['error'], $this->user, $notification['subject'], $ref);
-                die();
+                $this->utility->kill();
             }
             
             // don't know what you are talking about
             if (!isset($this->notification_types[$type_id]))
             {
-                die();
+                $this->utility->kill();
             }
                
             $type = $this->notification_types[$type_id];
@@ -159,7 +161,7 @@ class notify_controller
         $this->rp_model->log_transaction($notification);
         
         // no output
-        die();
+        $this->utility->kill();
     }
     
     protected function process_topic_notification($from_user_id, $topic_id, $forum_id, $message)
