@@ -1,0 +1,7 @@
+reply_push_notify_ping:
+    path: /replypush/ping/{uri}
+    defaults: { _controller: reply_push_notify_controller:ping }
+
+reply_push_notify:
+    path: /replypush/{uri}
+    defaults: { _controller: reply_push_notify_controller:process_incoming_notification }

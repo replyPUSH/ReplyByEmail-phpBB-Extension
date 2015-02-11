@@ -1,0 +1,17 @@
+.reply_push_uri_check{
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 16px;
+    margin-left: 5px;
+    vertical-align: middle;
+    width: 16px;
+}
+
+.reply_push_uri_found{
+    background-image:url(images/found.gif);
+
+}
+
+.reply_push_uri_not_found{
+    background-image:url(images/not_found.gif);
+}

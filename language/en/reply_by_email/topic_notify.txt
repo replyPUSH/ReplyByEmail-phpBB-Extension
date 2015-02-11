@@ -1,0 +1,13 @@
+Subject: Topic - "{TOPIC_TITLE}" #{SUBJECT_ID}
+
+<p>Hello {USERNAME},</p>
+<br>
+<p>You are receiving this notification because the topic "{TOPIC_TITLE}" at "{SITENAME}" you are watching has received a reply<!-- IF AUTHOR_NAME !== '' --> from {AUTHOR_NAME}<!-- ENDIF -->.</p>
+
+<blockquote>{MESSAGE}</blockquote>
+
+<p>If you want to view the newest post made since your last visit, click on this <a href="{U_NEWEST_POST}">link</a>.</p>
+<br>
+<p>If you no longer wish to watch this topic you can either click the "Unsubscribe topic" link found at the bottom of the topic above, clicking this <a href="{U_STOP_WATCHING_TOPIC}">link</a>.</p>
+{RP_EMAIL_SIG}
+

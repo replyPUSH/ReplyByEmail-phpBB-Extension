@@ -1,0 +1,181 @@
+services:
+    reply_push:
+        class: replyPUSH\reply_by_email\vendor\ReplyPush
+        
+    reply_push_model:
+        class: replyPUSH\reply_by_email\model\reply_push_model
+        arguments:
+            - @dbal.conn
+            - %tables.notification_types%
+            - %core.table_prefix%
+        
+    reply_push_notify_controller:
+        class: replyPUSH\reply_by_email\controller\notify_controller
+        arguments:
+            - @user
+            - @config
+            - @dbal.conn
+            - @reply_push_utility
+            - @notification.helper.messenger
+            - @reply_push_model
+            - %tables.notification_types%
+            - %core.root_path%
+            - %core.php_ext%
+            
+    reply_push_utility:
+        class: replyPUSH\reply_by_email\helper\reply_utility
+        arguments:
+            - @user
+            - @auth
+            - @config
+            - @dbal.conn
+            - @request
+            - %core.root_path%
+            - %core.php_ext%
+
+    notification.helper.messenger:
+        class: replyPUSH\reply_by_email\helper\reply_messenger
+        arguments:
+            - @config
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+            - @ext.manager
+        
+    notification.method.email:
+        class: replyPUSH\reply_by_email\notification\method\reply_notification
+        scope: prototype
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - @notification.helper.messenger
+            - @reply_push_model
+            - @reply_push_utility
+            - %core.root_path%
+            - %core.php_ext%
+            
+        tags:
+            - { name: notification.method }
+        
+    notification.type.bookmark:
+        class: replyPUSH\reply_by_email\notification\type\bookmark
+        scope: prototype
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.notification_types%
+            - %tables.notifications%
+            - %tables.user_notifications%
+            - @reply_push_utility
+        tags:
+            - { name: notification.type }
+            
+    notification.type.post:
+        class: replyPUSH\reply_by_email\notification\type\post
+        scope: prototype
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.notification_types%
+            - %tables.notifications%
+            - %tables.user_notifications%
+            - @reply_push_utility
+        tags:
+            - { name: notification.type }
+            
+    notification.type.quote:
+        class: replyPUSH\reply_by_email\notification\type\quote
+        scope: prototype
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.notification_types%
+            - %tables.notifications%
+            - %tables.user_notifications%
+            - @reply_push_utility
+        tags:
+            - { name: notification.type }
+            
+    notification.type.topic:
+        class: replyPUSH\reply_by_email\notification\type\topic
+        scope: prototype
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.notification_types%
+            - %tables.notifications%
+            - %tables.user_notifications%
+            - @reply_push_utility
+        tags:
+            - { name: notification.type }
+            
+    notification.type.pm:
+        class: replyPUSH\reply_by_email\notification\type\pm
+        scope: prototype
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.notification_types%
+            - %tables.notifications%
+            - %tables.user_notifications%
+            - @reply_push_utility
+        tags:
+            - { name: notification.type }
+            
+    reply_by_email.listener:
+        class: replyPUSH\reply_by_email\event\listener
+        arguments:
+            - @config
+            - @template
+            - @user
+            - @auth
+            - @reply_push_utility
+            - @symfony_request
+            - %core.adm_relative_path%
+            - %core.php_ext%
+        tags:
+            - { name: event.listener }
+            
+    reply_by_email.acp_listener:
+        class: replyPUSH\reply_by_email\event\acp_listener
+        arguments:
+            - @config
+            - @template
+            - @user
+        tags:
+            - { name: event.listener }
+

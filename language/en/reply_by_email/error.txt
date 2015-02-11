@@ -1,0 +1,6 @@
+<p>Hello {USERNAME},</p>
+
+<p>The following error occured</p>
+
+<blockquote>{MESSAGE}</blockquote>
+

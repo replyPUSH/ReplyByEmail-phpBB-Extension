@@ -1,0 +1,12 @@
+Subject: Topic - "{TOPIC_TITLE}" #{SUBJECT_ID}
+
+<p>Hello {USERNAME},</p>
+<br>
+<p>You are receiving this notification because a topic you bookmarked, "{TOPIC_TITLE}" at "{SITENAME}", has received a new reply<!-- IF AUTHOR_NAME !== '' --> from {AUTHOR_NAME}<!-- ENDIF -->:</p>
+
+<blockquote>{MESSAGE}</blockquote>
+
+<p>If you want to view the newest post made since your last visit, click on this <a href="{U_NEWEST_POST}">link</a>.</p>
+<br>
+<p>If you no longer wish to receive updates about replies to bookmarks, please update your notification settings <a href="{U_NOTIFICATION_SETTINGS}">here</a>.</p>
+{RP_EMAIL_SIG}

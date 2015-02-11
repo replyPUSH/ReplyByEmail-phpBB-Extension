@@ -1,0 +1,13 @@
+Subject: Private Message - {SUBJECT_STRIPPED}
+
+<p>Hello {USERNAME},</p>
+<br>
+<p>You have received a new private message "{SUBJECT}" from "{AUTHOR_NAME}" to your account on "{SITENAME}":</p>
+
+<blockquote>{MESSAGE}</blockquote>
+
+<p>You can view your new message by clicking on this <a href="{U_VIEW_MESSAGE}">link</a>.</p>
+<br>
+<p>You have requested that you be notified on this event, remember that you can always choose not to be notified of new messages by changing the appropriate setting in your profile.</p>
+<br>
+{RP_EMAIL_SIG}

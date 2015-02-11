@@ -1,0 +1,12 @@
+Subject: Topic - "{TOPIC_TITLE}" #{SUBJECT_ID}
+
+<p>Hello {USERNAME},</p>
+<br>
+<p>You are receiving this notification because "{AUTHOR_NAME}" quoted you in the topic "{TOPIC_TITLE}" at "{SITENAME}":</p>
+
+<blockquote>{MESSAGE}</blockquote>
+
+<p>If you want to view the quoted post, click on this <a href="{U_VIEW_POST}">link</a>.</p>
+<br>
+<p>If you no longer wish to receive updates about replies quoting you, please update your notification settings <a href="{U_NOTIFICATION_SETTINGS}">here</a>.</p>
+{RP_EMAIL_SIG}
