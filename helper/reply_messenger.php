@@ -1,5 +1,10 @@
 <?php
-namespace replyPUSH\reply_by_email\helper;
+if (!defined('IN_PHPBB'))
+{
+    exit;
+}
+
+namespace replyPUSH\replybyemail\helper;
 
 if (!class_exists('messenger'))
 {
@@ -58,7 +63,7 @@ class reply_messenger extends \messenger
             $template_path = (!empty($this->user->lang_path)) ? $this->user->lang_path : $this->phpbb_root_path . 'language/';
             $template_path .= $template_lang . '/'. $name_space;
             
-            $template_path_ext = $this->phpbb_root_path . 'ext/replyPUSH/reply_by_email/language/';
+            $template_path_ext = $this->phpbb_root_path . 'ext/replyPUSH/replybyemail/language/';
             $template_path_ext .= $template_lang . '/'. $name_space;
 
             $template_paths = array();
@@ -77,7 +82,7 @@ class reply_messenger extends \messenger
                 $fallback_template_path = (!empty($this->user->lang_path)) ? $this->user->lang_path : $this->phpbb_root_path . 'language/';
                 $fallback_template_path .= basename($this->config['default_lang']) . '/'. $name_space;
                 
-                $fallback_template_path_ext = $this->phpbb_root_path . 'ext/replyPUSH/reply_by_email/language/';
+                $fallback_template_path_ext = $this->phpbb_root_path . 'ext/replyPUSH/replybyemail/language/';
                 $fallback_template_path_ext .= basename($this->config['default_lang']) . '/'. $name_space;
                 
                 if (file_exists($fallback_template_path))

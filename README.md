@@ -2,9 +2,9 @@
 
 ## Installation
 
-Clone into phpBB/replyPUSH/reply_by_email:
+Clone into phpBB/replyPUSH/replybyemail:
 
-    git clone https://github.com/replyPUSH/ReplyByEmail-phpBB-Plugin.git phpBB/ext/replyPUSH/reply_by_email
+    git clone https://github.com/replyPUSH/ReplyByEmail-phpBB-Plugin.git phpBB/ext/replyPUSH/replybyemail
 
 Go to "ACP" > "Customise" > "Extensions" and enable the "Reply By Email" extension.
 

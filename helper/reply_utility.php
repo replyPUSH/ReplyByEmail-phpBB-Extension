@@ -1,6 +1,6 @@
 <?php
-namespace replyPUSH\reply_by_email\helper;
-use replyPUSH\reply_by_email\vendor\ReplyPush;
+namespace replyPUSH\replybyemail\helper;
+use replyPUSH\replybyemail\vendor\ReplyPush;
 
 class reply_utility
 {
@@ -97,7 +97,7 @@ class reply_utility
     {
         $file = $this->prime_request($file, $post_data);
         $this->special_include($this->phpbb_root_path.$file);
-        exit();
+        die();
     }
     
     
@@ -123,7 +123,7 @@ class reply_utility
         $this->user->setup($section);
         
         $module->load($section, $module_name, $mode);
-        exit();
+        die();
     }
     
     public function credentials()
@@ -165,7 +165,7 @@ class reply_utility
         catch(\Exception $ex)
         {
             //sometimes above is not sufficient as instance is wrong
-            if (get_class($ex) == 'replyPUSH\reply_by_email\vendor\ReplyPushError')
+            if (get_class($ex) == 'replyPUSH\replybyemail\vendor\ReplyPushError')
             {
                 return false;
             }
@@ -179,7 +179,7 @@ class reply_utility
     
     public function check_uri($uri)
     {
-        return $this->config['reply_push_notify_uri'] == $uri;
+        return $this->config['replyPUSH_replybyemail_notify_uri'] == $uri;
     }
     
     public function get_user_id_by_email($email)

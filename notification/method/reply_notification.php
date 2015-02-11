@@ -1,8 +1,8 @@
 <?php
-namespace replyPUSH\reply_by_email\notification\method;
+namespace replyPUSH\replybyemail\notification\method;
 
 use \phpbb\notification\method\email;
-use replyPUSH\reply_by_email\vendor\ReplyPush;
+use replyPUSH\replybyemail\vendor\ReplyPush;
 
 class reply_notification extends email
 {
@@ -91,7 +91,7 @@ class reply_notification extends email
                     'RP_EMAIL_SIG'              => str_replace('{RP_SIG_ID}', mt_rand(), $this->user->lang['REPLY_PUSH_EMAIL_SIG']),
                 ), $notification->get_email_template_variables()));
                 
-                $this->messenger->template($template_dir_prefix . $notification->get_email_template(), $user['user_lang'], '', 'reply_by_email');
+                $this->messenger->template($template_dir_prefix . $notification->get_email_template(), $user['user_lang'], '', 'replybyemail');
 
                 $from_users  =  $notification->users_to_query();
                 if (sizeof($from_users))

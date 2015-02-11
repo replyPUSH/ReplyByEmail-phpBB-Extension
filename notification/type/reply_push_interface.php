@@ -1,5 +1,5 @@
 <?php
-namespace replyPUSH\reply_by_email\notification\type;
+namespace replyPUSH\replybyemail\notification\type;
 
 interface reply_push_interface
 {

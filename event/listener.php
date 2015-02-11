@@ -1,5 +1,5 @@
 <?php
-namespace replyPUSH\reply_by_email\event;
+namespace replyPUSH\replybyemail\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -44,10 +44,10 @@ class listener implements EventSubscriberInterface
     public function submit_post($event)
     {
         $route = $this->request->attributes->get('_route');
-        // if in reply_push exit without output
+        // if in reply_push die without output
         if (strpos($route, 'reply_push') !== false)
         {
-            exit();
+            die();
         }
     }
     
@@ -55,7 +55,7 @@ class listener implements EventSubscriberInterface
     {
         $lang_set_ext = $event['lang_set_ext'];
         $lang_set_ext[] = array(
-            'ext_name' => 'replyPUSH/reply_by_email',
+            'ext_name' => 'replyPUSH/replybyemail',
             'lang_set' => 'main',
         );
         $event['lang_set_ext'] = $lang_set_ext;

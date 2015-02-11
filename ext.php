@@ -8,7 +8,7 @@
 *
 */
 
-namespace replyPUSH\reply_by_email;
+namespace replyPUSH\replybyemail;
 
 /**
 * This ext class is optional and can be omitted if left empty.

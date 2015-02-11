@@ -1,5 +1,5 @@
 <?php
-namespace replyPUSH\reply_by_email\migrations\v01x;
+namespace replyPUSH\replybyemail\migrations\v01x;
 
 class schema_02 extends \phpbb\db\migration\migration
 {
@@ -14,7 +14,7 @@ class schema_02 extends \phpbb\db\migration\migration
     
     static public function depends_on()
     {
-        return array('\replyPUSH\reply_by_email\migrations\v01x\schema_01');
+        return array('\replyPUSH\replybyemail\migrations\v01x\schema_01');
     }
     
     public function update_schema()

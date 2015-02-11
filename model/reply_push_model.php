@@ -1,6 +1,6 @@
 <?php
 
-namespace replyPUSH\reply_by_email\model;
+namespace replyPUSH\replybyemail\model;
 
 class reply_push_model
 {

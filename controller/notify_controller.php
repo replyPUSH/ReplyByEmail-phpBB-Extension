@@ -1,6 +1,6 @@
 <?php
-namespace replyPUSH\reply_by_email\controller;
-use replyPUSH\reply_by_email\vendor\ReplyPush;
+namespace replyPUSH\replybyemail\controller;
+use replyPUSH\replybyemail\vendor\ReplyPush;
 
 class notify_controller
 {    
@@ -31,7 +31,7 @@ class notify_controller
     protected function denied($denied_msg = null)
     {
         header("HTTP/1.0 403 Denied");
-        exit($denied_msg);
+        die($denied_msg);
     }
     
     public function ping($uri = null)
@@ -41,7 +41,7 @@ class notify_controller
             $this->denied('DENIED');
         }
         // I'm here ...
-        exit("OK");
+        die("OK");
     }
     
     public function process_incoming_notification($uri = null)
@@ -62,7 +62,7 @@ class notify_controller
         
         if (empty($notification))
         {
-            exit(); // do nothing.
+            die(); // do nothing.
         }
         
         // is valid?
@@ -74,7 +74,7 @@ class notify_controller
         //check for duplicate message id
         if ($this->rp_model->get_transaction($notification['msg_id']))
         {
-            exit(); //ignore
+            die(); //ignore
         }
         
         // add optional
@@ -122,13 +122,13 @@ class notify_controller
             if (isset($notification['error']))
             {
                 $this->process_incoming_error($notification['error'], $this->user, $notification['subject'], $ref);
-                exit();
+                die();
             }
             
             // don't know what you are talking about
             if (!isset($this->notification_types[$type_id]))
             {
-                exit();
+                die();
             }
                
             $type = $this->notification_types[$type_id];
@@ -159,7 +159,7 @@ class notify_controller
         $this->rp_model->log_transaction($notification);
         
         // no output
-        exit();
+        die();
     }
     
     protected function process_topic_notification($from_user_id, $topic_id, $forum_id, $message)
@@ -348,7 +348,7 @@ class notify_controller
             'MESSAGE'   => $error_msg,
         ));
         
-        $this->messenger->template('error', $user['user_lang'], '', 'reply_by_email');
+        $this->messenger->template('error', $user['user_lang'], '', 'replybyemail');
         
         $this->messenger->send();
     }

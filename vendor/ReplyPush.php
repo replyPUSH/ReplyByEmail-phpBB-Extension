@@ -1,5 +1,5 @@
 <?php
-namespace replyPUSH\reply_by_email\vendor;
+namespace replyPUSH\replybyemail\vendor;
 
 /**
  * @@ ReplyPushError @@

@@ -1,7 +1,7 @@
 <?php
-namespace replyPUSH\reply_by_email\notification\type;
+namespace replyPUSH\replybyemail\notification\type;
 use \phpbb\notification\type\post as post_base;
-use replyPUSH\reply_by_email\notification\type\reply_push_interface;
+use replyPUSH\replybyemail\notification\type\reply_push_interface;
 
 class post extends post_base implements reply_push_interface
 {

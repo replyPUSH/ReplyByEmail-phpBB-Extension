@@ -1,29 +1,29 @@
 services:
-    reply_push:
-        class: replyPUSH\reply_by_email\vendor\ReplyPush
+    replyPUSH.reply_by_email.api:
+        class: replyPUSH\replybyemail\vendor\ReplyPush
         
-    reply_push_model:
-        class: replyPUSH\reply_by_email\model\reply_push_model
+    replyPUSH.reply_by_email.model:
+        class: replyPUSH\replybyemail\model\reply_push_model
         arguments:
             - @dbal.conn
             - %tables.notification_types%
             - %core.table_prefix%
         
-    reply_push_notify_controller:
-        class: replyPUSH\reply_by_email\controller\notify_controller
+    replyPUSH.replybyemail.notify_controller:
+        class: replyPUSH\replybyemail\controller\notify_controller
         arguments:
             - @user
             - @config
             - @dbal.conn
-            - @reply_push_utility
+            - @replyPUSH.reply_by_email.utility
             - @notification.helper.messenger
-            - @reply_push_model
+            - @replyPUSH.reply_by_email.model
             - %tables.notification_types%
             - %core.root_path%
             - %core.php_ext%
             
-    reply_push_utility:
-        class: replyPUSH\reply_by_email\helper\reply_utility
+    replyPUSH.reply_by_email.utility:
+        class: replyPUSH\replybyemail\helper\reply_utility
         arguments:
             - @user
             - @auth
@@ -34,7 +34,7 @@ services:
             - %core.php_ext%
 
     notification.helper.messenger:
-        class: replyPUSH\reply_by_email\helper\reply_messenger
+        class: replyPUSH\replybyemail\helper\reply_messenger
         arguments:
             - @config
             - @user
@@ -43,7 +43,7 @@ services:
             - @ext.manager
         
     notification.method.email:
-        class: replyPUSH\reply_by_email\notification\method\reply_notification
+        class: replyPUSH\replybyemail\notification\method\reply_notification
         scope: prototype
         arguments:
             - @user_loader
@@ -53,8 +53,8 @@ services:
             - @auth
             - @config
             - @notification.helper.messenger
-            - @reply_push_model
-            - @reply_push_utility
+            - @replyPUSH.reply_by_email.model
+            - @replyPUSH.reply_by_email.utility
             - %core.root_path%
             - %core.php_ext%
             
@@ -62,7 +62,7 @@ services:
             - { name: notification.method }
         
     notification.type.bookmark:
-        class: replyPUSH\reply_by_email\notification\type\bookmark
+        class: replyPUSH\replybyemail\notification\type\bookmark
         scope: prototype
         arguments:
             - @user_loader
@@ -76,12 +76,12 @@ services:
             - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
-            - @reply_push_utility
+            - @replyPUSH.reply_by_email.utility
         tags:
             - { name: notification.type }
             
     notification.type.post:
-        class: replyPUSH\reply_by_email\notification\type\post
+        class: replyPUSH\replybyemail\notification\type\post
         scope: prototype
         arguments:
             - @user_loader
@@ -95,12 +95,12 @@ services:
             - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
-            - @reply_push_utility
+            - @replyPUSH.reply_by_email.utility
         tags:
             - { name: notification.type }
             
     notification.type.quote:
-        class: replyPUSH\reply_by_email\notification\type\quote
+        class: replyPUSH\replybyemail\notification\type\quote
         scope: prototype
         arguments:
             - @user_loader
@@ -114,12 +114,12 @@ services:
             - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
-            - @reply_push_utility
+            - @replyPUSH.reply_by_email.utility
         tags:
             - { name: notification.type }
             
     notification.type.topic:
-        class: replyPUSH\reply_by_email\notification\type\topic
+        class: replyPUSH\replybyemail\notification\type\topic
         scope: prototype
         arguments:
             - @user_loader
@@ -133,12 +133,12 @@ services:
             - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
-            - @reply_push_utility
+            - @replyPUSH.reply_by_email.utility
         tags:
             - { name: notification.type }
             
     notification.type.pm:
-        class: replyPUSH\reply_by_email\notification\type\pm
+        class: replyPUSH\replybyemail\notification\type\pm
         scope: prototype
         arguments:
             - @user_loader
@@ -152,26 +152,26 @@ services:
             - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
-            - @reply_push_utility
+            - @replyPUSH.reply_by_email.utility
         tags:
             - { name: notification.type }
             
-    reply_by_email.listener:
-        class: replyPUSH\reply_by_email\event\listener
+    replyPUSH.reply_by_email.listener:
+        class: replyPUSH\replybyemail\event\listener
         arguments:
             - @config
             - @template
             - @user
             - @auth
-            - @reply_push_utility
+            - @replyPUSH.reply_by_email.utility
             - @symfony_request
             - %core.adm_relative_path%
             - %core.php_ext%
         tags:
             - { name: event.listener }
             
-    reply_by_email.acp_listener:
-        class: replyPUSH\reply_by_email\event\acp_listener
+    replyPUSH.reply_by_email.acp_listener:
+        class: replyPUSH\replybyemail\event\acp_listener
         arguments:
             - @config
             - @template

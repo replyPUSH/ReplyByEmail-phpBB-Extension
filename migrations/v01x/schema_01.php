@@ -1,5 +1,5 @@
 <?php
-namespace replyPUSH\reply_by_email\migrations\v01x;
+namespace replyPUSH\replybyemail\migrations\v01x;
 
 class schema_01 extends \phpbb\db\migration\migration
 {

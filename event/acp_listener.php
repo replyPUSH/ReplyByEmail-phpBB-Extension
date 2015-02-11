@@ -1,9 +1,9 @@
 <?php
-namespace replyPUSH\reply_by_email\event;
+namespace replyPUSH\replybyemail\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use replyPUSH\reply_by_email\vendor\ReplyPush;
-use replyPUSH\reply_by_email\vendor\ReplyPushError;
+use replyPUSH\replybyemail\vendor\ReplyPush;
+use replyPUSH\replybyemail\vendor\ReplyPushError;
 
 class acp_listener implements EventSubscriberInterface
 {
@@ -25,8 +25,8 @@ class acp_listener implements EventSubscriberInterface
     static public function getSubscribedEvents()
     {
         return array(
-            'core.acp_board_config_edit_add' => 'reply_by_email_config',
-            'core.validate_config_variable'  => 'reply_by_email_config_validate',
+            'core.acp_board_config_edit_add' => 'replybyemail_config',
+            'core.validate_config_variable'  => 'replybyemail_config_validate',
         );
     }
     
@@ -39,15 +39,15 @@ class acp_listener implements EventSubscriberInterface
         $this->user->lang['REPLY_PUSH_URI_BLURB'];
     }
     
-    public function reply_by_email_config($event)
+    public function replybyemail_config($event)
     {
 
         if ($event['mode'] == 'email')
         {
             // if notify_uri doesn't exist create it
-            if (!isset($this->config['reply_push_notify_uri']))
+            if (!isset($this->config['replyPUSH_replybyemail_notify_uri']))
             {
-                $this->config->set('reply_push_notify_uri', uniqid());
+                $this->config->set('replyPUSH_replybyemail_notify_uri', uniqid());
             }
             
             $display_vars = $event['display_vars'];
@@ -66,7 +66,7 @@ class acp_listener implements EventSubscriberInterface
             $display_vars['vars']['reply_push_account_no']    = array('lang' => 'REPLY_PUSH_ACCOUNT_NO', 'validate' => 'reply_push',  'type' => 'text:8:8', 'explain' => true);
             $display_vars['vars']['reply_push_secret_id']     = array('lang' => 'REPLY_PUSH_SECRET_ID', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
             $display_vars['vars']['reply_push_secret_key']    = array('lang' => 'REPLY_PUSH_SECRET_KEY', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
-            $display_vars['vars']['reply_push_uri']           = array('lang' => 'REPLY_PUSH_URI', 'type' => 'custom', 'function' => array($this, 'uri_boxes'), 'params' => array($this->config['reply_push_notify_uri']),'explain' => true);
+            $display_vars['vars']['reply_push_uri']           = array('lang' => 'REPLY_PUSH_URI', 'type' => 'custom', 'function' => array($this, 'uri_boxes'), 'params' => array($this->config['replyPUSH_replybyemail_notify_uri']),'explain' => true);
             
             $display_vars['vars']['legend'.$x] =  'ACP_SUBMIT_CHANGES';
 
@@ -77,7 +77,7 @@ class acp_listener implements EventSubscriberInterface
         }
     }
     
-    public function reply_by_email_config_validate($event)
+    public function replybyemail_config_validate($event)
     {
         if (!$this->validate_reply_push || $this->validation_failed)
         {
