@@ -93,3 +93,32 @@ services:
             - @replyPUSH.replybyemail.utility
         tags:
             - { name: notification.type }
+            
+    notification.helper.messenger:
+        class: replyPUSH\replybyemail\helper\reply_messenger
+        arguments:
+            - @config
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+            - @ext.manager
+        
+    notification.method.email:
+        class: replyPUSH\replybyemail\notification\method\reply_notification
+        scope: prototype
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - @notification.helper.messenger
+            - @replyPUSH.replybyemail.model
+            - @replyPUSH.replybyemail.utility
+            - %core.root_path%
+            - %core.php_ext%
+            
+        tags:
+            - { name: notification.method }
+            
