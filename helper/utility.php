@@ -54,6 +54,9 @@ class utility
     /** @var array[string] stash credentials */
     private $credentials = null;
     
+    /** @var string for references/checksums */
+    private $hash_function = 'md5';
+    
     /**
     * Constructor
     *
@@ -431,6 +434,32 @@ class utility
         return trim($content);
     }
     
+    
+    /**
+    * hash method
+    * 
+    * Optiola trys a list of algorithm before defaulting. 
+    * 
+    * @param   string            $value
+    * @param   array[int]string  $try
+    * @return  string 
+    */
+    public function hash_method($value, $try = array())
+    {
+        $hash_function = $this->hash_method();
+        $algos = hash_algos();
+        foreach($try as $func)
+        {
+            if(in_array($func, $algos))
+            {
+                $hash_function = $func;
+                break;
+            }
+        }
+        
+        return $hash_function($value);
+    }
+    
     /**
     * Strip subject from 'Re:'
     * 
@@ -452,7 +481,7 @@ class utility
     */
     public function subject_code($subject)
     {
-        return hexdec(substr(md5($this->subject_stripped($subject)), 0, 8));
+        return hexdec(substr($this->hash_method($this->subject_stripped($subject)), 0, 8));
     }
     
     /**

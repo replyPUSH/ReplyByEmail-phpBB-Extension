@@ -34,20 +34,25 @@ class rp_model
     /** @var array[mixed] optional schema for population */
     protected $optional_schema = array('error', 'content' => array('text/html'));
     
+    /** @var utility methods */
+    protected $utility;
+    
     /** @staticvar array[string]string cache of references */
     public static $ref = array();
 
     /**
     * Constructor
     *
-    * @param \phpbb\db\driver\factory             $db                           Database factory object
-    * @param string                               $notification_types_table     notification_types table name
-    * @param string                               $table_prefix                 prefix for phpBB db tables
+    * @param \phpbb\db\driver\factory                       $db                           Database factory object
+    * @param \replyPUSH\replybyemail\helper\utility         $utility                      Reply By Email utility helper
+    * @param string                                         $notification_types_table     notification_types table name
+    * @param string                                         $table_prefix                 prefix for phpBB db tables
     * @access public
     */
-    function __construct(\phpbb\db\driver\factory $db, $notification_types_table, $table_prefix)
+    function __construct(\phpbb\db\driver\factory $db, \replyPUSH\replybyemail\helper\utility $utility, $notification_types_table, $table_prefix)
     {
         $this->db = $db;
+        $this->utility = $utility;
         $this->notification_types_table = $notification_types_table;
         $this->table_prefix = $table_prefix;
     }
@@ -186,7 +191,7 @@ class rp_model
             }
         }
         
-        return md5($type.$record_id.$email);
+        return $this->utility->hash_method($type.$record_id.$email);
     }
     
     public function has_required($data, $schema = NULL)

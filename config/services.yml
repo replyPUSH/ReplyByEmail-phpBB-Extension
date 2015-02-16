@@ -9,6 +9,7 @@ services:
         class: replyPUSH\replybyemail\model\rp_model
         arguments:
             - @dbal.conn
+            - @replyPUSH.replybyemail.utility
             - %tables.notification_types%
             - %core.table_prefix%
         

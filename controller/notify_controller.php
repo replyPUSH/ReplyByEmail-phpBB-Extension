@@ -417,7 +417,7 @@ class notify_controller
             'post' => 'Submit',
             'creation_time' => $time,
             'lastclick' => $time,
-            'form_token' => sha1($time . $this->user->data['user_form_salt'] . 'posting'),
+            'form_token' => $this->utility->hash_method($time . $this->user->data['user_form_salt'] . 'posting', array('sha1')),
         );
 
         // special method devised to deal with the problem of 
@@ -456,7 +456,7 @@ class notify_controller
             'creation_time' => $time,
             'lastclick' => $time,
             'address_list' => $address_list,
-            'form_token' => sha1($time . $this->user->data['user_form_salt'] . 'ucp_pm_compose'),
+            'form_token' => $this->utility->hash_method($time . $this->user->data['user_form_salt'] . 'ucp_pm_compose', array('sha1')),
         );
         
         // special method that calls a module as if handling a request
