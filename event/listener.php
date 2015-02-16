@@ -127,7 +127,6 @@ class listener implements EventSubscriberInterface
     */
     public function set_up($event)
     {   
-        echo get_class($event);
         if ($this->auth->acl_get('a_board'))
         {
             // link jump to settings
