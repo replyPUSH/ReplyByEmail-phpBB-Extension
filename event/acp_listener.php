@@ -1,26 +1,61 @@
 <?php
+/**
+*
+* @package phpBB Extension - Reply By Email
+* @copyright (c) 2015 Paul Thomas
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
 namespace replyPUSH\replybyemail\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use replyPUSH\replybyemail\vendor\ReplyPush;
 use replyPUSH\replybyemail\vendor\ReplyPushError;
 
+/**
+* All the admin hooks
+*/
 class acp_listener implements EventSubscriberInterface
 {
+    /** @var bool if config validation failed */
     private $validation_failed = false;
+    
+    /** @var bool if validation started */
     private $validate_reply_push = false;
     
+    /** @var \phpbb\config\config */
     protected $config;
+    
+    /** @var \phpbb\template\template */
     protected $template;
     
+    /** @var \phpbb\user $user */
+    protected $user;
     
-    
-    function __construct(\phpbb\config\config $config, \phpbb\template\template $template, $user)
+    /**
+    * Constructor
+    *
+    * @param \phpbb\config\config                 $config                       Config object
+    * @param \phpbb\template\template             $template                     Template builder
+    * @param string                               $table_prefix                 prefix for phpBB db tables
+    * @param \phpbb\user                          $user                         User object
+    * @access public
+    */
+    function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user)
     {
         $this->config = $config;
         $this->template = $template;
         $this->user = $user;
     }
+    
+    
+    /**
+    * Get subscribed events
+    *
+    * Listen to these
+    * 
+    * return array[string]string
+    */
     
     static public function getSubscribedEvents()
     {
@@ -30,6 +65,15 @@ class acp_listener implements EventSubscriberInterface
         );
     }
     
+    
+    /**
+    * URI Boxes
+    *
+    * Special read-only form fields for display of
+    * notification URI
+    * 
+    * @param string  $key
+    */
     public function uri_boxes($key)
     {
         return
@@ -39,6 +83,13 @@ class acp_listener implements EventSubscriberInterface
         $this->user->lang['REPLY_PUSH_URI_BLURB'];
     }
     
+    /**
+    * Reply By Email config
+    *
+    * Display of form section
+    * 
+    * @param phpbb\event\data  $event
+    */
     public function replybyemail_config($event)
     {
 
@@ -76,6 +127,14 @@ class acp_listener implements EventSubscriberInterface
             $this->validate_reply_push = true;
         }
     }
+    
+    /**
+    * Reply By Email config validate
+    *
+    * Processing and validation
+    * 
+    * @param phpbb\event\data  $event
+    */
     
     public function replybyemail_config_validate($event)
     {

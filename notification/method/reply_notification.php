@@ -1,17 +1,50 @@
 <?php
+/**
+*
+* @package phpBB Extension - Reply By Email
+* @copyright (c) 2015 Paul Thomas
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
 namespace replyPUSH\replybyemail\notification\method;
 
 use \phpbb\notification\method\email;
 use replyPUSH\replybyemail\vendor\ReplyPush;
 
+/**
+* Extend email notification method to work with replyPUSH
+*/
 class reply_notification extends email
 {
     
+    /** @vat custom messenger */
     protected $messenger;
+    
+    /** @var model for tracking replyPUSH notifications */
     protected $rp_model;
+    
+    /** @var utility methods */
     protected $utility;
     
-    public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $messenger, $rp_model, $utility, $phpbb_root_path, $php_ext)
+    /**
+    * Constructor
+    *
+    * @param \phpbb\user_loader                             $user_loader                  User Loader
+    * @param \phpbb\db\driver\driver_interface              $db                           Database driver interface
+    * @param \phpbb\cache\driver\driver_interface           $cache                        Cache driver interface
+    * @param \phpbb\user                                    $user                         User object
+    * @param \phpbb\auth\auth                               $auth                         Auth object
+    * @param \phpbb\config\config                           $config                       Config object
+    * @param \replyPUSH\replybyemail\helper\messenger       $messenger                    Custom messenger object
+    * @param \replyPUSH\replybyemail\model\rp_model         $rp_model                     replyPUSH model object
+    * @param \replyPUSH\replybyemail\helper\utility         $utility                      Reply By Email utility helper
+    * @param string                                         $phpbb_root_path              phpBB root path
+    * @param string                                         $php_ext                      phpEx
+    * @access public
+    */
+    
+    
+    public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, \replyPUSH\replybyemail\helper\messenger $messenger, \replyPUSH\replybyemail\model\rp_model $rp_model, \replyPUSH\replybyemail\helper\utility $utility, $phpbb_root_path, $php_ext)
     {
         $this->messenger = $messenger;
         $this->rp_model = $rp_model;
@@ -19,6 +52,14 @@ class reply_notification extends email
         parent::__construct($user_loader,  $db, $cache, $user, $auth, $config, $phpbb_root_path, $php_ext, $messenger);
     }
 
+    /**
+    * Notify using phpBB messenger overide
+    *
+    * @param int $notify_method             Notify method for messenger (e.g. NOTIFY_IM)
+    * @param string $template_dir_prefix    Base directory to prepend to the email template name
+    *
+    * @return null
+    */
     protected function notify_using_messenger($notify_method, $template_dir_prefix = '')
     {
         if (!$this->utility->credentials())
@@ -160,6 +201,15 @@ class reply_notification extends email
         $this->empty_queue();
     }
     
+    /**
+    * Clear Messages
+    *
+    * Ensures that messages are purged after notifications sent
+    * 
+    * @param int $notified_ids
+    *
+    * @return null
+    */
     public function clear_messages($notified_ids)
     {
         if (empty($notified_ids))

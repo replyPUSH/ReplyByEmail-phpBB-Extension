@@ -95,7 +95,7 @@ services:
             - { name: notification.type }
             
     notification.helper.messenger:
-        class: replyPUSH\replybyemail\helper\reply_messenger
+        class: replyPUSH\replybyemail\helper\messenger
         arguments:
             - @config
             - @user
@@ -121,4 +121,3 @@ services:
             
         tags:
             - { name: notification.method }
-            

@@ -1,22 +1,50 @@
 <?php
-
+/**
+*
+* @package phpBB Extension - Reply By Email
+* @copyright (c) 2015 Paul Thomas
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
 namespace replyPUSH\replybyemail\model;
 
-class reply_push_model
+/**
+* Model for tracking replyPUSH notifications
+*/
+class rp_model
 {
+    /** @var \phpbb\db\driver\factory */
     protected $db;
+    
+    /** @var string notification_types_table */
     protected $notification_types_table;
+    
+    /** @var array[int]string notification types id => value */
     protected $notification_types = array();
+    
+    /** @var array[string]string notification types that will be collated under a parent type */
     protected $collate_types  = array(
         'notification.type.topic' => array('notification.type.bookmark','notification.type.quote','notification.type.post'),
         'notification.type.pm'    => array('notification.type.pm')
     );
     
+    /** @var array[mixed] notification types that will be collated under a parent type */
     protected $required_schema = array('msg_id', 'from', 'in_reply_to', 'subject', 'from_msg_id', 'content' => array('text/plain'));
+    
+    /** @var array[mixed] optional schema for population */
     protected $optional_schema = array('error', 'content' => array('text/html'));
     
+    /** @staticvar array[string]string cache of references */
     public static $ref = array();
 
+    /**
+    * Constructor
+    *
+    * @param \phpbb\db\driver\factory             $db                           Database factory object
+    * @param string                               $notification_types_table     notification_types table name
+    * @param string                               $table_prefix                 prefix for phpBB db tables
+    * @access public
+    */
     function __construct(\phpbb\db\driver\factory $db, $notification_types_table, $table_prefix)
     {
         $this->db = $db;

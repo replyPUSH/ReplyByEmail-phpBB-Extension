@@ -1,26 +1,55 @@
 <?php
+/**
+*
+* @package phpBB Extension - Reply By Email
+* @copyright (c) 2015 Paul Thomas
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
 namespace replyPUSH\replybyemail\helper;
 
 if (!defined('IN_PHPBB'))
 {
     exit;
 }
-
+// old school required
 if (!class_exists('messenger'))
 {
     global $phpbb_root_path, $phpEx;
     require $phpbb_root_path . 'includes/functions_messenger.' . $phpEx;
 }
 
-class reply_messenger extends \messenger
+/**
+* More suitable messenger
+*/
+class messenger extends \messenger
 {
+    /** @var \phpbb\config\config */
     protected $config;
+    
+    /** @var \phpbb\user */
     protected $user;
+    
+    /** @var string phpBB root path */
     protected $phpbb_root_path;
+    
+    /** @var string phpEx */
     protected $phpEx;
+    
+    /** @var \phpbb\extension\manager */
     protected $phpbb_extension_manager;
     
-    public function __construct(\phpbb\config\config $config, $user, $phpbb_root_path, $phpEx, \phpbb\extension\manager $phpbb_extension_manager)
+    /**
+    * Constructor
+    *
+    * @param \phpbb\config\config                 $config                       Config object
+    * @param \phpbb\user                          $user                         User object
+    * @param string                               $phpbb_root_path              phpBB root path
+    * @param string                               $php_ext                      phpEx
+    * @param \phpbb\extension\manager             $phpbb_extension_manager      phpBB Extension Manager
+    * @access public
+    */
+    public function __construct(\phpbb\config\config $config, \phpbb\user $user, $phpbb_root_path, $phpEx, \phpbb\extension\manager $phpbb_extension_manager)
     {
         $this->config = $config;
         $this->user = $user;
@@ -32,6 +61,13 @@ class reply_messenger extends \messenger
     
     /**
     * Set email template to use
+    * 
+    * @param string $template_file
+    * @param string $template_lang
+    * @param string $template_path
+    * @param string $name_space
+    * 
+    * @return bool
     */
     function template($template_file, $template_lang = '', $template_path = '', $name_space = 'email')
     {
@@ -111,6 +147,9 @@ class reply_messenger extends \messenger
     
     /**
     * set up extra mail headers
+    * 
+    * @param strng $name
+    * @param strng $value
     */
     public function header($name, $value)
     {
@@ -124,8 +163,8 @@ class reply_messenger extends \messenger
     /**
     * Adds X-AntiAbuse headers
     *
-    * @param array $config        Configuration array
-    * @param user $user            A user object
+    * @param array  $config        Configuration array
+    * @param user   $user          A user object
     *
     * @return null
     */
@@ -139,6 +178,11 @@ class reply_messenger extends \messenger
 
     /**
     * Return email header
+    * 
+    * @param  string $to
+    * @param  string $cc
+    * @param  string $bcc
+    * @return array[int]string
     */
     public function build_header($to, $cc, $bcc)
     {
@@ -184,6 +228,14 @@ class reply_messenger extends \messenger
         return $raw_headers;
     }
     
+    
+    /**
+    * Send out emails
+    * 
+    * Add special replyPUSH marker tag
+    * 
+    * @return bool
+    */
     public function msg_email()
     {
         $match = array();

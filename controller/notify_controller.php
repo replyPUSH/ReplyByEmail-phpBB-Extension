@@ -1,23 +1,63 @@
 <?php
+/**
+*
+* @package phpBB Extension - Reply By Email
+* @copyright (c) 2015 Paul Thomas
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
 namespace replyPUSH\replybyemail\controller;
 use replyPUSH\replybyemail\vendor\ReplyPush;
+use Symfony\Component\HttpFoundation\Response;
 
-
-
+/**
+* Controller that handles incoming messages from replyPUSH
+*/
 class notify_controller
 {    
+    
+    /** @var \phpbb\user */
     protected $user;
+    
+    /** @var \phpbb\config\config */
     protected $config;
+    
+    /** @var \phpbb\db\driver\factory */
     protected $db;
+    
+    /** @var utility methods */
     protected $utility;
+    
+    /** @var custom messenger */
     protected $messenger;
+    
+    /** @var model for tracking replyPUSH notifications */
     protected $rp_model;
+    
+    /** @var string phpBB root path */
     protected $phpbb_root_path;
+    
+    /** @var string phpEx */
     protected $php_ext;
      
+    /** @var array[int]string notification types id => value */
     protected $notification_types = array();
     
-    function __construct(\phpbb\user $user, \phpbb\config\config $config, \phpbb\db\driver\factory $db, $utility, $messenger, $rp_model, $notification_types_table, $phpbb_root_path, $php_ext)
+    /**
+    * Constructor
+    *
+    * @param \phpbb\user                                    $user                         User object
+    * @param \phpbb\config\config                           $config                       Config object
+    * @param \phpbb\db\driver\factory                       $db                           Database factory object
+    * @param \replyPUSH\replybyemail\helper\utility       $utility                      Reply By Email utility helper
+    * @param \replyPUSH\replybyemail\helper\messenger        $messenger                    Custom messenger object
+    * @param \replyPUSH\replybyemail\model\rp_model          $rp_model                     replyPUSH model object
+    * @param string                                         $notification_types_table     notification_types table name
+    * @param string                                         $phpbb_root_path              phpBB root path
+    * @param string                                         $php_ext                      phpEx
+    * @access public
+    */
+    function __construct(\phpbb\user $user, \phpbb\config\config $config, \phpbb\db\driver\factory $db, \replyPUSH\replybyemail\helper\utility $utility, \replyPUSH\replybyemail\helper\messenger $messenger, \replyPUSH\replybyemail\model\rp_model $rp_model, $notification_types_table, $phpbb_root_path, $php_ext)
     {
         $this->user = $user;
         $this->config = $config;
@@ -30,23 +70,58 @@ class notify_controller
         $this->php_ext = $php_ext;
     }
     
-    protected function denied($denied_msg = null)
+    /**
+    * Denies Access
+    *
+    * Outputs Denied satus code and exit, with optional message
+    * 
+    * @param string $denied_msg message to output on exit
+    */
+    
+    protected function denied($denied_msg = '')
     {
-        header("HTTP/1.0 403 Denied");
-        $this->utility->kill($denied_msg);
+        $this->utility->leave($denied_msg, 403);
     }
     
-    public function ping($uri = null)
+    /**
+    * leave Request
+    *
+    * Ends request 
+    * 
+    * @param string $denied_msg message to output on exit
+    */
+    
+    protected function leave($leave_msg = '')
+    {
+        $this->utility->leave($leave_msg);
+    }
+    
+    /**
+    * For Checking Notification Url
+    *
+    * Checks uri code is correct, if not denies
+    * 
+    * @param string $uri code randomly generated on setup
+    */    
+    public function ping($uri)
     {
         if (!$this->utility->check_uri($uri))
         {
             $this->denied('DENIED');
         }
         // I'm here ...
-        $this->utility->kill("OK");
+        $this->leave('OK');
     }
     
-    public function process_incoming_notification($uri = null)
+    /**
+    * Process incoming notifications
+    *
+    * The entry point controller method for replyPUSH notifications
+    * inlcude security checks.
+    * 
+    * @param string $uri code randomly generated on setup
+    */    
+    public function process_incoming_notification($uri)
     {
         // no credentials can't process
         if (!$this->utility->credentials())
@@ -64,7 +139,7 @@ class notify_controller
         
         if (empty($notification))
         {
-            $this->utility->kill(); // do nothing.
+            $this->leave(); // do nothing.
         }
         
         // is valid?
@@ -76,7 +151,7 @@ class notify_controller
         //check for duplicate message id
         if ($this->rp_model->get_transaction($notification['msg_id']))
         {
-            $this->utility->kill(); //ignore
+            $this->leave(); //ignore
         }
         
         // add optional
@@ -124,13 +199,13 @@ class notify_controller
             if (isset($notification['error']))
             {
                 $this->process_incoming_error($notification['error'], $this->user, $notification['subject'], $ref);
-                $this->utility->kill();
+                $this->leave();
             }
             
             // don't know what you are talking about
             if (!isset($this->notification_types[$type_id]))
             {
-                $this->utility->kill();
+                $this->leave();
             }
                
             $type = $this->notification_types[$type_id];
@@ -161,9 +236,19 @@ class notify_controller
         $this->rp_model->log_transaction($notification);
         
         // no output
-        $this->utility->kill();
+        $this->leave();
     }
     
+    /**
+    * Process topic notifications
+    *
+    * Validates topic and context, then replies
+    * 
+    * @param int    $from_user_id
+    * @param int    $topic_id
+    * @param int    $forum_id
+    * @param string $message
+    */    
     protected function process_topic_notification($from_user_id, $topic_id, $forum_id, $message)
     {
         $sql = "SELECT topic_title FROM ". TOPICS_TABLE. 
@@ -188,6 +273,17 @@ class notify_controller
         
         $this->process_topic_reply($topic_id, $forum_id, $message, $subject);
     }
+    
+    /**
+    * Process post notifications
+    *
+    * Validates post and context, then replies
+    * 
+    * @param int    $from_user_id
+    * @param int    $post_id
+    * @param int    $topic_id
+    * @param string $message
+    */    
     
     protected function process_post_notification($from_user_id, $post_id, $topic_id, $message)
     {
@@ -216,15 +312,48 @@ class notify_controller
         $this->process_topic_reply($topic_id, $forum_id, $message, $subject); 
     }
     
+    /**
+    * Process bookmark notifications
+    *
+    * Wraper around process_post_notification
+    * 
+    * @param int    $from_user_id
+    * @param int    $post_id
+    * @param int    $topic_id
+    * @param string $message
+    */ 
+    
     protected function process_bookmark_notification($from_user_id, $post_id, $topic_id, $message)
     {
         $this->process_post_notification($from_user_id, $post_id, $topic_id, $message);
     }
     
+    /**
+    * Process quote notifications
+    *
+    * Wraper around process_post_notification
+    * 
+    * @param int    $from_user_id
+    * @param int    $post_id
+    * @param int    $topic_id
+    * @param string $message
+    */ 
+    
     protected function process_quote_notification($from_user_id, $post_id, $topic_id, $message)
     {
         $this->process_post_notification($from_user_id, $post_id, $topic_id, $message);
     }
+    
+    /**
+    * Process pm notifications
+    *
+    * Validates pm and context, then replies
+    * 
+    * @param int    $from_user_id
+    * @param int    $post_id
+    * @param int    $topic_id
+    * @param string $message
+    */    
     
     protected function process_pm_notification($from_user_id, $message_id, $content_id, $message)
     {
@@ -263,6 +392,17 @@ class notify_controller
         $this->process_pm_reply($message_id, $message, $subject, $to);
     }
     
+    /**
+    * Process topic replies
+    *
+    * Used for various types of replies.
+    * 
+    * @param int    $topic_id
+    * @param int    $forum_id
+    * @param string $message
+    * @param string $subject
+    */ 
+    
     protected function process_topic_reply($topic_id, $forum_id, $message, $subject)
     {
         
@@ -286,6 +426,15 @@ class notify_controller
         $this->utility->sub_request("posting.{$this->php_ext}?mode=reply&f={$forum_id}&t={$topic_id}", $post);
         
     }
+    
+    /**
+    * Process pm replies
+    * 
+    * @param int          $message_id
+    * @param string       $message
+    * @param string       $subject
+    * @param string|array $to
+    */ 
     
     protected function process_pm_reply($message_id, $message, $subject, $to)
     {
@@ -314,7 +463,14 @@ class notify_controller
         $this->utility->sub_request_module("ucp.{$this->php_ext}?i=pm&mode=compose&action=reply&p={$message_id}", $post);
     }
     
-    
+    /**
+    * Process incoming errors from replyPUSH notifications
+    * 
+    * @param int            $error
+    * @param \phpbb\user    $user
+    * @param string         $subject
+    * @param string         $ref
+    */ 
     
     protected function process_incoming_error($error, $user, $subject, $ref='')
     {
@@ -325,12 +481,22 @@ class notify_controller
         }
     }
     
+    /**
+    * Emial error back to user
+    * 
+    * @param \phpbb\user    $user
+    * @param string         $error_msg
+    * @param string         $subject
+    * @param string         $ref
+    */ 
+    
     protected function send_reply_error($user, $error_msg, $subject, $ref='')
     {
         $lang = $user->lang;
         $user = $user->data;
             
         $this->messenger->set_addresses($user);
+        
         $this->messenger->subject($subject ? $subject : $lang['REPLY_PUSH_ERROR_SUBJECT']);
         $this->messenger->header('Content-Type', 'text/html; charset=UTF-8');
         if ($this->config['board_contact'] == $user['user_email'])
@@ -338,7 +504,8 @@ class notify_controller
             $this->messenger->from($this->utility->service_email());
         }
         
-        if ($ref){
+        if ($ref)
+        {
             $this->messenger->header("References","{$ref}");
             $this->messenger->header("In-Reply-To","{$ref}");
         }
@@ -352,6 +519,7 @@ class notify_controller
         
         $this->messenger->template('error', $user['user_lang'], '', 'replybyemail');
         
+        $this->messenger->use_queue = false;
         $this->messenger->send();
     }
 }

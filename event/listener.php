@@ -1,24 +1,58 @@
 <?php
+/**
+*
+* @package phpBB Extension - Reply By Email
+* @copyright (c) 2015 Paul Thomas
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
 namespace replyPUSH\replybyemail\event;
-
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+* All the genral hooks
+*/
 class listener implements EventSubscriberInterface
 {
-    private $has_credencials = false;
     
+    /** @var \phpbb\config\config */
     protected $config;
+    
+    /** @var \phpbb\template\template */
     protected $template;
+    
+    /** @var \phpbb\user */
     protected $user;
-    protected $request;
-    protected $utility;
-    protected $phpbb_admin_path;
-    protected $php_ext;
+    
+    /** @var \phpbb\auth\auth */
     protected $auth;
     
+    /** @var utility methods */
+    protected $utility;
     
+    /** @var \phpbb\symfony_request */
+    protected $request;
     
-    function __construct(\phpbb\config\config $config, \phpbb\template\template $template, $user, $auth, $utility, \phpbb\symfony_request $request, $phpbb_admin_path, $php_ext)
+    /** @var string phpBB admin path */
+    protected $phpbb_admin_path;
+    
+    /** @var string phpEx */
+    protected $php_ext;
+    
+    /**
+    * Constructor
+    *
+    * @param \phpbb\config\config                       $config                       Config object
+    * @param \phpbb\template\template                   $template                     Template builder
+    * @param \phpbb\user                                $user                         User object
+    * @param \phpbb\auth\auth                           $auth                         Auth object
+    * @param \replyPUSH\replybyemail\helper\utility     $utility                      Reply By Email utility helper
+    * @param \phpbb\symfony_request                     $request                      Symfony request object
+    * @param string                                     $phpbb_root_path              phpBB root path
+    * @param string                                     $php_ext                      phpEx
+    * @access public
+    */
+    function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \replyPUSH\replybyemail\helper\utility $utility, \phpbb\symfony_request $request, $phpbb_admin_path, $php_ext)
     {
         $this->config = $config;
         $this->template = $template;
@@ -30,6 +64,13 @@ class listener implements EventSubscriberInterface
         $this->php_ext = $php_ext;
     }
     
+    /**
+    * Get subscribed events
+    *
+    * Listen to these
+    * 
+    * return array[string]string
+    */
     static public function getSubscribedEvents()
     {
         return array(
@@ -41,16 +82,32 @@ class listener implements EventSubscriberInterface
         );
     }
     
+    /**
+    * Submit post event
+    *
+    * Prevent output when posting
+    * with Reply by Email
+    * 
+    * @param phpbb\event\data  $event
+    */
     public function submit_post($event)
     {
         $route = $this->request->attributes->get('_route');
-        // if in reply_push $this->utility->kill() without output
-        if (strpos($route, 'reply_push') !== false)
+        // if in replyPUSH_replybyemail leave without output
+        if (strpos($route, 'replyPUSH_replybyemail') !== false)
         {
-            $this->utility->kill();
+            //leave
+            $this->utility->leave();
         }
     }
     
+    /**
+    * Load Language
+    *
+    * Setup default language file.
+    * 
+    * @param phpbb\event\data  $event
+    */
     public function load_language($event)
     {
         $lang_set_ext = $event['lang_set_ext'];
@@ -61,8 +118,16 @@ class listener implements EventSubscriberInterface
         $event['lang_set_ext'] = $lang_set_ext;
     }
     
+    /**
+    * Reply By Email setup
+    *
+    * Inform admin if not yet set up
+    * 
+    * @param phpbb\event\data  $event
+    */
     public function set_up($event)
     {   
+        echo get_class($event);
         if ($this->auth->acl_get('a_board'))
         {
             // link jump to settings

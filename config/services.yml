@@ -2,11 +2,11 @@ imports:
     - { resource: overides.yml }
 
 services:
-    replyPUSH.replybyemail.api:
+    replyPUSH.replybyemail.reply_push:
         class: replyPUSH\replybyemail\vendor\ReplyPush
         
     replyPUSH.replybyemail.model:
-        class: replyPUSH\replybyemail\model\reply_push_model
+        class: replyPUSH\replybyemail\model\rp_model
         arguments:
             - @dbal.conn
             - %tables.notification_types%
@@ -26,7 +26,7 @@ services:
             - %core.php_ext%
             
     replyPUSH.replybyemail.utility:
-        class: replyPUSH\replybyemail\helper\reply_utility
+        class: replyPUSH\replybyemail\helper\utility
         arguments:
             - @user
             - @auth
