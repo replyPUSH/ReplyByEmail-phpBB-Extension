@@ -2,12 +2,12 @@
 
 ## About
 
-This extension uses a service ![replyPUSH](http://replypush.com). Which is currently free for beta testing. 
+This extension uses a service called ![replyPUSH](http://replypush.com). Which is currently free for beta testing. 
 
 If you are happy to be a beta testing you may sign up, having read the terms. We do recommend you also 
 ![contact](https://www.phpbb.com/community/memberlist.php?mode=email&u=1453826) x00 if you wish to be involved, as you may be ignored otherwise.
 
-## What is does
+## What it does
 
 This extension allows email notifications from phpBB  (topic, post, bookmark, quote, pm) 
 to be replied to directly by the user, posting back their reply in context.
@@ -16,7 +16,7 @@ The notifications are sent directly from your users to their email as normal. Sp
 the user to reply though the replyPUSH service, which processes and posts them back to your site.
 
 Security is achieved through integrity and authenticity verification, which uses replyPUSH
-account no and credentials, and under normal posting rules and permissions. 
+account number and credentials, and under normal posting rules and permissions. 
 
 This is strictly a "push" not a "pull" based service, so the extension doesn't 'phone home', instead it 
 simply waits for the replies to come in.
