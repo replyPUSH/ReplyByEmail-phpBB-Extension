@@ -5,28 +5,28 @@
 This extension uses a service ![replyPUSH](http://replypush.com). Which is currently free for beta testing. 
 
 If you are happy to be a beta testing you may sign up, having read the terms. We do recommend you also 
-![contact](https://www.phpbb.com/community/memberlist.php?mode=email&u=1453826) x00 if you wish to be involved, as you may be ignore otherwise.
+![contact](https://www.phpbb.com/community/memberlist.php?mode=email&u=1453826) x00 if you wish to be involved, as you may be ignored otherwise.
 
 ## What is does
 
 This extension allows email notifications from phpBB  (topic, post, bookmark, quote, pm) 
-to be replied to directly by they user, posting back their reply in context.
+to be replied to directly by the user, posting back their reply in context.
 
-The notifications are sent directly from your to their email as normal. Special email header allow 
-the user to reply though the replyPUSH service, which processes them and posts them back to your site.
+The notifications are sent directly from your users to their email as normal. Special email headers allow 
+the user to reply though the replyPUSH service, which processes and posts them back to your site.
 
-Work has gone into security through integrity and authenticity verification, with which your replyPUSH
-account no and credentials will be used.  
+Security is achieved through integrity and authenticity verification, which uses replyPUSH
+account no and credentials, and under normal posting rules and permissions. 
 
 This is strictly a "push" not a "pull" based service, so the extension doesn't 'phone home', instead it 
 simply waits for the replies to come in.
 
-In order to make it work more fluidly, we have relaxed phpBB3 normal notification restrictions as 
+In order to make it work more fluidly, we have relaxed phpBB3's normal notification restrictions, 
 to be more conducive to this sort of user experience. We may be introducing configurable caps to 
 control this to your satisfaction.
 
 For user experience, we have have collated notifications relating to topics under one subject, 
-they appear in conversation/thread view in email clients (subject tot their settings), 
+they appear in conversation/thread view in email clients (subject to their settings), 
 and the same for PMs.
 
 ## Installation
