@@ -77,7 +77,7 @@ replacing any <code>/forum</code> text to reflect the relative location of the f
 <br>
 <br>
 <p><b>You can reply by the link provided, or reply directly to this email.</p><br>
-<p><u>Please put your message directly ABOVE the quoted message you get when you click reply, and end your message with "/eom" (without quotes) on a new line or your message will be rejected. Please ensure privacy of others.</u></p>
+<p><u>Please put your message directly ABOVE the quoted message you get when you click reply. Please ensure privacy of others.</u></p>
 <br>
 <p>Thank You.</b></p>
 <br>

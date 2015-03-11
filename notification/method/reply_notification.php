@@ -26,6 +26,18 @@ class reply_notification extends email
     /** @var utility methods */
     protected $utility;
     
+    /** @var notifications specific to posts */
+    protected $post_types = array('notification.type.bookmark','notification.type.quote','notification.type.post');
+    
+    /** @var stash for notification ids */
+    protected $notified_ids = array();
+    
+    /** @var stash for post notifications */
+    protected $notified_posts = array('users' => array(), 'topics' => array());
+    
+    /** @var stash for topic notifications */
+    protected $notified_topics = array('users' => array(), 'forums' => array());
+    
     /**
     * Constructor
     *
@@ -96,8 +108,7 @@ class reply_notification extends email
         $hash_method = in_array('sha1',hash_algos()) ? 'sha1': 'md5';
         
         extract($this->utility->credentials());
-        
-        $notified_ids = array();
+
         // Time to go through the queue and send emails
         foreach ($this->queue as $notification)
         {
@@ -176,7 +187,9 @@ class reply_notification extends email
                         $this->messenger->from($this->utility->encode_email_name(htmlspecialchars_decode($this->config['sitename'])));
                     }
                 }
-                $notified_ids[] = $notification->item_id;
+                $this->notified_ids[] = $notification->item_id;
+                
+                $this->collect_board_notifications($notification);
             }
             else
             {
@@ -192,13 +205,16 @@ class reply_notification extends email
         }
         
         // clear notifications of messages in order not to bloat the database
-        $this->clear_messages($notified_ids);
+        $this->clear_messages($this->notified_ids);
         
         // save the queue in the messenger class (has to be called or these emails could be lost?)
         $this->messenger->save_queue();
 
         // we're done, empty the queue
         $this->empty_queue();
+        
+        // get those notifications out
+        $this->ease_watch_notification_restrictions();
     }
     
     /**
@@ -206,20 +222,94 @@ class reply_notification extends email
     *
     * Ensures that messages are purged after notifications sent
     * 
-    * @param int $notified_ids
+    * @param int $this->notified_ids
     *
     * @return null
     */
-    public function clear_messages($notified_ids)
+    public function clear_messages()
     {
-        if (empty($notified_ids))
+        if (empty($this->notified_ids))
         {
             return;
         }
+        // currently marked as read to liberalise sending restrictions
+        
         $sql = 'UPDATE ' . NOTIFICATIONS_TABLE . 
-                ' SET ' . $this->db->sql_build_array('UPDATE', array('message'=>'')).
-                ' WHERE ' . $this->db->sql_in_set('item_id', $notified_ids);
+                ' SET ' . $this->db->sql_build_array('UPDATE', array('message'=>'', 'notification_read' => 1)).
+                ' WHERE ' . $this->db->sql_in_set('item_id', $this->notified_ids);
         $this->db->sql_query($sql);
+        
+    }
+    
+    /**
+    * Collect board notifications
+    *
+    * Collect any notification related to posts/topics
+    *
+    * @param    \phpbb\notification\type\base   $notification
+    * @return   null
+    */
+    
+    public function collect_board_notifications($notification)
+    {
+        // collect post notifications
+        if(in_array($notification->get_type(), $this->post_types))
+        {
+            if(!in_array($notification->user_id, $this->notified_posts['users']))
+            {
+                $this->notified_posts['users'][] = $notification->user_id;
+            }
+            
+            if(!in_array($notification->item_parent_id, $this->notified_posts['topics']))
+            {
+                $this->notified_posts['topics'][] = $notification->item_parent_id;
+            }
+        }
+        
+        // collect topic notifications
+        if('notification.type.topic' == $notification->get_type())
+        {
+            if(!in_array($notification->user_id, $this->notified_topics['users']))
+            {
+                $this->notified_topics['users'][] = $notification->user_id;
+            }
+            
+            if(!in_array($notification->item_parent_id, $this->notified_topics['forums']))
+            {
+                $this->notified_topics['forums'][] = $notification->item_parent_id;
+            }
+        }
+    }
+    
+    /**
+    * Ease watch notification restrictions
+    *
+    * Allow for future notification to go out
+    * before watched topic or forum read
+    *
+    * @return null
+    */
+    public function ease_watch_notification_restrictions()
+    {
+        if(!empty($this->notified_posts['users']))
+        {
+            $sql = "UPDATE ".TOPICS_WATCH_TABLE .
+                " SET notify_status = " . NOTIFY_YES .
+                //" , notifiy_ease = notifiy_ease + 1" .
+                " WHERE " . $this->db->sql_in_set('user_id', $this->notified_posts['users']) .
+                " AND " . $this->db->sql_in_set('topic_id', $this->notified_posts['topics']);
+            $this->db->sql_query($sql);
+        }
+        
+        if(!empty($this->notified_topics['users']))
+        {
+            $sql = "UPDATE ".FORUMS_WATCH_TABLE .
+                " SET notify_status = " . NOTIFY_YES .
+                //" , notifiy_ease = notifiy_ease + 1" .
+                " WHERE " . $this->db->sql_in_set('user_id', $this->notified_topics['users']) .
+                " AND " . $this->db->sql_in_set('forum_id', $this->notified_topics['forums']);
+            $this->db->sql_query($sql);
+        }
         
     }
     

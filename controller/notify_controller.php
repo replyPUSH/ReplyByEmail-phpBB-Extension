@@ -49,9 +49,9 @@ class notify_controller
     * @param \phpbb\user                                    $user                         User object
     * @param \phpbb\config\config                           $config                       Config object
     * @param \phpbb\db\driver\factory                       $db                           Database factory object
-    * @param \replyPUSH\replybyemail\helper\utility       $utility                      Reply By Email utility helper
-    * @param \replyPUSH\replybyemail\helper\messenger        $messenger                    Custom messenger object
-    * @param \replyPUSH\replybyemail\model\rp_model          $rp_model                     replyPUSH model object
+    * @param \replyPUSH\replybyemail\helper\utility         $utility                      Reply By Email utility helper
+    * @param \replyPUSH\replybyemail\helper\messenger       $messenger                    Custom messenger object
+    * @param \replyPUSH\replybyemail\model\rp_model         $rp_model                     replyPUSH model object
     * @param string                                         $notification_types_table     notification_types table name
     * @param string                                         $phpbb_root_path              phpBB root path
     * @param string                                         $php_ext                      phpEx
@@ -134,7 +134,7 @@ class notify_controller
         {
             $this->denied();
         }
-            
+        
         $notification = $this->utility->rq_vals();
         
         if (empty($notification))
@@ -405,6 +405,12 @@ class notify_controller
     
     protected function process_topic_reply($topic_id, $forum_id, $message, $subject)
     {
+        
+        $table_sql = ($mode == 'forum') ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
+        $where_sql = ($mode == 'forum') ? 'forum_id' : 'topic_id';
+        
+        // anti-constipation 
+        $this->utility->update_notify_status($topic_id, $forum_id);
         
         // post the reply
         

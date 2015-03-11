@@ -360,6 +360,32 @@ class utility
         $this->set_rq_val($this->config['cookie_name'] . '_sid', $this->user->session_id, 'COOKIE');
     }
     
+    /**
+    * Update notify status
+    * 
+    * Ensure all watched topic and forums
+    * send out new emails
+    * 
+    * @param   int   $forum_id
+    * @param   int   $topic_id
+    * @return  null
+    */
+    public function update_notify_status($forum_id, $topic_id)
+    {
+        $sql = "UPDATE ".FORUMS_WATCH_TABLE .
+            " SET notify_status = " . NOTIFY_YES .
+            " WHERE forum_id = " . (int) $forum_id .
+            " AND user_id = " . (int) $this->user->data['user_id'];
+            
+        $this->db->sql_query($sql);
+        
+        $sql = "UPDATE ".TOPICS_WATCH_TABLE .
+            " SET notify_status = " . NOTIFY_YES .
+            " WHERE topic_id = " . (int) $topic_id .
+            " AND user_id = " . (int) $this->user->data['user_id'];
+            
+        $this->db->sql_query($sql);
+    }
     
     /**
     * Parse message
@@ -412,10 +438,10 @@ class utility
                         '`<div(\s[^>]+)?>(.*?)</\s*div(\s[^>]+)?>`i',
                     ),
                     array(
-                    '',
-                    "\n",
-                    "$2\n",
-                    "$2\n",
+                        '',
+                        "\n",
+                        "$2\n",
+                        "$2\n",
                     ),
                     $content
                 )
@@ -438,7 +464,7 @@ class utility
     /**
     * hash method
     * 
-    * Optiola trys a list of algorithm before defaulting. 
+    * Optional tries a list of algorithms before defaulting. 
     * 
     * @param   string            $value
     * @param   array[int]string  $try
@@ -446,7 +472,7 @@ class utility
     */
     public function hash_method($value, $try = array())
     {
-        $hash_function = $this->hash_method();
+        $hash_function = $this->hash_function;
         $algos = hash_algos();
         foreach($try as $func)
         {
@@ -461,7 +487,7 @@ class utility
     }
     
     /**
-    * Strip subject from 'Re:'
+    * Strip subject from 'Re:' prefix
     * 
     * @param   string   $subject
     * @return  string

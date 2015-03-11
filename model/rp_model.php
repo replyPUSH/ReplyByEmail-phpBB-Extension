@@ -57,6 +57,12 @@ class rp_model
         $this->table_prefix = $table_prefix;
     }
     
+    /**
+    * Gets Ref using ref hash if exits
+    * 
+    * @param   string            $ref_hash
+    * @return  string 
+    */
     public function get_ref($ref_hash)
     {
         if (array_key_exists($ref_hash,self::$ref))
@@ -79,6 +85,13 @@ class rp_model
         return $row['ref'];
     }
     
+    /**
+    * Stashed Ref by ref_hash
+    * 
+    * @param   string            $ref_hash
+    * @param   string            $ref
+    * @return  null 
+    */
     public function save_ref($ref_hash, $ref)
     {
         if (!$ref_hash || !$ref)
@@ -115,6 +128,12 @@ class rp_model
         }
     }
     
+    /**
+    * Gets Transaction, to prevent collisions. 
+    * 
+    * @param   int            $msg_id
+    * @return  array[sting]string 
+    */
     public function get_transaction($msg_id)
     {
         $sql = "SELECT message_id FROM {$this->table_prefix}reply_push_log".
@@ -125,6 +144,12 @@ class rp_model
         return $this->db->sql_fetchrow($result);
     }
     
+    /**
+    * Log Transaction, with transaction locking. 
+    * 
+    * @param   array[string]mixed    $notification
+    * @return  null 
+    */
     public function log_transaction($notification)
     {
         try
@@ -144,6 +169,11 @@ class rp_model
         }
     }
     
+    /**
+    * Gets notification types
+    * 
+    * @return  array[int]string 
+    */
     public function get_notification_types(){
         
         if ($this->notification_types)
@@ -169,6 +199,17 @@ class rp_model
         return $notification_types;        
     }
     
+    /**
+    * Get reference key
+    * 
+    * Creates a hash based on input parameters and collation rules
+    * 
+    * @param    int     $type_id
+    * @param    int     $record_id
+    * @param    int     $content_id
+    * @aparma   string  $email
+    * @return   string 
+    */
     public function get_reference_key($type_id, $record_id, $content_id, $email)
     {
         
@@ -194,6 +235,16 @@ class rp_model
         return $this->utility->hash_method($type.$record_id.$email);
     }
     
+    
+    /**
+    * Has required
+    * 
+    * Checks data agaist an array based schema
+    * 
+    * @param    array[string]mixed     $data
+    * @param    array[string]mixed     $schema
+    * @return   bool 
+    */
     public function has_required($data, $schema = NULL)
     {
         if (!$schema)
@@ -219,6 +270,15 @@ class rp_model
         return $return;
     }
     
+    /**
+    * Populate schema
+    * 
+    * Adds keys and null values where optional schema is missing
+    * 
+    * @param    array[string]mixed     $data
+    * @param    array[string]mixed     &$schema
+    * @return   bool 
+    */
     public function populate_schema(&$data, $schema = NULL)
     {
         if (!$schema)
