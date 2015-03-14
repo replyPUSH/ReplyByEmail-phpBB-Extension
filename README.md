@@ -2,9 +2,9 @@
 
 ## About
 
-This extension uses a service called ![replyPUSH](http://replypush.com). Which is currently free for beta testing. 
+This extension uses a service called ![replyPUSH](http://replypush.com). Which is currently being trialled for free.
 
-If you are happy to be a beta testing you may sign up, having read the terms. We do recommend you also 
+If you are happy to trial it you may sign up, having read the terms. We do recommend you also 
 ![contact](https://www.phpbb.com/community/memberlist.php?mode=email&u=1453826) x00 if you wish to be involved, as you may be ignored otherwise.
 
 ## What it does
