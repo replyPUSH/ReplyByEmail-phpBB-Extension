@@ -13,8 +13,8 @@ namespace replyPUSH\replybyemail\notification\type;
 */
 interface reply_push_interface
 {
-    
-    /** @const bool we are replyPUSH notifications */
-    const REPLY_PUSH = true;
-    
+	
+	/** @const bool we are replyPUSH notifications */
+	const REPLY_PUSH = true;
+	
 }
