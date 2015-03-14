@@ -17,7 +17,7 @@ services:
             - @replyPUSH.replybyemail.utility
         tags:
             - { name: notification.type }
-            
+
     notification.type.post:
         class: replyPUSH\replybyemail\notification\type\post
         scope: prototype
@@ -36,7 +36,7 @@ services:
             - @replyPUSH.replybyemail.utility
         tags:
             - { name: notification.type }
-            
+
     notification.type.quote:
         class: replyPUSH\replybyemail\notification\type\quote
         scope: prototype
@@ -55,7 +55,7 @@ services:
             - @replyPUSH.replybyemail.utility
         tags:
             - { name: notification.type }
-            
+
     notification.type.topic:
         class: replyPUSH\replybyemail\notification\type\topic
         scope: prototype
@@ -74,7 +74,7 @@ services:
             - @replyPUSH.replybyemail.utility
         tags:
             - { name: notification.type }
-            
+
     notification.type.pm:
         class: replyPUSH\replybyemail\notification\type\pm
         scope: prototype
@@ -102,7 +102,7 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - @ext.manager
-        
+
     notification.method.email:
         class: replyPUSH\replybyemail\notification\method\reply_notification
         scope: prototype
@@ -118,6 +118,5 @@ services:
             - @replyPUSH.replybyemail.utility
             - %core.root_path%
             - %core.php_ext%
-            
         tags:
             - { name: notification.method }

@@ -12,7 +12,7 @@ services:
             - @replyPUSH.replybyemail.utility
             - %tables.notification_types%
             - %core.table_prefix%
-        
+
     replyPUSH.replybyemail.notify_controller:
         class: replyPUSH\replybyemail\controller\notify_controller
         arguments:
@@ -25,7 +25,7 @@ services:
             - %tables.notification_types%
             - %core.root_path%
             - %core.php_ext%
-            
+
     replyPUSH.replybyemail.utility:
         class: replyPUSH\replybyemail\helper\utility
         arguments:
@@ -50,7 +50,7 @@ services:
             - %core.php_ext%
         tags:
             - { name: event.listener }
-            
+
     replyPUSH.replybyemail.acp_listener:
         class: replyPUSH\replybyemail\event\acp_listener
         arguments:
