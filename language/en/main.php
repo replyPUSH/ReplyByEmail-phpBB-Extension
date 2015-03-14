@@ -19,7 +19,6 @@ if (empty($lang) || !is_array($lang))
 	$lang = array();
 }
 
-
 $lang = array_merge($lang, array(
 	'REPLY_PUSH_ACCOUNT_NO_MISSING'     => 'replyPUSH API Account No Missing',
 	'REPLY_PUSH_SECRET_ID_MISSING'      => 'replyPUSH API Secret ID Missing',
@@ -44,18 +43,18 @@ $lang = array_merge($lang, array(
 If you see <span class="reply_push_uri_check reply_push_uri_not_found"></span> next to the url that means the url cannot be accessed and it will not work.
 It is down to server rules to ensure that urls are correctly routed.<br>
 <br>
-In nginx you need to make sure the <code>app.php/[someapp]</code> is open. 
+In nginx you need to make sure the <code>app.php/[someapp]</code> is open.
 It is common for non Apache servers to restrict cgi handling to certain files like index.php<br>
 <br>
 You could modify you php handler rules by changing the condition e.g.<br>
-<pre>    
+<pre>
 	location ~ (\.php|app\.php/.*)$ {
 		...
 </pre>
 <br>
 Then you can route the urls
 <br>
-<pre> 
+<pre>
 	# phpBB folder location
 	location /forum {
 		try_files $uri @phpbb;
@@ -64,7 +63,7 @@ Then you can route the urls
 	location @phpbb{
 		rewrite ^/forum/(.*)$ /forum/app.php/$1 last;
 	}
-	
+
 </pre>
 replacing any <code>/forum</code> text to reflect the relative location of the forum to the root directory or simply <code>/</code> if using the root.
 ',

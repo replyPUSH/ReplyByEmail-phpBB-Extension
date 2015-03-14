@@ -15,10 +15,10 @@ use replyPUSH\replybyemail\notification\type\reply_push_interface;
 */
 class post extends post_base implements reply_push_interface
 {
-	
+
 	/** @var utility methods */
 	protected $utility;
-	
+
 	/**
 	* Notification Type Constructor
 	*
@@ -40,19 +40,19 @@ class post extends post_base implements reply_push_interface
 		$this->utility = $utility;
 		parent::__construct($user_loader, $db, $cache, $user, $auth, $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table);
 	}
-	
+
 	/**
 	* Subject ID
-	* 
+	*
 	* Used in subject line for uniqueness
-	* 
+	*
 	* return int
 	*/
 	public function subject_id()
 	{
 		return $this->item_parent_id;
 	}
-	
+
 	/**
 	* For preparing the data for insertion in an SQL query
 	* extended to add message

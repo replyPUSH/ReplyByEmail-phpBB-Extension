@@ -26,19 +26,19 @@ class messenger extends \messenger
 {
 	/** @var \phpbb\config\config */
 	protected $config;
-	
+
 	/** @var \phpbb\user */
 	protected $user;
-	
+
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
-	
+
 	/** @var string phpEx */
 	protected $phpEx;
-	
+
 	/** @var \phpbb\extension\manager */
 	protected $phpbb_extension_manager;
-	
+
 	/**
 	* Constructor
 	*
@@ -58,15 +58,15 @@ class messenger extends \messenger
 		$this->phpbb_extension_manager = $phpbb_extension_manager;
 		parent::messenger();
 	}
-	
+
 	/**
 	* Set email template to use
-	* 
+	*
 	* @param string $template_file
 	* @param string $template_lang
 	* @param string $template_path
 	* @param string $name_space
-	* 
+	*
 	* @return bool
 	*/
 	function template($template_file, $template_lang = '', $template_path = '', $name_space = 'email')
@@ -98,17 +98,17 @@ class messenger extends \messenger
 		{
 			$template_path = (!empty($this->user->lang_path)) ? $this->user->lang_path : $this->phpbb_root_path . 'language/';
 			$template_path .= $template_lang . '/'. $name_space;
-			
+
 			$template_path_ext = $this->phpbb_root_path . 'ext/replyPUSH/replybyemail/language/';
 			$template_path_ext .= $template_lang . '/'. $name_space;
 
 			$template_paths = array();
-			
+
 			if (file_exists($template_path))
 			{
 				$template_paths[] = $template_path;
 			}
-			
+
 			$template_paths[] = $template_path_ext;
 
 			// we can only specify default language fallback when the path is not a custom one for which we
@@ -117,10 +117,10 @@ class messenger extends \messenger
 			{
 				$fallback_template_path = (!empty($this->user->lang_path)) ? $this->user->lang_path : $this->phpbb_root_path . 'language/';
 				$fallback_template_path .= basename($this->config['default_lang']) . '/'. $name_space;
-				
+
 				$fallback_template_path_ext = $this->phpbb_root_path . 'ext/replyPUSH/replybyemail/language/';
 				$fallback_template_path_ext .= basename($this->config['default_lang']) . '/'. $name_space;
-				
+
 				if (file_exists($fallback_template_path))
 				{
 					$template_paths[] = $fallback_template_path;
@@ -129,8 +129,7 @@ class messenger extends \messenger
 				$template_paths[] = $fallback_template_path_ext;
 			}
 		}
-		
-		
+
 		$this->set_template_paths(array(
 			array(
 				'name' => $template_lang . '_email',
@@ -144,10 +143,10 @@ class messenger extends \messenger
 
 		return true;
 	}
-	
+
 	/**
 	* set up extra mail headers
-	* 
+	*
 	* @param strng $name
 	* @param strng $value
 	*/
@@ -157,8 +156,6 @@ class messenger extends \messenger
 		$value  = trim($value);
 		$this->extra_headers[$name] = $value;
 	}
-	
-	
 
 	/**
 	* Adds X-AntiAbuse headers
@@ -178,7 +175,7 @@ class messenger extends \messenger
 
 	/**
 	* Return email header
-	* 
+	*
 	* @param  string $to
 	* @param  string $cc
 	* @param  string $bcc
@@ -186,7 +183,6 @@ class messenger extends \messenger
 	*/
 	public function build_header($to, $cc, $bcc)
 	{
-
 
 		$headers = array(
 			'Reply-To'                  => $this->replyto,
@@ -203,7 +199,7 @@ class messenger extends \messenger
 			'X-MimeOLE'                 => 'phpBB3',
 			'X-phpBB-Origin'            => 'phpbb://' . str_replace(array('http://', 'https://'), array('', ''), generate_board_url()),
 		);
-		
+
 		$headers['From'] = $this->from;
 
 		if ($cc)
@@ -222,18 +218,17 @@ class messenger extends \messenger
 		}
 
 		$raw_headers = array();
-		
+
 		foreach ($headers as $key => $value)
 			$raw_headers[] = $key.': '.$value;
 		return $raw_headers;
 	}
-	
-	
+
 	/**
 	* Send out emails
-	* 
+	*
 	* Add special replyPUSH marker tag
-	* 
+	*
 	* @return bool
 	*/
 	public function msg_email()
@@ -246,8 +241,7 @@ class messenger extends \messenger
 			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
 		}
 		$this->msg = '<a href="http://replypush.com#rp-message"></a>' . trim($this->msg);
-		
+
 		parent::msg_email();
 	}
 }
-

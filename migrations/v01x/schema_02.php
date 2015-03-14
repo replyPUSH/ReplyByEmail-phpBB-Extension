@@ -17,34 +17,34 @@ class schema_02 extends \phpbb\db\migration\migration
 	* Effectively installed
 	*
 	* reply_push_ref & reply_push_log tables exist
-	* 
+	*
 	* return bool
 	*/
 	public function effectively_installed()
 	{
-		return 
-			$this->db_tools->sql_table_exists($this->table_prefix . 'reply_push_ref') 
+		return
+			$this->db_tools->sql_table_exists($this->table_prefix . 'reply_push_ref')
 			&& $this->db_tools->sql_table_exists($this->table_prefix . 'reply_push_log');
-		
+
 	}
-	
+
 	/**
 	* Depends on
 	*
 	* Previous Reply By Email notification
-	* 
+	*
 	* return array[int]string
 	*/
 	static public function depends_on()
 	{
 		return array('\replyPUSH\replybyemail\migrations\v01x\schema_01');
 	}
-	
+
 	/**
 	* Update schema
 	*
 	* Add reply_push_ref & reply_push_log tables
-	* 
+	*
 	* return array[string]mixed
 	*/
 	public function update_schema()
@@ -68,5 +68,5 @@ class schema_02 extends \phpbb\db\migration\migration
 			)
 		);
 	}
-	
+
 }

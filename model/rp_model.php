@@ -15,28 +15,28 @@ class rp_model
 {
 	/** @var \phpbb\db\driver\factory */
 	protected $db;
-	
+
 	/** @var string notification_types_table */
 	protected $notification_types_table;
-	
+
 	/** @var array[int]string notification types id => value */
 	protected $notification_types = array();
-	
+
 	/** @var array[string]string notification types that will be collated under a parent type */
 	protected $collate_types  = array(
 		'notification.type.topic' => array('notification.type.bookmark','notification.type.quote','notification.type.post'),
 		'notification.type.pm'    => array('notification.type.pm')
 	);
-	
+
 	/** @var array[mixed] notification types that will be collated under a parent type */
 	protected $required_schema = array('msg_id', 'from', 'in_reply_to', 'subject', 'from_msg_id', 'content' => array('text/plain'));
-	
+
 	/** @var array[mixed] optional schema for population */
 	protected $optional_schema = array('error', 'content' => array('text/html'));
-	
+
 	/** @var utility methods */
 	protected $utility;
-	
+
 	/** @staticvar array[string]string cache of references */
 	public static $ref = array();
 
@@ -56,12 +56,12 @@ class rp_model
 		$this->notification_types_table = $notification_types_table;
 		$this->table_prefix = $table_prefix;
 	}
-	
+
 	/**
 	* Gets Ref using ref hash if exits
-	* 
+	*
 	* @param   string            $ref_hash
-	* @return  string 
+	* @return  string
 	*/
 	public function get_ref($ref_hash)
 	{
@@ -69,28 +69,28 @@ class rp_model
 		{
 			return self::$ref[$ref_hash];
 		}
-			
+
 		$sql = "SELECT ref FROM {$this->table_prefix}reply_push_ref".
 				" WHERE ref_hash = '". $this->db->sql_escape($ref_hash). "'";
-		
+
 		$result = $this->db->sql_query($sql);
-			
+
 		$row = $this->db->sql_fetchrow($result);
-		
+
 		if (!$row)
 		{
 			return '';
 		}
-			
+
 		return $row['ref'];
 	}
-	
+
 	/**
 	* Stashed Ref by ref_hash
-	* 
+	*
 	* @param   string            $ref_hash
 	* @param   string            $ref
-	* @return  null 
+	* @return  null
 	*/
 	public function save_ref($ref_hash, $ref)
 	{
@@ -98,7 +98,7 @@ class rp_model
 		{
 			return;
 		}
-			
+
 		if ($this->get_ref($ref_hash))
 		{
 			$sql = "UPDATE {$this->table_prefix}reply_push_ref SET " .
@@ -108,14 +108,14 @@ class rp_model
 					)
 				).
 				" WHERE ref_hash = '". $this->db->sql_escape($ref_hash). "'";
-				
+
 			$result = $this->db->sql_query($sql);
-			
+
 			self::$ref[$ref_hash] = $ref;
 		}
 		else
 		{
-			
+
 			$sql = "INSERT INTO {$this->table_prefix}reply_push_ref " .
 				$this->db->sql_build_array('INSERT',
 					array(
@@ -123,32 +123,32 @@ class rp_model
 						'ref_hash' => $ref_hash,
 					)
 				);
-				
+
 			$result = $this->db->sql_query($sql);
 		}
 	}
-	
+
 	/**
-	* Gets Transaction, to prevent collisions. 
-	* 
+	* Gets Transaction, to prevent collisions.
+	*
 	* @param   int            $msg_id
-	* @return  array[sting]string 
+	* @return  array[sting]string
 	*/
 	public function get_transaction($msg_id)
 	{
 		$sql = "SELECT message_id FROM {$this->table_prefix}reply_push_log".
 				" WHERE message_id = ". (int) $msg_id;
-			
+
 		$result = $this->db->sql_query($sql);
-			
+
 		return $this->db->sql_fetchrow($result);
 	}
-	
+
 	/**
-	* Log Transaction, with transaction locking. 
-	* 
+	* Log Transaction, with transaction locking.
+	*
 	* @param   array[string]mixed    $notification
-	* @return  null 
+	* @return  null
 	*/
 	public function log_transaction($notification)
 	{
@@ -168,60 +168,59 @@ class rp_model
 			throw $ex;
 		}
 	}
-	
+
 	/**
 	* Gets notification types
-	* 
-	* @return  array[int]string 
+	*
+	* @return  array[int]string
 	*/
 	public function get_notification_types(){
-		
+
 		if ($this->notification_types)
 		{
 			return $this->notification_types;
 		}
-		
-		$sql = "SELECT notification_type_id, notification_type_name 
+
+		$sql = "SELECT notification_type_id, notification_type_name
 				FROM " . $this->notification_types_table;
-		
-		
+
 		$result = $this->db->sql_query($sql);
-		
+
 		$notification_types = array();
-		
+
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$notification_types[$row['notification_type_id']] = $row['notification_type_name'];
 		}
-		
+
 		$this->notification_types = $notification_types;
-		
-		return $notification_types;        
+
+		return $notification_types;
 	}
-	
+
 	/**
 	* Get reference key
-	* 
+	*
 	* Creates a hash based on input parameters and collation rules
-	* 
+	*
 	* @param    int     $type_id
 	* @param    int     $record_id
 	* @param    int     $content_id
 	* @aparma   string  $email
-	* @return   string 
+	* @return   string
 	*/
 	public function get_reference_key($type_id, $record_id, $content_id, $email)
 	{
-		
+
 		$this->get_notification_types();
-		
+
 		if (!isset($this->notification_types[$type_id]))
 		{
 			return '';
 		}
-			
+
 		$type = $this->notification_types[$type_id];
-		
+
 		foreach ($this->collate_types as $collate_parent => $collate_children)
 		{
 			if (in_array($type, $collate_children))
@@ -231,19 +230,18 @@ class rp_model
 				break;
 			}
 		}
-		
+
 		return $this->utility->hash_method($type.$record_id.$email);
 	}
-	
-	
+
 	/**
 	* Has required
-	* 
+	*
 	* Checks data agaist an array based schema
-	* 
+	*
 	* @param    array[string]mixed     $data
 	* @param    array[string]mixed     $schema
-	* @return   bool 
+	* @return   bool
 	*/
 	public function has_required($data, $schema = NULL)
 	{
@@ -251,7 +249,7 @@ class rp_model
 		{
 			$schema = $this->required_schema;
 		}
-		
+
 		$return = true;
 		foreach ($schema as $key => $value)
 		{
@@ -266,18 +264,18 @@ class rp_model
 				break;
 			}
 		}
-		
+
 		return $return;
 	}
-	
+
 	/**
 	* Populate schema
-	* 
+	*
 	* Adds keys and null values where optional schema is missing
-	* 
+	*
 	* @param    array[string]mixed     $data
 	* @param    array[string]mixed     &$schema
-	* @return   bool 
+	* @return   bool
 	*/
 	public function populate_schema(&$data, $schema = NULL)
 	{
@@ -285,7 +283,7 @@ class rp_model
 		{
 			$schema = $this->optional_schema;
 		}
-		
+
 		foreach ($schema as $key => $value)
 		{
 			if (is_array($value))
