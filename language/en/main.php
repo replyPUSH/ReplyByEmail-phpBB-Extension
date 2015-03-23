@@ -69,6 +69,8 @@ replacing any <code>/forum</code> text to reflect the relative location of the f
 ',
 	'REPLY_PUSH_ERROR_GENERAL'        => 'An error has occured',
 	'REPLY_PUSH_ERROR_NOEOM'          => 'Could not find /eom so can\'t send message!  Make sure to end your reply with /eom (on new line) to use this service.',
+	'REPLY_PUSH_ERROR_NOMSG'          => 'We could not find a message in your reply.',
+	'REPLY_PUSH_ERROR_NOMARK'         => 'We could not process your reply, please reply above the quoted message.',
 	'REPLY_PUSH_SETUP_MSG'            => '<h4>Reply By Email has not been set up yet!</h4><hr>Please set it up <a href="%s">here</a>.',
 	'REPLY_PUSH_EMAIL_SIG'            => '
 <br>

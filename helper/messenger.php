@@ -72,6 +72,12 @@ class messenger extends \messenger
 	function template($template_file, $template_lang = '', $template_path = '', $name_space = 'email')
 	{
 
+		// don't mess with other template handling
+		if ($name_space != 'replybyemail')
+		{
+			return parent::template($template_file, $template_lang, $template_path, $name_space);
+		}
+		
 		$this->setup_template();
 
 		if (!trim($template_file))
@@ -240,7 +246,12 @@ class messenger extends \messenger
 			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
 			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
 		}
-		$this->msg = '<a href="http://replypush.com#rp-message"></a>' . trim($this->msg);
+		
+		// if replying via replyPUSH need to insert marker
+		if (stripos($this->replyto, 'replypush') !== FALSE)
+		{
+			$this->msg = '<a name="rp-message"></a><a href="http://replypush.com#rp-message"><wbr></a>' . trim($this->msg);
+		}
 
 		parent::msg_email();
 	}

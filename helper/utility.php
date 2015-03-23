@@ -399,17 +399,18 @@ class utility
 
 		if (!class_exists('parse_message'))
 		{
+			// need global for include scope
 			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+			include($this->phpbb_root_path . 'includes/message_parser.' . $this->php_ext);
 		}
 
-		$message_parser = new \parse_message($data['message']);
+		$message_parser = new \parse_message(isset($data['post_text']) ? $data['post_text'] : $data['message']);
 		$message_parser->bbcode_bitfield = $data['bbcode_bitfield'];
 		$message_parser->bbcode_uid = $data['bbcode_uid'];
 
 		$message = $message_parser->format_display(
 			$data['enable_bbcode'],
-			$data['enable_urls'],
+			isset($data['enable_magic_url']) ? $data['enable_magic_url'] : $data['enable_urls'],
 			$data['enable_smilies'],
 			false
 		);
@@ -428,21 +429,23 @@ class utility
 	public function pre_format_html_content($content)
 	{
 		return trim(
-			strip_tags(
-				preg_replace(
-					array(
-						'`\n`',
-						'`<br\s*/>`i',
-						'`<p(\s[^>]+)?>(.*?)</\s*p(\s[^>]+)?>`i',
-						'`<div(\s[^>]+)?>(.*?)</\s*div(\s[^>]+)?>`i',
-					),
-					array(
-						'',
-						"\n",
-						"$2\n",
-						"$2\n",
-					),
-					$content
+			html_entity_decode(
+				strip_tags(
+					preg_replace(
+						array(
+							'`\n`',
+							'`<br\s*/?>`i',
+							'`<p(\s[^>]+)?>(.*?)</\s*p(\s[^>]+)?>`i',
+							'`<div(\s[^>]+)?>(.*?)</\s*div(\s[^>]+)?>`i',
+						),
+						array(
+							'',
+							"\n",
+							"$2\n",
+							"$2\n",
+						),
+						$content
+					)
 				)
 			)
 		);

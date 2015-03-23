@@ -161,8 +161,8 @@ class notify_controller
 		extract($this->utility->credentials());
 
 		// authenticate
-		$reply_push = new ReplyPush($account_no, $secret_id, $secret_key, $this->user->data['user_email'], $notification['in_reply_to']);
-
+		$reply_push = new ReplyPush($account_no, $secret_id, $secret_key, $notification['from'], $notification['in_reply_to']);
+		
 		if ($reply_push->hashCheck())
 		{
 
@@ -207,12 +207,12 @@ class notify_controller
 			{
 				$this->leave();
 			}
-
+			
 			$type = $this->notification_types[$type_id];
 
 			// valid function name
 			$type_process = 'process_'.preg_replace('`notification\.type\.|[^a-z_]`', '', $type).'_notification';
-
+			
 			// better than switch statement
 			if (is_callable(array($this, $type_process)))
 			{
@@ -388,7 +388,7 @@ class notify_controller
 		}
 
 		$this->db->sql_freeresult($result);
-
+		
 		$this->process_pm_reply($message_id, $message, $subject, $to);
 	}
 

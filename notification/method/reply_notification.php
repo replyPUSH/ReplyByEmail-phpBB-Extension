@@ -131,7 +131,7 @@ class reply_notification extends email
 			$type_class = get_class($notification);
 
 			// is replyPUSH notification?
-			if (constant("{$type_class}::REPLY_PUSH"))
+			if (defined("{$type_class}::REPLY_PUSH"))
 			{
 				$this->messenger->assign_vars(array_merge(array(
 					'USERNAME'                  => $user['username'],

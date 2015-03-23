@@ -54,11 +54,11 @@ class ReplyPush{
 	*/
 	private $accountNo;
 
-   /**
-	* The API ID used for salting the data
-	*
-	* @var string
-	*/
+	/**
+	 * The API ID used for salting the data
+	 *
+	 * @var string
+	 */
 	private $secretID;
 
 	/**
