@@ -2,10 +2,10 @@
 
 ## About
 
-This extension uses a service called ![replyPUSH](http://replypush.com). Which is currently being trialled for free.
+This extension uses a service called [replyPUSH](http://replypush.com). Which is currently being trialled for free.
 
 If you are happy to trial it you may sign up, having read the terms. We do recommend you also 
-![contact](https://www.phpbb.com/community/memberlist.php?mode=email&u=1453826) x00 if you wish to be involved, as you may be ignored otherwise.
+[contact](https://www.phpbb.com/community/memberlist.php?mode=email&u=1453826) x00 if you wish to be involved, as you may be ignored otherwise.
 
 ## What it does
 
@@ -41,7 +41,7 @@ Go to "ACP" > "Customise" > "Extensions" and enable the "Reply By Email" extensi
 
 Go to "ACP" > "General" > "Email settings" scroll to "Reply by Email Settings" and fill it out
 
-Your credentials will be on your replyPUSH ![profile](http://replypush.com/profile)
+Your credentials will be on your replyPUSH [profile](http://replypush.com/profile)
 
 Save the Notify Url on your replyPUSH profile, and you should be good to go. 
 
