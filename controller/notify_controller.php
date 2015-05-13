@@ -7,7 +7,7 @@
 *
 */
 namespace replyPUSH\replybyemail\controller;
-use replyPUSH\replybyemail\vendor\ReplyPush;
+use replyPUSH\replybyemail\library\ReplyPush;
 use Symfony\Component\HttpFoundation\Response;
 
 /**

@@ -3,7 +3,7 @@ imports:
 
 services:
     replyPUSH.replybyemail.reply_push:
-        class: replyPUSH\replybyemail\vendor\ReplyPush
+        class: replyPUSH\replybyemail\library\ReplyPush
         
     replyPUSH.replybyemail.model:
         class: replyPUSH\replybyemail\model\rp_model

@@ -9,7 +9,7 @@
 namespace replyPUSH\replybyemail\notification\method;
 
 use \phpbb\notification\method\email;
-use replyPUSH\replybyemail\vendor\ReplyPush;
+use replyPUSH\replybyemail\library\ReplyPush;
 
 /**
 * Extend email notification method to work with replyPUSH

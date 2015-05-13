@@ -10,8 +10,8 @@ namespace replyPUSH\replybyemail\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use replyPUSH\replybyemail\vendor\ReplyPush;
-use replyPUSH\replybyemail\vendor\ReplyPushError;
+use replyPUSH\replybyemail\library\ReplyPush;
+use replyPUSH\replybyemail\library\ReplyPushError;
 
 /**
 * All the admin hooks

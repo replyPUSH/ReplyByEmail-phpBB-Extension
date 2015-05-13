@@ -7,7 +7,7 @@
 *
 */
 namespace replyPUSH\replybyemail\helper;
-use replyPUSH\replybyemail\vendor\ReplyPush;
+use replyPUSH\replybyemail\library\ReplyPush;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -231,7 +231,7 @@ class utility
 		catch(\Exception $ex)
 		{
 			//sometimes above is not sufficient as instance is wrong
-			if (get_class($ex) == 'replyPUSH\replybyemail\vendor\ReplyPushError')
+			if (get_class($ex) == 'replyPUSH\replybyemail\library\ReplyPushError')
 			{
 				return false;
 			}
