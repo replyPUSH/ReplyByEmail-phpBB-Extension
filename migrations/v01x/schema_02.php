@@ -72,7 +72,7 @@ class schema_02 extends \phpbb\db\migration\migration
 	/**
 	* Revert schema
 	*
-	* Drop tables
+	* Drop reply_push_ref & reply_push_log tables
 	*
 	* return array[string]mixed
 	*/

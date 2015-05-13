@@ -1,7 +1,7 @@
 {
     "name": "replyPUSH/replybyemail",
     "type": "phpbb-extension",
-    "description": "Reply By Email",
+    "description": "Reply By Email using replyPUSH.com service",
     "homepage": "http://replypush.com",
     "version": "1.0.0",
     "license": "GPL-2.0",
@@ -21,11 +21,6 @@
         "display-name": "Reply By Email",
         "soft-require": {
             "phpbb/phpbb": "3.1.*"
-        },
-        "version-check": {
-            "host": "github.com",
-            "directory": "/replyPUSH/ReplyByEmail-phpBB-Extension/master",
-            "filename": "versioncheck.json"
         }
     }
 }
