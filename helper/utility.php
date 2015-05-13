@@ -43,7 +43,7 @@ class utility
 	protected $db;
 
 	/** @var \phpbb\request\request */
-	protected $request;
+	public $request;
 
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
@@ -79,70 +79,6 @@ class utility
 		$this->request = $request;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-	}
-
-	/**
-	* Covience to retrieve class contants
-	*
-	* @param    string   $type
-	* @param    string   $suffix
-	* @return   mixed
-	*/
-
-	private function cnst($type, $suffix = '_REQ')
-	{
-		return constant('self::'.$type.$suffix);
-	}
-
-	/**
-	* Request Values
-	*
-	* Retrieves all request values of a type
-	*
-	* @param    string   $type
-	* @return   array[string]mixed
-	*/
-
-	public function rq_vals($type = 'POST')
-	{
-		$type = $this->cnst($type);
-		return $this->request->get_super_global($type);
-	}
-
-	/**
-	* Request Value
-	*
-	* Retrieves single request values of a type
-	*
-	* @param    string   $key
-	* @param    string   $type
-	* @return   mixed
-	*/
-	public function rq_val($key, $type = 'POST')
-	{
-		$type = $this->cnst($type);
-		return $this->request->variable($key, '', true, $type);
-	}
-
-	/**
-	* Set Request Value
-	*
-	* Overrides or sets request values of a type
-	*
-	* @param    string   $key
-	* @param    string   $value
-	* @param    string   $type
-	* @return   null
-	*/
-	public function set_rq_val($key, $value, $type = 'POST')
-	{
-		$request = in_array($type,array('POST', 'GET')) ? true : false;
-		$type = $this->cnst($type);
-		$this->request->overwrite($key, $value, $type);
-		if ($request)
-		{
-			$this->set_rq_val($key, $value, 'REQUEST');
-		}
 	}
 
 	/**
@@ -184,13 +120,15 @@ class utility
 			parse_str($get_str, $get_data);
 			foreach ($get_data as $key => $val)
 			{
-				$this->set_rq_val($key, $val, 'GET');
+				$this->request->overwrite($key, $val, self::GET_REQ);
+				$this->request->overwrite($key, $val, self::REQUEST_REQ);
 			}
 
 		}
 		foreach ($post_data as $key => $val)
 		{
-			$this->set_rq_val($key, $val);
+			$this->request->overwrite($key, $val, self::POST_REQ);
+			$this->request->overwrite($key, $val, self::REQUEST_REQ);
 		}
 		return $file;
 	}
@@ -237,8 +175,8 @@ class utility
 			require($this->phpbb_root_path . 'includes/functions_module.' . $this->php_ext);
 		}
 
-		$module_name = $this->rq_val('i', 'GET');
-		$mode = $this->rq_val('mode','GET');
+		$module_name = $this->request->variable('i', self::GET_REQ);
+		$mode = $this->request->variable('mode', self::GET_REQ);
 		$module = new \p_master();
 		$this->user->setup($section);
 
@@ -354,9 +292,9 @@ class utility
 		$this->auth->acl($this->user->data);
 
 		// fake session cookies for persistance
-		$this->set_rq_val($this->config['cookie_name'] . '_u', $this->user->cookie_data['u'], 'COOKIE');
-		$this->set_rq_val($this->config['cookie_name'] . '_k', $this->user->cookie_data['k'], 'COOKIE');
-		$this->set_rq_val($this->config['cookie_name'] . '_sid', $this->user->session_id, 'COOKIE');
+		$this->request->overwrite($this->config['cookie_name'] . '_u', $this->user->cookie_data['u'], self::COOKIE_REQ);
+		$this->request->overwrite($this->config['cookie_name'] . '_k', $this->user->cookie_data['k'], self::COOKIE_REQ);
+		$this->request->overwrite($this->config['cookie_name'] . '_sid', $this->user->session_id, self::COOKIE_REQ);
 	}
 
 	/**

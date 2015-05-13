@@ -134,8 +134,8 @@ class notify_controller
 		{
 			$this->denied();
 		}
-
-		$notification = $this->utility->rq_vals();
+		
+		$notification = $this->utility->request->get_super_global(\phpbb\request\request_interface::POST);
 
 		if (empty($notification))
 		{
