@@ -68,5 +68,22 @@ class schema_02 extends \phpbb\db\migration\migration
 			)
 		);
 	}
+	
+	/**
+	* Revert schema
+	*
+	* Drop tables
+	*
+	* return array[string]mixed
+	*/
+	public function revert_schema()
+	{
+		return array(
+			'drop_tables' => array(
+				$this->table_prefix . 'reply_push_ref',
+				$this->table_prefix . 'reply_push_log'
+			)
+		);
+	}
 
 }

@@ -55,5 +55,23 @@ class schema_01 extends \phpbb\db\migration\migration
 			)
 		);
 	}
+	
+	/**
+	* Revert schema
+	*
+	* Drop message column
+	*
+	* return array[string]mixed
+	*/
+	public function revert_schema()
+	{
+		return array(
+			'drop_columns' => array(
+				$this->table_prefix . 'notifications' => array(
+					'message'
+				)
+			)
+		);
+	}
 
 }
