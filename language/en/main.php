@@ -67,7 +67,7 @@ Then you can route the urls
 </pre>
 replacing any <code>/forum</code> text to reflect the relative location of the forum to the root directory or simply <code>/</code> if using the root.
 ',
-	'REPLY_PUSH_ERROR_GENERAL'        => 'An error has occured',
+	'REPLY_PUSH_ERROR_GENERAL'        => 'An error has occurred',
 	'REPLY_PUSH_ERROR_NOEOM'          => 'Could not find /eom so can\'t send message!  Make sure to end your reply with /eom (on new line) to use this service.',
 	'REPLY_PUSH_ERROR_NOMSG'          => 'We could not find a message in your reply.',
 	'REPLY_PUSH_ERROR_NOMARK'         => 'We could not process your reply, please reply above the quoted message.',
@@ -84,5 +84,7 @@ replacing any <code>/forum</code> text to reflect the relative location of the f
 <br>
 <p><small>{RP_SIG_ID}</small></p>',
 	'REPLY_PUSH_FROM_NAME'           => '%s [at] %s',
-
+	'REPLY_PUSH_PUBLIC_REACH'        => '<h3>Access the site through a public address</h3>The site must be hosted at a publicly reachable address to use the service.',
+	'REPLY_PUSH_DISABLED'            => 'Information',
+	'REPLY_PUSH_DISABLED_EXPLAIN'    => 'You can\'t configure Reply By Email for the reason stated.',
 ));

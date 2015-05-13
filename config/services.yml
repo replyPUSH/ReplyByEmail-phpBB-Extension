@@ -57,6 +57,8 @@ services:
             - @config
             - @template
             - @user
+            - @controller.helper
+            - @symfony_request
         tags:
             - { name: event.listener }
 

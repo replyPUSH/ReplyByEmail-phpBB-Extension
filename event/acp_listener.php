@@ -9,6 +9,7 @@
 namespace replyPUSH\replybyemail\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use replyPUSH\replybyemail\vendor\ReplyPush;
 use replyPUSH\replybyemail\vendor\ReplyPushError;
 
@@ -31,6 +32,12 @@ class acp_listener implements EventSubscriberInterface
 
 	/** @var \phpbb\user $user */
 	protected $user;
+	
+	/** @var \phpbb\controller\helper $helper */
+	protected $helper;
+	
+	/** @var \phpbb\symfony_request $request */
+	protected $request;
 
 	/**
 	* Constructor
@@ -41,11 +48,13 @@ class acp_listener implements EventSubscriberInterface
 	* @param \phpbb\user                          $user                         User object
 	* @access public
 	*/
-	function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user)
+	function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\controller\helper $helper, \phpbb\symfony_request $request)
 	{
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
+		$this->helper = $helper;
+		$this->request = $request;
 	}
 
 	/**
@@ -63,6 +72,17 @@ class acp_listener implements EventSubscriberInterface
 			'core.validate_config_variable'  => 'replybyemail_config_validate',
 		);
 	}
+	
+	/**
+	* Not Public
+	*
+	* Display not public message
+	*/
+	public function not_public()
+	{
+		return 
+			'<div class="errorbox">' . $this->user->lang['REPLY_PUSH_PUBLIC_REACH'] . '</div>';
+	}
 
 	/**
 	* URI Boxes
@@ -74,11 +94,10 @@ class acp_listener implements EventSubscriberInterface
 	*/
 	public function uri_boxes($key)
 	{
+		$url = $this->helper->route('replybyemail_notify', array('uri' => $key), true, null, UrlGeneratorInterface::ABSOLUTE_URL);
 		return
-		'<input class="reply_push_uri" type="text" value="'.generate_board_url().'/replypush/'.$key.'" readonly="readonly" size="80">'.
-		'<br>'.$this->user->lang['REPLY_PUSH_URI_BOXES_SEP'].'</br>'.
-		'<input class="reply_push_uri" type="text" value="'.generate_board_url().'/app.php/replypush/'.$key.'" readonly="readonly" size="80">'.
-		$this->user->lang['REPLY_PUSH_URI_BLURB'];
+			'<input class="reply_push_uri" type="text" value="'. $url.'" readonly="readonly" size="80">'.
+			$this->user->lang['REPLY_PUSH_URI_BLURB'];
 	}
 
 	/**
@@ -94,9 +113,9 @@ class acp_listener implements EventSubscriberInterface
 		if ($event['mode'] == 'email')
 		{
 			// if notify_uri doesn't exist create it
-			if (!isset($this->config['replyPUSH_replybyemail_notify_uri']))
+			if (!isset($this->config['replybyemail_notify_uri']))
 			{
-				$this->config->set('replyPUSH_replybyemail_notify_uri', uniqid());
+				$this->config->set('replybyemail_notify_uri', uniqid());
 			}
 
 			$display_vars = $event['display_vars'];
@@ -111,11 +130,20 @@ class acp_listener implements EventSubscriberInterface
 			}
 
 			$display_vars['vars']['legend'.($x-1)] = 'REPLY_BY_EMAIL_SETTINGS';
-
-			$display_vars['vars']['reply_push_account_no']    = array('lang' => 'REPLY_PUSH_ACCOUNT_NO', 'validate' => 'reply_push',  'type' => 'text:8:8', 'explain' => true);
-			$display_vars['vars']['reply_push_secret_id']     = array('lang' => 'REPLY_PUSH_SECRET_ID', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
-			$display_vars['vars']['reply_push_secret_key']    = array('lang' => 'REPLY_PUSH_SECRET_KEY', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
-			$display_vars['vars']['reply_push_uri']           = array('lang' => 'REPLY_PUSH_URI', 'type' => 'custom', 'function' => array($this, 'uri_boxes'), 'params' => array($this->config['replyPUSH_replybyemail_notify_uri']),'explain' => true);
+			
+			
+			if (!in_array($this->request->server->get('REMOTE_ADDR'), array('127.0.0.1', '::1'))) // if not localhost
+			{
+				$display_vars['vars']['reply_push_account_no']    = array('lang' => 'REPLY_PUSH_ACCOUNT_NO', 'validate' => 'reply_push',  'type' => 'text:8:8', 'explain' => true);
+				$display_vars['vars']['reply_push_secret_id']     = array('lang' => 'REPLY_PUSH_SECRET_ID', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
+				$display_vars['vars']['reply_push_secret_key']    = array('lang' => 'REPLY_PUSH_SECRET_KEY', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
+				$display_vars['vars']['reply_push_uri']           = array('lang' => 'REPLY_PUSH_URI', 'type' => 'custom', 'function' => array($this, 'uri_boxes'), 'params' => array($this->config['replybyemail_notify_uri']),'explain' => true);
+			}
+			else
+			{
+				$display_vars['vars']['reply_push_uri']           = array('lang' => 'REPLY_PUSH_DISABLED', 'type' => 'custom', 'function' => array($this, 'not_public'), 'explain' => true);
+			}
+			
 
 			$display_vars['vars']['legend'.$x] =  'ACP_SUBMIT_CHANGES';
 

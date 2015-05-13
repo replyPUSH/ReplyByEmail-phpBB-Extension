@@ -314,7 +314,7 @@ class utility
 	*/
 	public function check_uri($uri)
 	{
-		return $this->config['replyPUSH_replybyemail_notify_uri'] == $uri;
+		return $this->config['replybyemail_notify_uri'] == $uri;
 	}
 
 	/**
