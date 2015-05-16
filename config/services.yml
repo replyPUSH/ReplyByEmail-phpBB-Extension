@@ -58,7 +58,7 @@ services:
             - @template
             - @user
             - @controller.helper
-            - @symfony_request
+            - @replyPUSH.replybyemail.utility
         tags:
             - { name: event.listener }
 

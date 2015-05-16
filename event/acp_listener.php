@@ -36,8 +36,8 @@ class acp_listener implements EventSubscriberInterface
 	/** @var \phpbb\controller\helper $helper */
 	protected $helper;
 	
-	/** @var \phpbb\symfony_request $request */
-	protected $request;
+	/** @var utility methods */
+	protected $utility;
 
 	/**
 	* Constructor
@@ -48,13 +48,13 @@ class acp_listener implements EventSubscriberInterface
 	* @param \phpbb\user                          $user                         User object
 	* @access public
 	*/
-	function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\controller\helper $helper, \phpbb\symfony_request $request)
+	function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\controller\helper $helper, \replyPUSH\replybyemail\helper\utility $utility)
 	{
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
 		$this->helper = $helper;
-		$this->request = $request;
+		$this->utility = $utility;
 	}
 
 	/**
@@ -130,9 +130,8 @@ class acp_listener implements EventSubscriberInterface
 			}
 
 			$display_vars['vars']['legend'.($x-1)] = 'REPLY_BY_EMAIL_SETTINGS';
-			
-			
-			if (!in_array($this->request->server->get('REMOTE_ADDR'), array('127.0.0.1', '::1'))) // if not localhost
+		
+			if ($this->utility->can_access_site()) // if public
 			{
 				$display_vars['vars']['reply_push_account_no']    = array('lang' => 'REPLY_PUSH_ACCOUNT_NO', 'validate' => 'reply_push',  'type' => 'text:8:8', 'explain' => true);
 				$display_vars['vars']['reply_push_secret_id']     = array('lang' => 'REPLY_PUSH_SECRET_ID', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);

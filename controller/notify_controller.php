@@ -69,6 +69,24 @@ class notify_controller
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
+	
+	/**
+	* leave Request
+	*
+	* Ends request
+	*
+	* @param   string   $message output this message
+	* @param   string   $code HTTP status code
+	* @return  null
+	*/
+
+	public function leave($message = '', $code = 200)
+	{
+		$response = new Response($message, $code);
+		$response->setStatusCode($code);
+		return $response;
+		
+	}
 
 	/**
 	* Denies Access
@@ -80,20 +98,7 @@ class notify_controller
 
 	protected function denied($denied_msg = '')
 	{
-		$this->utility->leave($denied_msg, 403);
-	}
-
-	/**
-	* leave Request
-	*
-	* Ends request
-	*
-	* @param string $denied_msg message to output on exit
-	*/
-
-	protected function leave($leave_msg = '')
-	{
-		$this->utility->leave($leave_msg);
+		return $this->leave($denied_msg, 403);
 	}
 
 	/**
@@ -107,10 +112,10 @@ class notify_controller
 	{
 		if (!$this->utility->check_uri($uri))
 		{
-			$this->denied('DENIED');
+			return $this->denied('DENIED');
 		}
 		// I'm here ...
-		$this->leave('OK');
+		return $this->leave('OK');
 	}
 
 	/**
@@ -126,32 +131,32 @@ class notify_controller
 		// no credentials can't process
 		if (!$this->utility->credentials())
 		{
-			$this->denied();
+			return $this->denied();
 		}
 
 		// spoofed
 		if (!$this->utility->check_uri($uri))
 		{
-			$this->denied();
+			return $this->denied();
 		}
 		
 		$notification = $this->utility->request->get_super_global(\phpbb\request\request_interface::POST);
 
 		if (empty($notification))
 		{
-			$this->leave(); // do nothing.
+			return $this->leave(); // do nothing.
 		}
 
 		// is valid?
 		if (!$this->rp_model->has_required($notification))
 		{
-			$this->denied();
+			return $this->denied();
 		}
 
 		//check for duplicate message id
 		if ($this->rp_model->get_transaction($notification['msg_id']))
 		{
-			$this->leave(); //ignore
+			return $this->leave(); //ignore
 		}
 
 		// add optional
@@ -172,7 +177,7 @@ class notify_controller
 			// don't know you go away
 			if (!$user_id)
 			{
-				$this->denied();
+				return $this->denied();
 			}
 
 			// start session
@@ -199,13 +204,13 @@ class notify_controller
 			if (isset($notification['error']))
 			{
 				$this->process_incoming_error($notification['error'], $this->user, $notification['subject'], $ref);
-				$this->leave();
+				return $this->leave();
 			}
 
 			// don't know what you are talking about
 			if (!isset($this->notification_types[$type_id]))
 			{
-				$this->leave();
+				return $this->leave();
 			}
 			
 			$type = $this->notification_types[$type_id];
@@ -236,7 +241,7 @@ class notify_controller
 		$this->rp_model->log_transaction($notification);
 
 		// no output
-		$this->leave();
+		return $this->leave();
 	}
 
 	/**

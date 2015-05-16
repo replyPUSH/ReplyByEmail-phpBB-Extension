@@ -8,7 +8,7 @@
 */
 namespace replyPUSH\replybyemail\helper;
 use replyPUSH\replybyemail\library\ReplyPush;
-use Symfony\Component\HttpFoundation\Response;
+
 
 /**
 * Bunch of utility helpers
@@ -473,20 +473,34 @@ class utility
 		return sprintf('=?UTF-8?B?%s?= <%s>', base64_encode($name), $email ? $email : $this->service_email());
 	}
 
-	/**
-	* Leave
-	*
-	* Convenience method for exiting framework
-	* post-haste
-	*
-	* @param   string   $message output this message
-	* @param   string   $code HTTP status code
-	* @return  null
-	*/
-	public function leave($message = '', $code = 200){
-		$response = new Response($message, $code);
-		$response->setStatusCode($code);
-		$response->send();
+
+	public function can_access_site()
+	{
+		$local = array('127.0.0.1', '::1');
+		$addresses = array();
+		
+		if (function_exists('gethostbyname')) 
+		{
+			$addresses[] = gethostbyname($this->request->server('HTTP_HOST'));
+		} else {
+			$addresses[] = $this->request->server('SERVER_ADDR'); 
+			$addresses[] = array_pop(explode(',', $this->request->server('HTTP_X_FORWARDED_FOR')));
+			$addresses[] = $this->request->server('HTTP_X_REAL_IP');
+		}
+
+		$access = false;
+
+		foreach ($addresses as $address)
+		{
+			$access = $address && !in_array($address, $local);
+			
+			if ($access)
+			{
+				break;
+			}
+		}
+		
+		return $access;
 	}
 
 }
