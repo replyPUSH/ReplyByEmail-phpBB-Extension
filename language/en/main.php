@@ -27,10 +27,12 @@ $lang = array_merge($lang, array(
 	'REPLY_PUSH_SECRET_ID_INVALID'      => 'replyPUSH API Secret ID should be 32 characters long with alphanumeric and punctuation characters',
 	'REPLY_PUSH_SECRET_KEY_INVALID'     => 'replyPUSH API Secret Key should be 32 characters long with alphanumeric and punctuation characters',
 	'REPLY_BY_EMAIL_SETTINGS'           => '<a id="rp_settings">Reply by Email Settings</a>',
+	'REPLY_PUSH_ENABLE'                 => 'Enable Reply by Email',
 	'REPLY_PUSH_ACCOUNT_NO'             => 'API Account No',
 	'REPLY_PUSH_SECRET_ID'              => 'API Secret ID',
 	'REPLY_PUSH_SECRET_KEY'             => 'API Secret Key',
 	'REPLY_PUSH_URI'                    => 'Notify Url',
+	'REPLY_PUSH_ENABLE'                 => 'If set it will use the credentials bellow to send out emails that can be replied to through the replyPUSH service.',
 	'REPLY_PUSH_ACCOUNT_NO_EXPLAIN'     => 'The Account No found <a href="http://replypush.com/profile">here</a>. Sign up for an account first.',
 	'REPLY_PUSH_SECRET_ID_EXPLAIN'      => 'The API ID found <a href="http://replypush.com/profile">here</a>.',
 	'REPLY_PUSH_SECRET_KEY_EXPLAIN'     => 'The API Key found <a href="http://replypush.com/profile">here</a>.',
@@ -72,6 +74,7 @@ replacing any <code>/forum</code> text to reflect the relative location of the f
 	'REPLY_PUSH_ERROR_NOMSG'          => 'We could not find a message in your reply.',
 	'REPLY_PUSH_ERROR_NOMARK'         => 'We could not process your reply, please reply above the quoted message.',
 	'REPLY_PUSH_SETUP_MSG'            => '<h4>Reply By Email has not been set up yet!</h4><hr>Please set it up <a href="%s">here</a>.',
+	'REPLY_PUSH_SETUP_MSG_DISMISS'    => 'dismiss',
 	'REPLY_PUSH_EMAIL_SIG'            => '
 <br>
 <b>***** reply service *****</b>

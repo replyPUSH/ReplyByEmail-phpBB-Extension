@@ -117,6 +117,16 @@ class notify_controller
 		// I'm here ...
 		return $this->leave('OK');
 	}
+	
+	/**
+	* For dismissing that annoying setup message
+	*
+	*/
+	public function dismiss_setup()
+	{
+		$this->config->set('reply_push_dismiss_msg', true);
+		return $this->leave('OK');
+	}
 
 	/**
 	* Process incoming notifications
@@ -434,7 +444,7 @@ class notify_controller
 		// special method devised to deal with the problem of
 		// the long and sprawling entry points like posting.php
 		// in the absence of rationalised auth / model setups.
-		$this->utility->sub_request("posting.{$this->php_ext}?mode=reply&f={$forum_id}&t={$topic_id}", $post);
+		$this->utility->post_request("posting.{$this->php_ext}?mode=reply&f={$forum_id}&t={$topic_id}", $post);
 
 	}
 
@@ -471,7 +481,7 @@ class notify_controller
 		);
 
 		// special method that calls a module as if handling a request
-		$this->utility->sub_request_module("ucp.{$this->php_ext}?i=pm&mode=compose&action=reply&p={$message_id}", $post);
+		$this->utility->post_request("ucp.{$this->php_ext}?i=pm&mode=compose&action=reply&p={$message_id}", $post);
 	}
 
 	/**

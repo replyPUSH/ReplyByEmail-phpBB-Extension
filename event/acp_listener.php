@@ -113,9 +113,9 @@ class acp_listener implements EventSubscriberInterface
 		if ($event['mode'] == 'email')
 		{
 			// if notify_uri doesn't exist create it
-			if (!isset($this->config['replybyemail_notify_uri']))
+			if (!isset($this->config['reply_push_notify_uri']))
 			{
-				$this->config->set('replybyemail_notify_uri', uniqid());
+				$this->config->set('reply_push_notify_uri', uniqid());
 			}
 
 			$display_vars = $event['display_vars'];
@@ -133,10 +133,11 @@ class acp_listener implements EventSubscriberInterface
 		
 			if ($this->utility->can_access_site()) // if public
 			{
+				$display_vars['vars']['reply_push_enable']        = array('lang' => 'REPLY_PUSH_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true);
 				$display_vars['vars']['reply_push_account_no']    = array('lang' => 'REPLY_PUSH_ACCOUNT_NO', 'validate' => 'reply_push',  'type' => 'text:8:8', 'explain' => true);
 				$display_vars['vars']['reply_push_secret_id']     = array('lang' => 'REPLY_PUSH_SECRET_ID', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
 				$display_vars['vars']['reply_push_secret_key']    = array('lang' => 'REPLY_PUSH_SECRET_KEY', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
-				$display_vars['vars']['reply_push_uri']           = array('lang' => 'REPLY_PUSH_URI', 'type' => 'custom', 'function' => array($this, 'uri_boxes'), 'params' => array($this->config['replybyemail_notify_uri']),'explain' => true);
+				$display_vars['vars']['reply_push_uri']           = array('lang' => 'REPLY_PUSH_URI', 'type' => 'custom', 'function' => array($this, 'uri_boxes'), 'params' => array($this->config['reply_push_notify_uri']),'explain' => true);
 			}
 			else
 			{
@@ -162,50 +163,53 @@ class acp_listener implements EventSubscriberInterface
 	*/
 
 	public function replybyemail_config_validate($event)
-	{
+	{        
 		if (!$this->validate_reply_push || $this->validation_failed)
 		{
 			return;
 		}
-
+		
 		$error = $event['error'];
 		$cfg_array = $event['cfg_array'];
 
-		if (!isset($cfg_array['reply_push_account_no']))
+		if (isset($cfg_array['reply_push_enabled']))
 		{
-			$error[] = $this->user->lang['REPLY_PUSH_ACCOUNT_NO_MISSING'];
-		}
-		if (!isset($cfg_array['reply_push_secret_id']))
-		{
-			$error[] = $this->user->lang['REPLY_PUSH_SECRET_ID_MISSING'];
-		}
+			if (!isset($cfg_array['reply_push_account_no']))
+			{
+				$error[] = $this->user->lang['REPLY_PUSH_ACCOUNT_NO_MISSING'];
+			}
+			if (!isset($cfg_array['reply_push_secret_id']))
+			{
+				$error[] = $this->user->lang['REPLY_PUSH_SECRET_ID_MISSING'];
+			}
 
-		if (!isset($cfg_array['reply_push_secret_key']))
-		{
-			$error[] = $this->user->lang['REPLY_PUSH_SECRET_KEY_MISSING'];
-		}
+			if (!isset($cfg_array['reply_push_secret_key']))
+			{
+				$error[] = $this->user->lang['REPLY_PUSH_SECRET_KEY_MISSING'];
+			}
 
-		if (sizeof($error)>0)
-		{
-			$event['error'] = $error;
-			$event['cfg_array'] = $cfg_array;
-			$this->validation_failed = true;
-			return;
-		}
+			if (sizeof($error)>0)
+			{
+				$event['error'] = $error;
+				$event['cfg_array'] = $cfg_array;
+				$this->validation_failed = true;
+				return;
+			}
 
-		//necessary because of htmlspecialchars use
-		$reply_push_account_no = html_entity_decode($cfg_array['reply_push_account_no']);
-		$reply_push_secret_id  = html_entity_decode($cfg_array['reply_push_secret_id']);
-		$reply_push_secret_key = html_entity_decode($cfg_array['reply_push_secret_key']);
+			//necessary because of htmlspecialchars use
+			$reply_push_account_no = html_entity_decode($cfg_array['reply_push_account_no']);
+			$reply_push_secret_id  = html_entity_decode($cfg_array['reply_push_secret_id']);
+			$reply_push_secret_key = html_entity_decode($cfg_array['reply_push_secret_key']);
 
-		try
-		{
-			ReplyPush::validateCredentials($reply_push_account_no, $reply_push_secret_id, $reply_push_secret_key);
-		}
-		catch(ReplyPushError $e)
-		{
-			$item = strtoupper(preg_replace('`([a-z])([A-Z])`','$1_$2', $e->getItem()));
-			$error[] = $this->user->lang['REPLY_PUSH_'.$item.'_INVALID'];
+			try
+			{
+				ReplyPush::validateCredentials($reply_push_account_no, $reply_push_secret_id, $reply_push_secret_key);
+			}
+			catch(ReplyPushError $e)
+			{
+				$item = strtoupper(preg_replace('`([a-z])([A-Z])`','$1_$2', $e->getItem()));
+				$error[] = $this->user->lang['REPLY_PUSH_'.$item.'_INVALID'];
+			}
 		}
 
 		if (sizeof($error)>0)
@@ -216,6 +220,11 @@ class acp_listener implements EventSubscriberInterface
 			return;
 		}
 		$this->validate_reply_push = false;
+		
+		$this->config->set('reply_push_account_no', isset($cfg_array['reply_push_enabled']));
+		$this->config->set('reply_push_account_no', $cfg_array['reply_push_account_no']);
+		$this->config->set('reply_push_secret_id', $cfg_array['reply_push_secret_id']);
+		$this->config->set('reply_push_secret_key', $cfg_array['reply_push_secret_key']);
 
 		$event['cfg_array'] = $cfg_array;
 

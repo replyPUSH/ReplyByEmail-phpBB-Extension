@@ -201,7 +201,8 @@ class utility
 			return $this->credentials;
 		}
 
-		if (!isset($this->config[$prefix . 'account_no'])
+		if (!isset($this->config[$prefix . 'enabled'])
+			|| !isset($this->config[$prefix . 'account_no'])
 			|| !isset($this->config[$prefix . 'secret_id'])
 			|| !isset($this->config[$prefix . 'secret_key']))
 		{
@@ -252,7 +253,7 @@ class utility
 	*/
 	public function check_uri($uri)
 	{
-		return $this->config['replybyemail_notify_uri'] == $uri;
+		return $this->config['reply_push_notify_uri'] == $uri;
 	}
 
 	/**

@@ -32,6 +32,9 @@ class listener implements EventSubscriberInterface
 
 	/** @var \phpbb\symfony_request */
 	protected $request;
+	
+	/** @var \phpbb\controller\helper $helper */
+	protected $helper;
 
 	/** @var string phpBB admin path */
 	protected $phpbb_admin_path;
@@ -52,7 +55,7 @@ class listener implements EventSubscriberInterface
 	* @param string                                     $php_ext                      phpEx
 	* @access public
 	*/
-	function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \replyPUSH\replybyemail\helper\utility $utility, \phpbb\symfony_request $request, $phpbb_admin_path, $php_ext)
+	function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \replyPUSH\replybyemail\helper\utility $utility, \phpbb\symfony_request $request, \phpbb\controller\helper $helper, $phpbb_admin_path, $php_ext)
 	{
 		$this->config = $config;
 		$this->template = $template;
@@ -60,6 +63,7 @@ class listener implements EventSubscriberInterface
 		$this->auth = $auth;
 		$this->utility = $utility;
 		$this->request = $request;
+		$this->helper = $helper;
 		$this->phpbb_admin_path = $phpbb_admin_path;
 		$this->php_ext = $php_ext;
 	}
@@ -77,7 +81,6 @@ class listener implements EventSubscriberInterface
 			'core.posting_modify_submit_post_after'  => 'submit_post',
 			'core.submit_pm_after'                   => 'submit_post',
 			'core.user_setup'                        => 'load_language',
-			'core.page_header'                       => 'set_up',
 			'core.adm_page_header'                   => 'set_up',
 		);
 	}
@@ -94,7 +97,7 @@ class listener implements EventSubscriberInterface
 	{
 		$route = $this->request->attributes->get('_route');
 		// if in replyPUSH_replybyemail leave without output
-		if (strpos($route, 'replyPUSH_replybyemail') !== false)
+		if (strpos($route, 'replybyemail_notify') !== false)
 		{
 			//leave
 			$this->utility->leave();
@@ -133,8 +136,13 @@ class listener implements EventSubscriberInterface
 			$url = generate_board_url().'/'.append_sid("{$this->phpbb_admin_path}index.{$this->php_ext}", "i=acp_board&amp;mode=email#rp_settings", true, $this->user->session_id);
 
 			// if missing credentials display message
-			$this->template->assign_var('REPLY_PUSH_SETUP', !$this->utility->credentials());
-			$this->template->assign_var('REPLY_PUSH_SETUP_MSG', $this->user->lang('REPLY_PUSH_SETUP_MSG',$url));
+			if(!$this->config['reply_push_dismiss_msg'] && !$this->utility->credentials())
+			{
+				$this->template->assign_var('REPLY_PUSH_SETUP', true);
+				$this->template->assign_var('REPLY_PUSH_SETUP_MSG_DISMISS', $this->user->lang('REPLY_PUSH_SETUP_MSG_DISMISS'));
+				$this->template->assign_var('REPLY_PUSH_SETUP_DISMISS_URL', $this->helper->route('replybyemail_dismiss_setup'));
+				$this->template->assign_var('REPLY_PUSH_SETUP_MSG', $this->user->lang('REPLY_PUSH_SETUP_MSG',$url));
+			}
 		}
 	}
 }

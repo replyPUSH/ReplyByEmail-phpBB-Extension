@@ -46,6 +46,7 @@ services:
             - @auth
             - @replyPUSH.replybyemail.utility
             - @symfony_request
+            - @controller.helper
             - %core.adm_relative_path%
             - %core.php_ext%
         tags:
