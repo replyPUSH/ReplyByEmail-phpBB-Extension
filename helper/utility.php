@@ -92,7 +92,7 @@ class utility
 	*/
 	public function post_request($url, $post_data)
 	{
-		
+		$url = generate_board_url() . $url;
 		$ch = curl_init(); 
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
@@ -143,7 +143,7 @@ class utility
 	/**
 	* Is Proxy ?
 	*
-	* Is posted back from notifier
+	* Is posted on from notifier
 	*
 	* @return bool
 	*/

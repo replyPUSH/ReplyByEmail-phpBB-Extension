@@ -440,7 +440,7 @@ class notify_controller
 			'creation_time' => $time,
 			'lastclick'     => $time,
 			'form_token'    => $this->utility->hash_method($time . $this->user->data['user_form_salt'] . 'posting', array('sha1')),
-			'rp_token'      =>  $this->utility->hash_method($time . $this->utility->credencials()['account_no'] . $this->config['reply_push_notify_uri'], array('sha1'))
+			'rp_token'      => $this->utility->hash_method($time . $this->utility->credencials()['account_no'] . $this->config['reply_push_notify_uri'], array('sha1'))
 		);
 
 		$this->utility->post_request("posting.{$this->php_ext}?mode=reply&f={$forum_id}&t={$topic_id}", $post);
