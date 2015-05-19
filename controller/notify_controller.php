@@ -231,6 +231,7 @@ class notify_controller
 			// better than switch statement
 			if (is_callable(array($this, $type_process)))
 			{
+				
 				// process
 				$this->$type_process(
 					$from_user_id,
@@ -264,7 +265,7 @@ class notify_controller
 	* @param int    $forum_id
 	* @param string $message
 	*/
-	protected function process_topic_notification($from_user_id, $topic_id, $forum_id, $message)
+	protected function process_topic_notification($from_user_id, $topic_id, $forum_id, $message, $in_reply_to)
 	{
 		$sql = "SELECT topic_title FROM ". TOPICS_TABLE.
 				" WHERE topic_id = ". (int) $topic_id .
@@ -433,17 +434,15 @@ class notify_controller
 		$time = strtotime('-10 seconds');
 
 		$post = array(
-			'subject'  => $subject,
-			'message' => $message,
-			'post' => 'Submit',
+			'subject'       => $subject,
+			'message'       => $message,
+			'post'          => 'Submit',
 			'creation_time' => $time,
-			'lastclick' => $time,
-			'form_token' => $this->utility->hash_method($time . $this->user->data['user_form_salt'] . 'posting', array('sha1')),
+			'lastclick'     => $time,
+			'form_token'    => $this->utility->hash_method($time . $this->user->data['user_form_salt'] . 'posting', array('sha1')),
+			'rp_token'      =>  $this->utility->hash_method($time . $this->utility->credencials()['account_no'] . $this->config['reply_push_notify_uri'], array('sha1'))
 		);
 
-		// special method devised to deal with the problem of
-		// the long and sprawling entry points like posting.php
-		// in the absence of rationalised auth / model setups.
 		$this->utility->post_request("posting.{$this->php_ext}?mode=reply&f={$forum_id}&t={$topic_id}", $post);
 
 	}
@@ -470,17 +469,17 @@ class notify_controller
 		$time = strtotime('-10 seconds');
 
 		$post = array(
-			'subject' => $subject,
-			'message' => $message,
-			'post' => 'Submit',
-			'reply_to_all' => 1,
+			'subject'       => $subject,
+			'message'       => $message,
+			'post'          => 'Submit',
+			'reply_to_all'  => 1,
 			'creation_time' => $time,
-			'lastclick' => $time,
-			'address_list' => $address_list,
-			'form_token' => $this->utility->hash_method($time . $this->user->data['user_form_salt'] . 'ucp_pm_compose', array('sha1')),
+			'lastclick'     => $time,
+			'address_list'  => $address_list,
+			'form_token'    => $this->utility->hash_method($time . $this->user->data['user_form_salt'] . 'ucp_pm_compose', array('sha1')),
+			'rp_token'      => $this->utility->hash_method($time . $this->utility->credencials()['account_no'] . $this->config['reply_push_notify_uri'], array('sha1'))
 		);
 
-		// special method that calls a module as if handling a request
 		$this->utility->post_request("ucp.{$this->php_ext}?i=pm&mode=compose&action=reply&p={$message_id}", $post);
 	}
 

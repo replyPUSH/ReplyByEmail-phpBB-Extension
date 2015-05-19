@@ -82,106 +82,90 @@ class utility
 	}
 
 	/**
-	* Special Include
+	* Post request
 	*
-	* Include core entry point for simulated request
+	* Post back form
 	*
-	* @param    string   $file
-	* @return   null
-	*/
-	protected function special_include($file)
-	{
-		// have to use global for this hack to exclude common.php
-		// it is dirty but the only other alternatives
-		// are eval or a session proxy which aren't the best
-		global $phpbb_root_path;
-		$phpbb_root_path_real = $phpbb_root_path;
-		define('PHPBB_ROOT_PATH',dirname(__FILE__).'/');
-		error_reporting(0);
-		include($file);
-	}
-
-	/**
-	* Prime request
-	*
-	* Processes query string as GET
-	* Processes $post_data as POST
-	*
-	* @param    string              $file
+	* @param    string              $url
 	* @param    array[string]mixed  $post_data
-	* @return   string              returns $file
+	* @return   string
 	*/
-	protected function prime_request($file, $post_data)
+	public function post_request($url, $post_data)
 	{
-		if (strpos($file, '?')!==false)
-		{
-			list($file,$get_str) = explode('?',$file);
-			$get_data = array();
-			parse_str($get_str, $get_data);
-			foreach ($get_data as $key => $val)
-			{
-				$this->request->overwrite($key, $val, self::GET_REQ);
-				$this->request->overwrite($key, $val, self::REQUEST_REQ);
-			}
+		
+		$ch = curl_init(); 
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
+		
+		$cookies = $this->request->get_super_global(self::COOKIE_REQ); 
 
-		}
-		foreach ($post_data as $key => $val)
+		$cookie_array = array();
+		foreach ($cookies as $cookie_name => $cookie_value)
 		{
-			$this->request->overwrite($key, $val, self::POST_REQ);
-			$this->request->overwrite($key, $val, self::REQUEST_REQ);
+			$cookie_array[] = "{$cookie_name}={$cookie_value}";
 		}
-		return $file;
+
+		$cookie_string = implode('; ', $cookie_array);
+		curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		$response = curl_exec($ch);
+		curl_close($ch);
+		return $response;
 	}
-
+	
 	/**
-	* Sub request
+	* Hash Compare
 	*
-	* Special method simulating request internally
+	* Timing neutral string comparison
 	*
-	* @param    string              $file
-	* @param    array[string]mixed  $post_data
-	* @return   null
+	* @param string $a
+	* @param string $b
+	*
+	* @return bool
 	*/
-	public function sub_request($file, $post_data)
+
+	protected function hash_cmp($a, $b)
 	{
-		$file = $this->prime_request($file, $post_data);
-		$this->special_include($this->phpbb_root_path.$file);
-		$this->leave();
+		if (strlen($a) != strlen($b))
+		{
+			return false;
+		}
+		
+		$result = 0;
+		
+		foreach (array_combine(str_split($a), str_split($b)) as $x => $y)
+		{
+			$result |= ord($y) ^ ord($y);
+		}
+		return $result == 0;
 	}
-
+	
 	/**
-	* Sub request
+	* Is Proxy ?
 	*
-	* Special method simulating request internally
-	* but with module specific loading
+	* Is posted back from notifier
 	*
-	* @param    string              $file
-	* @param    array[string]mixed  $post_data
-	* @return   null
+	* @return bool
 	*/
-	public function sub_request_module($file, $post_data)
+	
+	public function is_proxy()
 	{
-		$section = $this->prime_request($file, $post_data);
-
-		$section = preg_replace('`\.' . $this->php_ext . '$`', '', $section);
-
-		if (!function_exists('user_get_id_name'))
+		if ($this->request->variable('form_token')
+			&& $this->request->variable('creation_time')
+			&& $this->request->variable('rp_token'))
 		{
-			require($this->phpbb_root_path  . 'includes/functions_user.' . $this->php_ext);
+			return $this->hash_cmp(
+				$this->request->variable('rp_token'),
+				$this->utility->hash_method(
+					$this->request->variable('creation_time') . 
+						$this->utility->credencials()['account_no'] . 
+						$this->config['reply_push_notify_uri'],
+					array('sha1')
+				)
+			);
 		}
-
-		if (!class_exists('p_master'))
-		{
-			require($this->phpbb_root_path . 'includes/functions_module.' . $this->php_ext);
-		}
-
-		$module_name = $this->request->variable('i', self::GET_REQ);
-		$mode = $this->request->variable('mode', self::GET_REQ);
-		$module = new \p_master();
-		$this->user->setup($section);
-
-		$module->load($section, $module_name, $mode);
-		$this->leave();
+		
+		return false;
 	}
 
 	/**
@@ -292,7 +276,7 @@ class utility
 		// init permissions
 		$this->auth->acl($this->user->data);
 
-		// fake session cookies for persistance
+		// create session cookies for persistance
 		$this->request->overwrite($this->config['cookie_name'] . '_u', $this->user->cookie_data['u'], self::COOKIE_REQ);
 		$this->request->overwrite($this->config['cookie_name'] . '_k', $this->user->cookie_data['k'], self::COOKIE_REQ);
 		$this->request->overwrite($this->config['cookie_name'] . '_sid', $this->user->session_id, self::COOKIE_REQ);

@@ -95,12 +95,13 @@ class listener implements EventSubscriberInterface
 	*/
 	public function submit_post($event)
 	{
-		$route = $this->request->attributes->get('_route');
-		// if in replyPUSH_replybyemail leave without output
-		if (strpos($route, 'replybyemail_notify') !== false)
+		// reply push proxy?
+		if ($this->utility->is_proxy())
 		{
-			//leave
-			$this->utility->leave();
+			//finish
+			$response = new Response('OK', 200);
+			$response->setStatusCode(200);
+			return $response;
 		}
 	}
 
