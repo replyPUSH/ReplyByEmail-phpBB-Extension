@@ -138,11 +138,6 @@ class notify_controller
 	*/
 	public function process_incoming_notification($uri)
 	{
-		// no credentials can't process
-		if (!$this->utility->credentials())
-		{
-			return $this->denied();
-		}
 
 		// spoofed
 		if (!$this->utility->check_uri($uri))
@@ -155,6 +150,12 @@ class notify_controller
 		if (empty($notification))
 		{
 			return $this->leave(); // do nothing.
+		}
+		
+		// no credentials can't process
+		if (!$this->utility->credentials())
+		{
+			return $this->denied();
 		}
 
 		// is valid?

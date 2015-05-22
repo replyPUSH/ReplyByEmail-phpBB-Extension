@@ -81,7 +81,7 @@ class acp_listener implements EventSubscriberInterface
 	public function not_public()
 	{
 		return 
-			'<div class="errorbox">' . $this->user->lang['REPLY_PUSH_PUBLIC_REACH'] . '</div>';
+			'<div class="errorbox" style="clear: none;">' . $this->user->lang['REPLY_PUSH_PUBLIC_REACH'] . '</div>';
 	}
 
 	/**
@@ -172,7 +172,7 @@ class acp_listener implements EventSubscriberInterface
 		$error = $event['error'];
 		$cfg_array = $event['cfg_array'];
 
-		if (isset($cfg_array['reply_push_enabled']))
+		if (isset($cfg_array['reply_push_enabled']) && $cfg_array['reply_push_enabled'])
 		{
 			if (!isset($cfg_array['reply_push_account_no']))
 			{
@@ -221,7 +221,7 @@ class acp_listener implements EventSubscriberInterface
 		}
 		$this->validate_reply_push = false;
 		
-		$this->config->set('reply_push_enabled', isset($cfg_array['reply_push_enabled']));
+		$this->config->set('reply_push_enabled', (int) $cfg_array['reply_push_enabled']);
 		$this->config->set('reply_push_account_no', $cfg_array['reply_push_account_no']);
 		$this->config->set('reply_push_secret_id', $cfg_array['reply_push_secret_id']);
 		$this->config->set('reply_push_secret_key', $cfg_array['reply_push_secret_key']);
