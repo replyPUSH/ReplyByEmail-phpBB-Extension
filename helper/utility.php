@@ -44,6 +44,9 @@ class utility
 
 	/** @var \phpbb\request\request */
 	public $request;
+	
+	/** @var\phpbb\cache\service */
+	protected $cache;
 
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
@@ -70,59 +73,16 @@ class utility
 	* @access public
 	*/
 
-	function __construct(\phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\factory $db, \phpbb\request\request $request,  $phpbb_root_path, $php_ext)
+	function __construct(\phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\factory $db, \phpbb\request\request $request, \phpbb\cache\service $cache, $phpbb_root_path, $php_ext)
 	{
 		$this->user = $user;
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->db = $db;
 		$this->request = $request;
+		$this->cache = $cache;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-	}
-
-	/**
-	* Post request
-	*
-	* Post back form
-	*
-	* @param    string              $url
-	* @param    array[string]mixed  $post_data
-	* @return   string
-	*/
-	public function post_request($url, $post_data)
-	{
-		$url = generate_board_url() . $url;
-		$ch = curl_init(); 
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
-		
-		$cookies = $this->request->get_super_global(self::COOKIE_REQ); 
-
-		$cookie_array = array();
-		foreach ($cookies as $cookie_name => $cookie_value)
-		{
-			$cookie_array[] = "{$cookie_name}={$cookie_value}";
-		}
-
-		$cookie_string = implode('; ', $cookie_array);
-		curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		$response = curl_exec($ch);
-		curl_close($ch);
-		return $response;
-	}
-	
-	public function is_ok($url)
-	{
-		$ch = curl_init(); 
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		$response = curl_exec($ch);
-		curl_close($ch);
-		
-		return $response == 'OK';
 	}
 	
 	/**
@@ -470,7 +430,15 @@ class utility
 		return sprintf('=?UTF-8?B?%s?= <%s>', base64_encode($name), $email ? $email : $this->service_email());
 	}
 	
-	
+	/**
+	* Parse host
+	*
+	* Strip port, etc from host 
+	*
+	* @param   string   $address
+	* @return  string
+	*/
+
 	protected function parse_host($address)
 	{
 		if (strpos($address, '::1') === 0) 
@@ -480,10 +448,25 @@ class utility
 		
 		return parse_url('http://' . $address, PHP_URL_HOST);
 	}
-
+	
+	/**
+	* Can access site ?
+	*
+	* Is this a public address?
+	*
+	* @return  bool
+	*/
 
 	public function can_access_site()
 	{
+		$can_access_site = $this->cache->get('rp_can_access_site');
+		
+		// is stashed ?
+		if (isset($can_access_site[$this->request->server('HTTP_HOST')]))
+		{
+			return $can_access_site[$this->request->server('HTTP_HOST')];
+		}
+		
 		$local = array('localhost', '127.0.0.1', '::1', '[::1]');
 		$addresses = array();
 		
@@ -510,7 +493,74 @@ class utility
 			}
 		}
 		
+		// stash
+		$this->cache->put('rp_can_access_site', array($this->request->server('HTTP_HOST') => $access));
+		
 		return $access;
+	}
+	
+	/**
+	* Post request
+	*
+	* Post back form
+	*
+	* @param    string              $url
+	* @param    array[string]mixed  $post_data
+	* @return   string
+	*/
+	public function post_request($url, $post_data)
+	{
+		$url = generate_board_url() . $url;
+		$ch = curl_init(); 
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
+		
+		$cookies = $this->request->get_super_global(self::COOKIE_REQ); 
+
+		$cookie_array = array();
+		foreach ($cookies as $cookie_name => $cookie_value)
+		{
+			$cookie_array[] = "{$cookie_name}={$cookie_value}";
+		}
+
+		$cookie_string = implode('; ', $cookie_array);
+		curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		$response = curl_exec($ch);
+		curl_close($ch);
+		return $response;
+	}
+	
+	/**
+	* Is OK
+	*
+	* Check url returns OK
+	*
+	* @param    string  $url
+	* @return   string
+	*/
+	
+	public function is_ok($url)
+	{
+		$is_ok = $this->cache->get('rp_is_ok');
+		
+		// is stashed ?
+		if (isset($is_ok[$url]))
+		{
+			return $is_ok[$url];
+		}
+		
+		$ch = curl_init(); 
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($ch);
+		curl_close($ch);
+		
+		// stash
+		$this->cache->put('rp_is_ok', array($url => $response == 'OK'));
+		
+		return $response == 'OK';
 	}
 
 }
