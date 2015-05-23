@@ -459,12 +459,12 @@ class utility
 
 	public function can_access_site()
 	{
-		$can_access_site = $this->cache->get('rp_can_access_site');
-		
+		$can_access_site_stash = $this->cache->get('rp_can_access_site');
+		$key = $this->hash_method($this->request->server('HTTP_HOST'));
 		// is stashed ?
-		if (isset($can_access_site[$this->request->server('HTTP_HOST')]))
+		if (isset($can_access_site_stash[$key]))
 		{
-			return $can_access_site[$this->request->server('HTTP_HOST')];
+			return $can_access_site_stash[$key];
 		}
 		
 		$local = array('localhost', '127.0.0.1', '::1', '[::1]');
@@ -494,7 +494,7 @@ class utility
 		}
 		
 		// stash
-		$this->cache->put('rp_can_access_site', array($this->request->server('HTTP_HOST') => $access));
+		$this->cache->put('rp_can_access_site', array($key => $access));
 		
 		return $access;
 	}
@@ -543,12 +543,12 @@ class utility
 	
 	public function is_ok($url)
 	{
-		$is_ok = $this->cache->get('rp_is_ok');
-		
+		$is_ok_stash = $this->cache->get('rp_is_ok');
+		$key = $this->hash_method($url);
 		// is stashed ?
-		if (isset($is_ok[$url]))
+		if (isset($is_ok_stash[$key]))
 		{
-			return $is_ok[$url];
+			return $is_ok_stash[$key];
 		}
 		
 		$ch = curl_init(); 
@@ -557,10 +557,12 @@ class utility
 		$response = curl_exec($ch);
 		curl_close($ch);
 		
-		// stash
-		$this->cache->put('rp_is_ok', array($url => $response == 'OK'));
+		$is_ok = $response == 'OK';
 		
-		return $response == 'OK';
+		// stash
+		$this->cache->put('rp_is_ok', array($key => $is_ok));
+		
+		return $is_ok;
 	}
 
 }
