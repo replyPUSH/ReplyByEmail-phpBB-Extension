@@ -32,7 +32,7 @@ $lang = array_merge($lang, array(
 	'REPLY_PUSH_SECRET_ID'              => 'API Secret ID',
 	'REPLY_PUSH_SECRET_KEY'             => 'API Secret Key',
 	'REPLY_PUSH_URI'                    => 'Notify Url',
-	'REPLY_PUSH_ENABLE'                 => 'If set it will use the credentials bellow to send out emails that can be replied to through the replyPUSH service.',
+	'REPLY_PUSH_ENABLE_EXPLAIN'         => 'If set it will use the credentials bellow to send out emails that can be replied to through the replyPUSH service.',
 	'REPLY_PUSH_ACCOUNT_NO_EXPLAIN'     => 'The Account No found <a href="http://replypush.com/profile">here</a>. Sign up for an account first.',
 	'REPLY_PUSH_SECRET_ID_EXPLAIN'      => 'The API ID found <a href="http://replypush.com/profile">here</a>.',
 	'REPLY_PUSH_SECRET_KEY_EXPLAIN'     => 'The API Key found <a href="http://replypush.com/profile">here</a>.',
