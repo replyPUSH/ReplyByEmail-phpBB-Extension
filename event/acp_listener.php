@@ -143,7 +143,7 @@ class acp_listener implements EventSubscriberInterface
 		
 			if ($this->utility->can_access_site()) // if public
 			{
-				$display_vars['vars']['reply_push_enabled']        = array('lang' => 'REPLY_PUSH_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true);
+				$display_vars['vars']['reply_push_enabled']       = array('lang' => 'REPLY_PUSH_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true);
 				$display_vars['vars']['reply_push_account_no']    = array('lang' => 'REPLY_PUSH_ACCOUNT_NO', 'validate' => 'reply_push',  'type' => 'text:8:8', 'explain' => true);
 				$display_vars['vars']['reply_push_secret_id']     = array('lang' => 'REPLY_PUSH_SECRET_ID', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
 				$display_vars['vars']['reply_push_secret_key']    = array('lang' => 'REPLY_PUSH_SECRET_KEY', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
@@ -151,7 +151,7 @@ class acp_listener implements EventSubscriberInterface
 			}
 			else
 			{
-				$display_vars['vars']['reply_push_uri']           = array('lang' => 'REPLY_PUSH_DISABLED', 'type' => 'custom', 'function' => array($this, 'not_public'), 'explain' => true);
+				$display_vars['vars']['reply_push_disabled']      = array('lang' => 'REPLY_PUSH_DISABLED', 'type' => 'custom', 'function' => array($this, 'not_public'), 'explain' => true);
 			}
 			
 
@@ -220,7 +220,7 @@ class acp_listener implements EventSubscriberInterface
 			}
 		}
 
-		if (sizeof($error)>0)
+		if (sizeof($error) > 0)
 		{
 			$event['error'] = $error;
 			$event['cfg_array'] = $cfg_array;
@@ -229,7 +229,7 @@ class acp_listener implements EventSubscriberInterface
 		}
 		$this->validate_reply_push = false;
 		
-		$this->config->set('reply_push_enabled', (int) $cfg_array['reply_push_enabled']);
+		$this->config->set('reply_push_enabled', isset($cfg_array['reply_push_enabled']) ? (bool) $cfg_array['reply_push_enabled'] : false);
 		$this->config->set('reply_push_account_no', $cfg_array['reply_push_account_no']);
 		$this->config->set('reply_push_secret_id', $cfg_array['reply_push_secret_id']);
 		$this->config->set('reply_push_secret_key', $cfg_array['reply_push_secret_key']);

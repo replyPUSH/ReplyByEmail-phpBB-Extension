@@ -20,9 +20,9 @@ class ext extends \phpbb\extension\base
 	public function  is_enableable()
 	{
 		return 
-			!function_exists('curl_init') 
-			|| !function_exists('curl_setopt')
-			|| !function_exists('curl_exec')
-			|| !function_exists('curl_close');
+			function_exists('curl_init') 
+			&& function_exists('curl_setopt')
+			&& function_exists('curl_exec')
+			&& function_exists('curl_close');
 	}
 }
