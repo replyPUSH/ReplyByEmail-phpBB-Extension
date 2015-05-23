@@ -77,7 +77,7 @@ class notify_controller
 	*
 	* @param   string   $message output this message
 	* @param   string   $code HTTP status code
-	* @return  null
+	* @return  Symfony\Component\HttpFoundation\Response
 	*/
 
 	public function leave($message = '', $code = 200)
@@ -94,6 +94,7 @@ class notify_controller
 	* Outputs Denied satus code and exit, with optional message
 	*
 	* @param string $denied_msg message to output on exit
+	* @return  Symfony\Component\HttpFoundation\Response
 	*/
 
 	protected function denied($denied_msg = '')
@@ -107,6 +108,7 @@ class notify_controller
 	* Checks uri code is correct, if not denies
 	*
 	* @param string $uri code randomly generated on setup
+	* @return Symfony\Component\HttpFoundation\Response
 	*/
 	public function ping($uri)
 	{
@@ -117,16 +119,6 @@ class notify_controller
 		// I'm here ...
 		return $this->leave('OK');
 	}
-	
-	/**
-	* For dismissing that annoying setup message
-	*
-	*/
-	public function dismiss_setup()
-	{
-		$this->config->set('reply_push_dismiss_msg', true);
-		return $this->leave('OK');
-	}
 
 	/**
 	* Process incoming notifications
@@ -134,7 +126,8 @@ class notify_controller
 	* The entry point controller method for replyPUSH notifications
 	* inlcude security checks.
 	*
-	* @param string $uri code randomly generated on setup
+	* @param  string $uri code randomly generated on setup
+	* @return Symfony\Component\HttpFoundation\Response
 	*/
 	public function process_incoming_notification($uri)
 	{
@@ -260,10 +253,11 @@ class notify_controller
 	*
 	* Validates topic and context, then replies
 	*
-	* @param int    $from_user_id
-	* @param int    $topic_id
-	* @param int    $forum_id
-	* @param string $message
+	* @param    int    $from_user_id
+	* @param    int    $topic_id
+	* @param    int    $forum_id
+	* @param    string $message
+	* @return   null
 	*/
 	protected function process_topic_notification($from_user_id, $topic_id, $forum_id, $message, $in_reply_to)
 	{
@@ -295,10 +289,11 @@ class notify_controller
 	*
 	* Validates post and context, then replies
 	*
-	* @param int    $from_user_id
-	* @param int    $post_id
-	* @param int    $topic_id
-	* @param string $message
+	* @param    int    $from_user_id
+	* @param    int    $post_id
+	* @param    int    $topic_id
+	* @param    string $message
+	* @return   null
 	*/
 
 	protected function process_post_notification($from_user_id, $post_id, $topic_id, $message)
@@ -333,10 +328,11 @@ class notify_controller
 	*
 	* Wraper around process_post_notification
 	*
-	* @param int    $from_user_id
-	* @param int    $post_id
-	* @param int    $topic_id
-	* @param string $message
+	* @param    int    $from_user_id
+	* @param    int    $post_id
+	* @param    int    $topic_id
+	* @param    string $message
+	* @return   null
 	*/
 
 	protected function process_bookmark_notification($from_user_id, $post_id, $topic_id, $message)
@@ -349,10 +345,11 @@ class notify_controller
 	*
 	* Wraper around process_post_notification
 	*
-	* @param int    $from_user_id
-	* @param int    $post_id
-	* @param int    $topic_id
-	* @param string $message
+	* @param    int    $from_user_id
+	* @param    int    $post_id
+	* @param    int    $topic_id
+	* @param    string $message
+	* @return   null
 	*/
 
 	protected function process_quote_notification($from_user_id, $post_id, $topic_id, $message)
@@ -413,10 +410,11 @@ class notify_controller
 	*
 	* Used for various types of replies.
 	*
-	* @param int    $topic_id
-	* @param int    $forum_id
-	* @param string $message
-	* @param string $subject
+	* @param    int    $topic_id
+	* @param    int    $forum_id
+	* @param    string $message
+	* @param    string $subject
+	* @return   null
 	*/
 
 	protected function process_topic_reply($topic_id, $forum_id, $message, $subject)
@@ -440,20 +438,23 @@ class notify_controller
 			'creation_time' => $time,
 			'lastclick'     => $time,
 			'form_token'    => $this->utility->hash_method($time . $this->user->data['user_form_salt'] . 'posting', array('sha1')),
-			'rp_token'      => $this->utility->hash_method($time . $this->utility->credencials()['account_no'] . $this->config['reply_push_notify_uri'], array('sha1'))
+			'rp_token'      => $this->utility->hash_method($time . $this->utility->credentials()['account_no'] . $this->config['reply_push_notify_uri'], array('sha1'))
 		);
 
-		$this->utility->post_request("posting.{$this->php_ext}?mode=reply&f={$forum_id}&t={$topic_id}", $post);
+		$response = $this->utility->post_request("posting.{$this->php_ext}?mode=reply&f={$forum_id}&t={$topic_id}", $post);
+		
+		$this->send_reply_error($this->user, $response, 'page');
 
 	}
 
 	/**
 	* Process pm replies
 	*
-	* @param int          $message_id
-	* @param string       $message
-	* @param string       $subject
-	* @param string|array $to
+	* @param    int          $message_id
+	* @param    string       $message
+	* @param    string       $subject
+	* @param    string|array $to
+	* @return   null
 	*/
 
 	protected function process_pm_reply($message_id, $message, $subject, $to)
@@ -477,7 +478,7 @@ class notify_controller
 			'lastclick'     => $time,
 			'address_list'  => $address_list,
 			'form_token'    => $this->utility->hash_method($time . $this->user->data['user_form_salt'] . 'ucp_pm_compose', array('sha1')),
-			'rp_token'      => $this->utility->hash_method($time . $this->utility->credencials()['account_no'] . $this->config['reply_push_notify_uri'], array('sha1'))
+			'rp_token'      => $this->utility->hash_method($time . $this->utility->credentials()['account_no'] . $this->config['reply_push_notify_uri'], array('sha1'))
 		);
 
 		$this->utility->post_request("ucp.{$this->php_ext}?i=pm&mode=compose&action=reply&p={$message_id}", $post);
@@ -504,10 +505,11 @@ class notify_controller
 	/**
 	* Emial error back to user
 	*
-	* @param \phpbb\user    $user
-	* @param string         $error_msg
-	* @param string         $subject
-	* @param string         $ref
+	* @param    \phpbb\user    $user
+	* @param    string         $error_msg
+	* @param    string         $subject
+	* @param    string         $ref
+	* @return   null
 	*/
 
 	protected function send_reply_error($user, $error_msg, $subject, $ref='')

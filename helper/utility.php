@@ -111,34 +111,6 @@ class utility
 		}
 		return $result == 0;
 	}
-	
-	/**
-	* Is Proxy ?
-	*
-	* Is posted on from notifier
-	*
-	* @return bool
-	*/
-	
-	public function is_proxy()
-	{
-		if ($this->request->variable('form_token')
-			&& $this->request->variable('creation_time')
-			&& $this->request->variable('rp_token'))
-		{
-			return $this->hash_cmp(
-				$this->request->variable('rp_token'),
-				$this->utility->hash_method(
-					$this->request->variable('creation_time') . 
-						$this->utility->credencials()['account_no'] . 
-						$this->config['reply_push_notify_uri'],
-					array('sha1')
-				)
-			);
-		}
-		
-		return false;
-	}
 
 	/**
 	* Credentials check
@@ -243,7 +215,7 @@ class utility
 	{
 
 		// start session
-		$this->user->session_create($user_id);
+		$this->user->session_create($user_id, false, true);
 
 		// init permissions
 		$this->auth->acl($this->user->data);
@@ -510,7 +482,7 @@ class utility
 	*/
 	public function post_request($url, $post_data)
 	{
-		$url = generate_board_url() . $url;
+		$url = generate_board_url() . '/'. ltrim($url, '/');
 		$ch = curl_init(); 
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -526,8 +498,9 @@ class utility
 
 		$cookie_string = implode('; ', $cookie_array);
 		curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		
 		$response = curl_exec($ch);
+		
 		curl_close($ch);
 		return $response;
 	}
@@ -563,6 +536,34 @@ class utility
 		$this->cache->put('rp_is_ok', array($key => $is_ok));
 		
 		return $is_ok;
+	}
+	
+	/**
+	* Is Proxy ?
+	*
+	* Is posted on from notifier
+	*
+	* @return bool
+	*/
+	
+	public function is_proxy()
+	{
+		if ($this->request->variable('form_token', false)
+			&& $this->request->variable('creation_time', false)
+			&& $this->request->variable('rp_token', false))
+		{
+			return $this->hash_cmp(
+				$this->request->variable('rp_token', false),
+				$this->utility->hash_method(
+					$this->request->variable('creation_time', false) . 
+						$this->utility->credentials()['account_no'] . 
+						$this->config['reply_push_notify_uri'],
+					array('sha1')
+				)
+			);
+		}
+		
+		return false;
 	}
 
 }
