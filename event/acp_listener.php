@@ -42,10 +42,12 @@ class acp_listener implements EventSubscriberInterface
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config                 $config                       Config object
-	* @param \phpbb\template\template             $template                     Template builder
-	* @param string                               $table_prefix                 prefix for phpBB db tables
-	* @param \phpbb\user                          $user                         User object
+	* @param \phpbb\config\config                       $config                       Config object
+	* @param \phpbb\template\template                   $template                     Template builder
+	* @param string                                     $table_prefix                 prefix for phpBB db tables
+	* @param \phpbb\user                                $user                         User object
+	* @param \phpbb\controller\helper $helper           $helper                       Controller helper
+	* @param \replyPUSH\replybyemail\helper\utility     $utility                      Reply By Email utility helper
 	* @access public
 	*/
 	function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\controller\helper $helper, \replyPUSH\replybyemail\helper\utility $utility)

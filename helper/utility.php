@@ -67,7 +67,8 @@ class utility
 	* @param \phpbb\auth\auth                     $auth                         Auth object
 	* @param \phpbb\config\config                 $config                       Config object
 	* @param \phpbb\db\driver\factory             $db                           Database factory object
-	* @param \phpbb\request\request               $request                      Request Object
+	* @param \phpbb\request\request               $request                      Request object
+	* @param \phpbb\cache\service                 $cache                        Cache object
 	* @param string                               $phpbb_root_path              phpBB root path
 	* @param string                               $php_ext                      phpEx
 	* @access public
@@ -418,7 +419,7 @@ class utility
 			$address = '[::1]';
 		}
 		
-		return parse_url('http://' . $address, PHP_URL_HOST);
+		return parse_url('scheme://' . $address, PHP_URL_HOST);
 	}
 	
 	/**

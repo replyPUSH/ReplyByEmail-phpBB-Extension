@@ -81,7 +81,6 @@ class listener implements EventSubscriberInterface
 			'core.posting_modify_submit_post_after'  => 'submit_post',
 			'core.submit_pm_after'                   => 'submit_post',
 			'core.user_setup'                        => 'load_language',
-			'core.adm_page_header'                   => 'set_up',
 		);
 	}
 
@@ -122,28 +121,4 @@ class listener implements EventSubscriberInterface
 		$event['lang_set_ext'] = $lang_set_ext;
 	}
 
-	/**
-	* Reply By Email setup
-	*
-	* Inform admin if not yet set up
-	*
-	* @param phpbb\event\data  $event
-	*/
-	public function set_up($event)
-	{
-		if ($this->auth->acl_get('a_board'))
-		{
-			// link jump to settings
-			$url = generate_board_url().'/'.append_sid("{$this->phpbb_admin_path}index.{$this->php_ext}", "i=acp_board&amp;mode=email#rp_settings", true, $this->user->session_id);
-
-			// if missing credentials display message
-			if(!$this->config['reply_push_dismiss_msg'] && !$this->utility->credentials())
-			{
-				$this->template->assign_var('REPLY_PUSH_SETUP', true);
-				$this->template->assign_var('REPLY_PUSH_SETUP_MSG_DISMISS', $this->user->lang('REPLY_PUSH_SETUP_MSG_DISMISS'));
-				$this->template->assign_var('REPLY_PUSH_SETUP_DISMISS_URL', $this->helper->route('replybyemail_dismiss_setup'));
-				$this->template->assign_var('REPLY_PUSH_SETUP_MSG', $this->user->lang('REPLY_PUSH_SETUP_MSG',$url));
-			}
-		}
-	}
 }
