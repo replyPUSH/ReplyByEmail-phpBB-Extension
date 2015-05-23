@@ -138,7 +138,6 @@ class notify_controller
 	*/
 	public function process_incoming_notification($uri)
 	{
-
 		// spoofed
 		if (!$this->utility->check_uri($uri))
 		{
@@ -146,7 +145,7 @@ class notify_controller
 		}
 		
 		$notification = $this->utility->request->get_super_global(\phpbb\request\request_interface::POST);
-
+		
 		if (empty($notification))
 		{
 			return $this->leave(); // do nothing.

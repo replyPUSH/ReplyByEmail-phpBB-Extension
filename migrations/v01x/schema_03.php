@@ -37,6 +37,7 @@ class schema_03 extends \phpbb\db\migration\migration
 	public function revert_data()
 	{
 		return array(
+			array('config.remove', array('reply_push_dismiss_msg')), 
 			array('config.remove', array('reply_push_notify_uri')), 
 			array('config.remove', array('reply_push_account_no')), 
 			array('config.remove', array('reply_push_secret_id')), 

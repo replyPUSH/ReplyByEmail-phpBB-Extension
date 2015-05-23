@@ -42,7 +42,7 @@ $lang = array_merge($lang, array(
 <br>
 <br>
 <u>tips:</u><br>
-If you see <span class="reply_push_uri_check reply_push_uri_not_found"></span> next to the url that means the url cannot be accessed and it will not work.
+If you see {NOT_FOUND_IMG} next to the url that means the url cannot be accessed and it will not work.
 It is down to server rules to ensure that urls are correctly routed.<br>
 <br>
 In nginx you need to make sure the <code>app.php/[someapp]</code> is open.

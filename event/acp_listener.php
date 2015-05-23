@@ -79,7 +79,7 @@ class acp_listener implements EventSubscriberInterface
 	* Display not public message
 	*/
 	public function not_public()
-	{
+	{        
 		return 
 			'<div class="errorbox" style="clear: none;">' . $this->user->lang['REPLY_PUSH_PUBLIC_REACH'] . '</div>';
 	}
@@ -94,10 +94,18 @@ class acp_listener implements EventSubscriberInterface
 	*/
 	public function uri_boxes($key)
 	{
-		$url = $this->helper->route('replybyemail_notify', array('uri' => $key), true, null, UrlGeneratorInterface::ABSOLUTE_URL);
+		$url      = $this->helper->route('replybyemail_notify', array('uri' => $key), true, null, UrlGeneratorInterface::ABSOLUTE_URL);
+		$ping_url = $this->helper->route('replybyemail_notify_ping', array('uri' => $key), true, null, UrlGeneratorInterface::ABSOLUTE_URL);
+		$bord_url = generate_board_url();
+		
+		$is_found = $this->utility->is_ok($ping_url);
+		$is_found_img  = '<img style="vertical-align:middle;margin:0 4px;" src="' . $bord_url . '/ext/replyPUSH/replybyemail/adm/style/images/' . ($is_found ? '' : 'not_') . 'found.gif" />';
+		$not_found_img = '<img style="vertical-align:middle;margin:0 4px;" src="' . $bord_url . '/ext/replyPUSH/replybyemail/adm/style/images/not_found.gif" />';
+
 		return
-			'<input class="reply_push_uri" type="text" value="'. $url.'" readonly="readonly" size="80">'.
-			$this->user->lang['REPLY_PUSH_URI_BLURB'];
+			'<input class="reply_push_uri" type="text" value="' . $url. '" readonly="readonly" size="80">' .
+			$is_found_img .
+			str_replace('{NOT_FOUND_IMG}', $not_found_img, $this->user->lang['REPLY_PUSH_URI_BLURB']);
 	}
 
 	/**
@@ -148,8 +156,6 @@ class acp_listener implements EventSubscriberInterface
 			$display_vars['vars']['legend'.$x] =  'ACP_SUBMIT_CHANGES';
 
 			$event['display_vars'] = $display_vars;
-
-			$this->template->assign_vars(array('IN_REPLY_BY_EMAIL_SETTINGS' => true));
 			$this->validate_reply_push = true;
 		}
 	}

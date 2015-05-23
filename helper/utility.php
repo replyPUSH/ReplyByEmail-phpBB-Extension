@@ -95,6 +95,7 @@ class utility
 		$url = generate_board_url() . $url;
 		$ch = curl_init(); 
 		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
 		
 		$cookies = $this->request->get_super_global(self::COOKIE_REQ); 
@@ -111,6 +112,17 @@ class utility
 		$response = curl_exec($ch);
 		curl_close($ch);
 		return $response;
+	}
+	
+	public function is_ok($url)
+	{
+		$ch = curl_init(); 
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($ch);
+		curl_close($ch);
+		
+		return $response == 'OK';
 	}
 	
 	/**
@@ -457,26 +469,39 @@ class utility
 	{
 		return sprintf('=?UTF-8?B?%s?= <%s>', base64_encode($name), $email ? $email : $this->service_email());
 	}
+	
+	
+	protected function parse_host($address)
+	{
+		if (strpos($address, '::1') === 0) 
+		{
+			$address = '[::1]';
+		}
+		
+		return parse_url('http://' . $address, PHP_URL_HOST);
+	}
 
 
 	public function can_access_site()
 	{
-		$local = array('127.0.0.1', '::1');
+		$local = array('localhost', '127.0.0.1', '::1', '[::1]');
 		$addresses = array();
 		
 		if (function_exists('gethostbyname')) 
 		{
-			$addresses[] = gethostbyname($this->request->server('HTTP_HOST'));
+			$addresses[] = gethostbyname($this->parse_host($this->request->server('HTTP_HOST')));
 		} else {
-			$addresses[] = $this->request->server('SERVER_ADDR'); 
-			$addresses[] = array_pop(explode(',', $this->request->server('HTTP_X_FORWARDED_FOR')));
-			$addresses[] = $this->request->server('HTTP_X_REAL_IP');
+			$addresses[] = $this->parse_host($this->request->server('SERVER_ADDR')); 
+			$addresses[] = $this->parse_host($this->request->server('LOCAL_ADDR')); 
+			$addresses[] = $this->parse_host(array_pop(explode(',', $this->request->server('HTTP_X_FORWARDED_FOR'))));
+			$addresses[] = $this->parse_host($this->request->server('HTTP_X_REAL_IP'));
 		}
 
 		$access = false;
-
+		
 		foreach ($addresses as $address)
 		{
+
 			$access = $address && !in_array($address, $local);
 			
 			if ($access)
