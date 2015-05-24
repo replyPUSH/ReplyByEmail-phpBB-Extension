@@ -17,7 +17,7 @@ class ext extends \phpbb\extension\base
 	*
 	* @return bool
 	*/
-	public function  is_enableable()
+	public function is_enableable()
 	{
 		return 
 			function_exists('curl_init') 

@@ -442,8 +442,6 @@ class notify_controller
 		);
 
 		$response = $this->utility->post_request("posting.{$this->php_ext}?mode=reply&f={$forum_id}&t={$topic_id}", $post);
-		
-		$this->send_reply_error($this->user, $response, 'page');
 
 	}
 
@@ -481,7 +479,8 @@ class notify_controller
 			'rp_token'      => $this->utility->hash_method($time . $this->utility->credentials()['account_no'] . $this->config['reply_push_notify_uri'], array('sha1'))
 		);
 
-		$this->utility->post_request("ucp.{$this->php_ext}?i=pm&mode=compose&action=reply&p={$message_id}", $post);
+		$response = $this->utility->post_request("ucp.{$this->php_ext}?i=pm&mode=compose&action=reply&p={$message_id}", $post);
+		
 	}
 
 	/**

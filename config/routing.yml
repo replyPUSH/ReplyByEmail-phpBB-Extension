@@ -5,7 +5,3 @@ replybyemail_notify_ping:
 replybyemail_notify:
     path: /replypush/{uri}
     defaults: { _controller: replyPUSH.replybyemail.notify_controller:process_incoming_notification }
-
-replybyemail_dismiss_setup:
-    path: /replypush/setup/dismiss
-    defaults: { _controller: replyPUSH.replybyemail.notify_controller:dismiss_setup }
