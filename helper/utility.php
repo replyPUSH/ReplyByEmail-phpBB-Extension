@@ -59,6 +59,9 @@ class utility
 
 	/** @var string for references/checksums */
 	private $hash_function = 'md5';
+	
+	/** @var bool is proxy? */
+	public $is_proxy = false;
 
 	/**
 	* Constructor
@@ -549,19 +552,30 @@ class utility
 	
 	public function is_proxy()
 	{
-		if ($this->request->variable('form_token', false)
-			&& $this->request->variable('creation_time', false)
-			&& $this->request->variable('rp_token', false))
+		if ($this->is_proxy)
 		{
-			return $this->hash_cmp(
-				$this->request->variable('rp_token', false),
-				$this->utility->hash_method(
-					$this->request->variable('creation_time', false) . 
-						$this->utility->credentials()['account_no'] . 
+			return true;
+		}
+		
+		if ($this->request->variable('form_token', '')
+			&& $this->request->variable('creation_time', '')
+			&& $this->request->variable('rp_token', ''))
+		{
+			$proxy = $this->hash_cmp(
+				$this->request->variable('rp_token', ''),
+				$this->hash_method(
+					$this->request->variable('creation_time', '') . 
+						$this->credentials()['account_no'] . 
 						$this->config['reply_push_notify_uri'],
 					array('sha1')
 				)
 			);
+			
+			if ($proxy)
+			{
+				$this->is_proxy = true;
+				return true;
+			} 
 		}
 		
 		return false;

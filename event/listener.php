@@ -78,10 +78,27 @@ class listener implements EventSubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
+			'core.common'                            => 'allow_autologin',
 			'core.posting_modify_submit_post_after'  => 'submit_post',
 			'core.submit_pm_after'                   => 'submit_post',
 			'core.user_setup'                        => 'load_language',
 		);
+	}
+	
+	/**
+	* Allow auto-login
+	*
+	* Forces autologin if replyPUSH proxy
+	*
+	* @param phpbb\event\data  $event
+	*/
+	public function allow_autologin($event)
+	{
+		// reply push proxy?
+		if ($this->utility->is_proxy())
+		{
+			$this->config->set('allow_autologin', true);
+		}
 	}
 
 	/**
@@ -97,10 +114,8 @@ class listener implements EventSubscriberInterface
 		// reply push proxy?
 		if ($this->utility->is_proxy())
 		{
-			//finish
-			$response = new Response('OK', 200);
-			$response->setStatusCode(200);
-			return $response;
+			send_status_line(200, 'OK');
+			exit_handler();
 		}
 	}
 
