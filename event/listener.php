@@ -51,6 +51,7 @@ class listener implements EventSubscriberInterface
 	* @param \phpbb\auth\auth                           $auth                         Auth object
 	* @param \replyPUSH\replybyemail\helper\utility     $utility                      Reply By Email utility helper
 	* @param \phpbb\symfony_request                     $request                      Symfony request object
+	* @param \phpbb\controller\helper $helper           $helper                       Controller helper
 	* @param string                                     $phpbb_root_path              phpBB root path
 	* @param string                                     $php_ext                      phpEx
 	* @access public
@@ -88,13 +89,14 @@ class listener implements EventSubscriberInterface
 	/**
 	* Allow auto-login
 	*
-	* Forces autologin if replyPUSH proxy
-	*
+	* Forces autologin if posting
+	* with Reply by Email
+	* 
 	* @param phpbb\event\data  $event
 	*/
 	public function allow_autologin($event)
 	{
-		// reply push proxy?
+		// replyPUSH proxy?
 		if ($this->utility->is_proxy())
 		{
 			$this->config->set('allow_autologin', true);
@@ -111,7 +113,7 @@ class listener implements EventSubscriberInterface
 	*/
 	public function submit_post($event)
 	{
-		// reply push proxy?
+		// replyPUSH proxy?
 		if ($this->utility->is_proxy())
 		{
 			send_status_line(200, 'OK');

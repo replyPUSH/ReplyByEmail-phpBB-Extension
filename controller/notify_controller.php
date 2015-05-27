@@ -442,7 +442,7 @@ class notify_controller
 		);
 
 		$response = $this->utility->post_request("posting.{$this->php_ext}?mode=reply&f={$forum_id}&t={$topic_id}", $post);
-
+		//$this->post_process();
 	}
 
 	/**
@@ -480,7 +480,31 @@ class notify_controller
 		);
 
 		$response = $this->utility->post_request("ucp.{$this->php_ext}?i=pm&mode=compose&action=reply&p={$message_id}", $post);
+		$this->post_process();
 		
+	}
+	
+	/**
+	* Post process
+	*
+	* Stuff that need to be done after post request
+	* 
+	* @return null
+	*/
+
+	protected function post_process()
+	{
+		// trigger proccess of notification queue
+		
+		// old school required
+		if (!class_exists('queue'))
+		{
+			require $this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext;
+		}
+		
+		$queue = new \queue();
+		$queue->queue();
+		$queue->process();  
 	}
 
 	/**

@@ -27,7 +27,7 @@ class reply_notification extends email
 	protected $utility;
 
 	/** @var notifications specific to posts */
-	protected $post_types = array('notification.type.bookmark','notification.type.quote','notification.type.post');
+	protected $post_types = array('notification.type.bookmark', 'notification.type.quote', 'notification.type.post');
 
 	/** @var stash for notification ids */
 	protected $notified_ids = array();
