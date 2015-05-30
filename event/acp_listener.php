@@ -96,8 +96,8 @@ class acp_listener implements EventSubscriberInterface
 	*/
 	public function uri_boxes($key)
 	{
-		$url      = $this->helper->route('replybyemail_notify', array('uri' => $key), true, null, UrlGeneratorInterface::ABSOLUTE_URL);
-		$ping_url = $this->helper->route('replybyemail_notify_ping', array('uri' => $key), true, null, UrlGeneratorInterface::ABSOLUTE_URL);
+		$url      = $this->helper->route('replyPUSH_replybyemail_notify', array('uri' => $key), true, null, UrlGeneratorInterface::ABSOLUTE_URL);
+		$ping_url = $this->helper->route('replyPUSH_replybyemail_notify_ping', array('uri' => $key), true, null, UrlGeneratorInterface::ABSOLUTE_URL);
 		$bord_url = generate_board_url();
 		
 		$is_found = $this->utility->is_ok($ping_url);

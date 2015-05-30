@@ -1,7 +1,7 @@
-replybyemail_notify_ping:
+replyPUSH_replybyemail_notify_ping:
     path: /replypush/ping/{uri}
     defaults: { _controller: replyPUSH.replybyemail.notify_controller:ping }
 
-replybyemail_notify:
+replyPUSH_replybyemail_notify:
     path: /replypush/{uri}
     defaults: { _controller: replyPUSH.replybyemail.notify_controller:process_incoming_notification }
