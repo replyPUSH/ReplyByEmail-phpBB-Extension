@@ -31,22 +31,9 @@ and the same for PMs.
 
 ## Installation
 
-Either grab the latest version from 
-
-    [Reply By Email CBD Listing](https://www.phpbb.com/customise/db/extension/reply_by_email/)
+Grab the latest stable version from the [Reply By Email phpBB CBD page](https://www.phpbb.com/customise/db/extension/reply_by_email/)
 
 Unzip and move the folder to phpBB/ext where phpBB is your phpBB directory
-
-__OR__
-
-Clone into phpBB/replyPUSH/replybyemail:
-
-    git clone https://github.com/replyPUSH/ReplyByEmail-phpBB-Extension.git phpBB/ext/replyPUSH/replybyemail
-    
-Check out the latest stable version using stable.php
-    
-    cd phpBB/ext/replyPUSH
-    php stable.php
     
 ## Enable
     

@@ -24,9 +24,9 @@
             "phpbb/phpbb": "3.1.*"
         },
         "version-check": {
-            "host": "github.com",
-            "directory": "/replyPUSH/ReplyByEmail-phpBB-Extension/master",
-            "filename": "versioncheck.json"
+            "host": "www.phpbb.com",
+            "directory": "/customise/db/extension/reply_by_email",
+            "filename": "version_check"
         }
     }
 }
