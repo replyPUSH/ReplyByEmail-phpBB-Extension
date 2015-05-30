@@ -31,15 +31,30 @@ and the same for PMs.
 
 ## Installation
 
+Either grab the latest version from 
+
+    [Reply By Email CBD Listing](https://www.phpbb.com/customise/db/extension/reply_by_email/)
+
+Unzip and move the folder to phpBB/ext where phpBB is your phpBB directory
+
+__OR__
+
 Clone into phpBB/replyPUSH/replybyemail:
 
     git clone https://github.com/replyPUSH/ReplyByEmail-phpBB-Extension.git phpBB/ext/replyPUSH/replybyemail
-
+    
+Check out the latest stable version using stable.php
+    
+    cd phpBB/ext/replyPUSH
+    php stable.php
+    
+## Enable
+    
 Go to "ACP" > "Customise" > "Extensions" and enable the "Reply By Email" extension.
 
 ## Setup
 
-Go to "ACP" > "General" > "Email settings" scroll to "Reply by Email Settings" enable and fill it out
+Go to "ACP" > "General" > "Email settings" scroll to "Reply by Email Settings", enable and fill it out
 
 Your credentials will be on your replyPUSH [profile](http://replypush.com/profile)
 
