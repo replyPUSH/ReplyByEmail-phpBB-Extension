@@ -179,7 +179,7 @@ class reply_notification extends email
 					// save current message id as ref
 					$this->rp_model->save_ref($ref_hash, $message_id);
 
-					$this->messenger->replyto($this->utility->encode_email_name($this->user->lang('REPLY_PUSH_FROM_NAME',$user['username'], $this->config['server_name'])));
+					$this->messenger->replyto($this->utility->encode_email_name($this->user->lang('REPLY_PUSH_FROM_NAME', $user['username'], $this->config['server_name'])));
 
 					if ($this->config['board_contact'] == $user['user_email'])
 					{
@@ -252,28 +252,28 @@ class reply_notification extends email
 	public function collect_board_notifications($notification)
 	{
 		// collect post notifications
-		if(in_array($notification->get_type(), $this->post_types))
+		if (in_array($notification->get_type(), $this->post_types))
 		{
-			if(!in_array($notification->user_id, $this->notified_posts['users']))
+			if (!in_array($notification->user_id, $this->notified_posts['users']))
 			{
 				$this->notified_posts['users'][] = $notification->user_id;
 			}
 
-			if(!in_array($notification->item_parent_id, $this->notified_posts['topics']))
+			if (!in_array($notification->item_parent_id, $this->notified_posts['topics']))
 			{
 				$this->notified_posts['topics'][] = $notification->item_parent_id;
 			}
 		}
 
 		// collect topic notifications
-		if('notification.type.topic' == $notification->get_type())
+		if ('notification.type.topic' == $notification->get_type())
 		{
-			if(!in_array($notification->user_id, $this->notified_topics['users']))
+			if (!in_array($notification->user_id, $this->notified_topics['users']))
 			{
 				$this->notified_topics['users'][] = $notification->user_id;
 			}
 
-			if(!in_array($notification->item_parent_id, $this->notified_topics['forums']))
+			if (!in_array($notification->item_parent_id, $this->notified_topics['forums']))
 			{
 				$this->notified_topics['forums'][] = $notification->item_parent_id;
 			}
@@ -290,9 +290,9 @@ class reply_notification extends email
 	*/
 	public function ease_watch_notification_restrictions()
 	{
-		if(!empty($this->notified_posts['users']))
+		if (!empty($this->notified_posts['users']))
 		{
-			$sql = "UPDATE ".TOPICS_WATCH_TABLE .
+			$sql = "UPDATE " . TOPICS_WATCH_TABLE .
 				" SET notify_status = " . NOTIFY_YES .
 				//" , notifiy_ease = notifiy_ease + 1" .
 				" WHERE " . $this->db->sql_in_set('user_id', $this->notified_posts['users']) .
@@ -300,9 +300,9 @@ class reply_notification extends email
 			$this->db->sql_query($sql);
 		}
 
-		if(!empty($this->notified_topics['users']))
+		if (!empty($this->notified_topics['users']))
 		{
-			$sql = "UPDATE ".FORUMS_WATCH_TABLE .
+			$sql = "UPDATE " . FORUMS_WATCH_TABLE .
 				" SET notify_status = " . NOTIFY_YES .
 				//" , notifiy_ease = notifiy_ease + 1" .
 				" WHERE " . $this->db->sql_in_set('user_id', $this->notified_topics['users']) .

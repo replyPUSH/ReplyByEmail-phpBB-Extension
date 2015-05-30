@@ -198,7 +198,7 @@ class utility
 	*/
 	public function get_user_id_by_email($email)
 	{
-		$sql = "SELECT user_id FROM " . USERS_TABLE . " WHERE user_email = '".$this->db->sql_escape($email)."'";
+		$sql = "SELECT user_id FROM " . USERS_TABLE . " WHERE user_email = '" . $this->db->sql_escape($email) . "'";
 
 		$result = $this->db->sql_query($sql);
 		$member = $this->db->sql_fetchrow($result);
@@ -242,14 +242,14 @@ class utility
 	*/
 	public function update_notify_status($forum_id, $topic_id)
 	{
-		$sql = "UPDATE ".FORUMS_WATCH_TABLE .
+		$sql = "UPDATE " . FORUMS_WATCH_TABLE .
 			" SET notify_status = " . NOTIFY_YES .
 			" WHERE forum_id = " . (int) $forum_id .
 			" AND user_id = " . (int) $this->user->data['user_id'];
 
 		$this->db->sql_query($sql);
 
-		$sql = "UPDATE ".TOPICS_WATCH_TABLE .
+		$sql = "UPDATE " . TOPICS_WATCH_TABLE .
 			" SET notify_status = " . NOTIFY_YES .
 			" WHERE topic_id = " . (int) $topic_id .
 			" AND user_id = " . (int) $this->user->data['user_id'];
@@ -348,7 +348,7 @@ class utility
 		$algos = hash_algos();
 		foreach($try as $func)
 		{
-			if(in_array($func, $algos))
+			if (in_array($func, $algos))
 			{
 				$hash_function = $func;
 				break;
@@ -366,7 +366,7 @@ class utility
 	*/
 	public function subject_stripped($subject)
 	{
-		return preg_replace('`^Re:\s*`','',$subject);
+		return preg_replace('`^Re:\s*`', '', $subject);
 	}
 
 	/**

@@ -39,7 +39,7 @@ Go to "ACP" > "Customise" > "Extensions" and enable the "Reply By Email" extensi
 
 ## Setup
 
-Go to "ACP" > "General" > "Email settings" scroll to "Reply by Email Settings" and fill it out
+Go to "ACP" > "General" > "Email settings" scroll to "Reply by Email Settings" enable and fill it out
 
 Your credentials will be on your replyPUSH [profile](http://replypush.com/profile)
 

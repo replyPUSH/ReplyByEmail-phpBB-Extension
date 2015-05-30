@@ -219,7 +219,7 @@ class notify_controller
 			$type = $this->notification_types[$type_id];
 
 			// valid function name
-			$type_process = 'process_'.preg_replace('`notification\.type\.|[^a-z_]`', '', $type).'_notification';
+			$type_process = 'process_' . preg_replace('`notification\.type\.|[^a-z_]`', '', $type) . '_notification';
 			
 			// better than switch statement
 			if (is_callable(array($this, $type_process)))
@@ -261,10 +261,10 @@ class notify_controller
 	*/
 	protected function process_topic_notification($from_user_id, $topic_id, $forum_id, $message, $in_reply_to)
 	{
-		$sql = "SELECT topic_title FROM ". TOPICS_TABLE.
-				" WHERE topic_id = ". (int) $topic_id .
-				" AND forum_id = ". (int) $forum_id .
-				" AND topic_poster = ". (int) $from_user_id;
+		$sql = "SELECT topic_title FROM " . TOPICS_TABLE .
+				" WHERE topic_id = " . (int) $topic_id .
+				" AND forum_id = " . (int) $forum_id .
+				" AND topic_poster = " . (int) $from_user_id;
 
 		$result = $this->db->sql_query($sql);
 
@@ -298,11 +298,11 @@ class notify_controller
 
 	protected function process_post_notification($from_user_id, $post_id, $topic_id, $message)
 	{
-		$sql = "SELECT p.post_subject, t.forum_id FROM ". POSTS_TABLE. " p, " . TOPICS_TABLE . " t" .
+		$sql = "SELECT p.post_subject, t.forum_id FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t" .
 				" WHERE p.topic_id = t.topic_id" .
-				" AND p.post_id = ". (int) $post_id .
-				" AND p.topic_id = ". (int) $topic_id .
-				" AND p.poster_id = ". (int) $from_user_id;
+				" AND p.post_id = " . (int) $post_id .
+				" AND p.topic_id = " . (int) $topic_id .
+				" AND p.poster_id = " . (int) $from_user_id;
 
 		$result = $this->db->sql_query($sql);
 
@@ -370,11 +370,11 @@ class notify_controller
 
 	protected function process_pm_notification($from_user_id, $message_id, $content_id, $message)
 	{
-		$sql = "SELECT pm.message_subject, pmt.user_id FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TO_TABLE . " pmt".
+		$sql = "SELECT pm.message_subject, pmt.user_id FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TO_TABLE . " pmt" .
 				" WHERE pm.msg_id = pmt.msg_id" .
-				" AND pm.msg_id = ". (int) $message_id .
-				" AND pm.author_id = ". (int) $from_user_id.
-				" AND pmt.user_id <> ". (int) $this->user->data['user_id'];
+				" AND pm.msg_id = " . (int) $message_id .
+				" AND pm.author_id = " . (int) $from_user_id.
+				" AND pmt.user_id <> " . (int) $this->user->data['user_id'];
 
 		$result = $this->db->sql_query($sql);
 
@@ -463,7 +463,7 @@ class notify_controller
 			$to = array($to);
 		}
 
-		$address_list = array('u' => array_combine($to, array_fill(0,sizeof($to), 'to')));
+		$address_list = array('u' => array_combine($to, array_fill(0, sizeof($to), 'to')));
 
 		$time = strtotime('-10 seconds');
 
@@ -518,7 +518,7 @@ class notify_controller
 
 	protected function process_incoming_error($error, $user, $subject, $ref='')
 	{
-		$error_msg = isset($user->lang['REPLY_PUSH_ERROR_'.strtoupper($error)]) ? $user->lang['REPLY_PUSH_ERROR_'.strtoupper($error)] : $user->lang['REPLY_PUSH_ERROR_GENERAL'];
+		$error_msg = isset($user->lang['REPLY_PUSH_ERROR_' . strtoupper($error)]) ? $user->lang['REPLY_PUSH_ERROR_' . strtoupper($error)] : $user->lang['REPLY_PUSH_ERROR_GENERAL'];
 		if ($error_msg)
 		{
 			$this->send_reply_error($user, $error_msg, $subject);
@@ -551,8 +551,8 @@ class notify_controller
 
 		if ($ref)
 		{
-			$this->messenger->header("References","{$ref}");
-			$this->messenger->header("In-Reply-To","{$ref}");
+			$this->messenger->header("References", "{$ref}");
+			$this->messenger->header("In-Reply-To", "{$ref}");
 		}
 
 		$this->messenger->replyto($this->utility->encode_email_name($this->user->lang('REPLY_PUSH_FROM_NAME', $user['username'], $this->config['server_name'])));

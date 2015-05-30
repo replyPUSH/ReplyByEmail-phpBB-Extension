@@ -133,13 +133,13 @@ class acp_listener implements EventSubscriberInterface
 			while (true)
 			{
 				$x++;
-				if (!isset($display_vars['vars']['legend'.$x]))
+				if (!isset($display_vars['vars']['legend' . $x]))
 				{
 					break;
 				}
 			}
 
-			$display_vars['vars']['legend'.($x-1)] = 'REPLY_BY_EMAIL_SETTINGS';
+			$display_vars['vars']['legend' . ($x-1)] = 'REPLY_BY_EMAIL_SETTINGS';
 		
 			if ($this->utility->can_access_site()) // if public
 			{
@@ -147,7 +147,7 @@ class acp_listener implements EventSubscriberInterface
 				$display_vars['vars']['reply_push_account_no']    = array('lang' => 'REPLY_PUSH_ACCOUNT_NO', 'validate' => 'reply_push',  'type' => 'text:8:8', 'explain' => true);
 				$display_vars['vars']['reply_push_secret_id']     = array('lang' => 'REPLY_PUSH_SECRET_ID', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
 				$display_vars['vars']['reply_push_secret_key']    = array('lang' => 'REPLY_PUSH_SECRET_KEY', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
-				$display_vars['vars']['reply_push_uri']           = array('lang' => 'REPLY_PUSH_URI', 'type' => 'custom', 'function' => array($this, 'uri_boxes'), 'params' => array($this->config['reply_push_notify_uri']),'explain' => true);
+				$display_vars['vars']['reply_push_uri']           = array('lang' => 'REPLY_PUSH_URI', 'type' => 'custom', 'function' => array($this, 'uri_boxes'), 'params' => array($this->config['reply_push_notify_uri']), 'explain' => true);
 			}
 			else
 			{
@@ -155,7 +155,7 @@ class acp_listener implements EventSubscriberInterface
 			}
 			
 
-			$display_vars['vars']['legend'.$x] =  'ACP_SUBMIT_CHANGES';
+			$display_vars['vars']['legend' . $x] =  'ACP_SUBMIT_CHANGES';
 
 			$event['display_vars'] = $display_vars;
 			$this->validate_reply_push = true;
@@ -215,8 +215,8 @@ class acp_listener implements EventSubscriberInterface
 			}
 			catch(ReplyPushError $e)
 			{
-				$item = strtoupper(preg_replace('`([a-z])([A-Z])`','$1_$2', $e->getItem()));
-				$error[] = $this->user->lang['REPLY_PUSH_'.$item.'_INVALID'];
+				$item = strtoupper(preg_replace('`([a-z])([A-Z])`', '$1_$2', $e->getItem()));
+				$error[] = $this->user->lang['REPLY_PUSH_' . $item . '_INVALID'];
 			}
 		}
 

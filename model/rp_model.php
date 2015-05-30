@@ -24,7 +24,7 @@ class rp_model
 
 	/** @var array[string]string notification types that will be collated under a parent type */
 	protected $collate_types  = array(
-		'notification.type.topic' => array('notification.type.bookmark','notification.type.quote','notification.type.post'),
+		'notification.type.topic' => array('notification.type.bookmark', 'notification.type.quote', 'notification.type.post'),
 		'notification.type.pm'    => array('notification.type.pm')
 	);
 
@@ -65,13 +65,13 @@ class rp_model
 	*/
 	public function get_ref($ref_hash)
 	{
-		if (array_key_exists($ref_hash,self::$ref))
+		if (array_key_exists($ref_hash, self::$ref))
 		{
 			return self::$ref[$ref_hash];
 		}
 
-		$sql = "SELECT ref FROM {$this->table_prefix}reply_push_ref".
-				" WHERE ref_hash = '". $this->db->sql_escape($ref_hash). "'";
+		$sql = "SELECT ref FROM {$this->table_prefix}reply_push_ref" .
+				" WHERE ref_hash = '" . $this->db->sql_escape($ref_hash). "'";
 
 		$result = $this->db->sql_query($sql);
 
@@ -107,7 +107,7 @@ class rp_model
 						'ref' => $ref
 					)
 				).
-				" WHERE ref_hash = '". $this->db->sql_escape($ref_hash). "'";
+				" WHERE ref_hash = '" . $this->db->sql_escape($ref_hash). "'";
 
 			$result = $this->db->sql_query($sql);
 
@@ -136,8 +136,8 @@ class rp_model
 	*/
 	public function get_transaction($msg_id)
 	{
-		$sql = "SELECT message_id FROM {$this->table_prefix}reply_push_log".
-				" WHERE message_id = ". (int) $msg_id;
+		$sql = "SELECT message_id FROM {$this->table_prefix}reply_push_log" .
+				" WHERE message_id = " . (int) $msg_id;
 
 		$result = $this->db->sql_query($sql);
 
@@ -174,7 +174,8 @@ class rp_model
 	*
 	* @return  array[int]string
 	*/
-	public function get_notification_types(){
+	public function get_notification_types()
+	{
 
 		if ($this->notification_types)
 		{
@@ -231,7 +232,7 @@ class rp_model
 			}
 		}
 
-		return $this->utility->hash_method($type.$record_id.$email);
+		return $this->utility->hash_method($type . $record_id . $email);
 	}
 
 	/**
