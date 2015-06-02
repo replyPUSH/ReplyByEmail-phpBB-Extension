@@ -476,6 +476,23 @@ class utility
 	}
 	
 	/**
+	* Proxy Init 
+	*
+	* Setup up cURL
+	*
+	* @param    string  $url
+	*/
+	
+	public function proxy_init($url)
+	{
+		$ch = curl_init(); 
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_USERAGENT, 'phpBB replyPUSH Proxy/0.1');
+		return $ch;
+	}
+	
+	/**
 	* Post request
 	*
 	* Post back form
@@ -487,9 +504,7 @@ class utility
 	public function post_request($url, $post_data)
 	{
 		$url = generate_board_url() . '/'. ltrim($url, '/');
-		$ch = curl_init(); 
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$ch = $this->proxy_init($url);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
 		
 		$cookies = $this->request->get_super_global(self::COOKIE_REQ); 
@@ -528,9 +543,7 @@ class utility
 			return $is_ok_stash[$key];
 		}
 		
-		$ch = curl_init(); 
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$ch = $this->proxy_init($url);
 		$response = curl_exec($ch);
 		curl_close($ch);
 		
