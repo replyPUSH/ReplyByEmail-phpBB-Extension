@@ -438,7 +438,7 @@ class notify_controller
 			'creation_time' => $time,
 			'lastclick'     => $time,
 			'form_token'    => $this->utility->hash_method($time . $this->user->data['user_form_salt'] . 'posting', array('sha1')),
-			'rp_token'      => $this->utility->hash_method($time . $this->utility->credentials()['account_no'] . $this->config['reply_push_notify_uri'], array('sha1'))
+			'rp_token'      => $this->utility->hash_method($time . $this->utility->credentials('account_no') . $this->config['reply_push_notify_uri'], array('sha1'))
 		);
 
 		$response = $this->utility->post_request("posting.{$this->php_ext}?mode=reply&f={$forum_id}&t={$topic_id}", $post);
@@ -476,7 +476,7 @@ class notify_controller
 			'lastclick'     => $time,
 			'address_list'  => $address_list,
 			'form_token'    => $this->utility->hash_method($time . $this->user->data['user_form_salt'] . 'ucp_pm_compose', array('sha1')),
-			'rp_token'      => $this->utility->hash_method($time . $this->utility->credentials()['account_no'] . $this->config['reply_push_notify_uri'], array('sha1'))
+			'rp_token'      => $this->utility->hash_method($time . $this->utility->credentials('account_no') . $this->config['reply_push_notify_uri'], array('sha1'))
 		);
 
 		$response = $this->utility->post_request("ucp.{$this->php_ext}?i=pm&mode=compose&action=reply&p={$message_id}", $post);

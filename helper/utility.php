@@ -124,13 +124,18 @@ class utility
 	*
 	* @return  array[string]|bool
 	*/
-	public function credentials()
+	public function credentials($key = null)
 	{
 		$prefix = 'reply_push_';
 
 		if ($this->credentials !== null)
 		{
-			return $this->credentials;
+            if (is_string($key)) {
+                return $this->credentials[$key];
+            } else {
+                return $this->credentials;
+            } 
+			
 		}
 
 		if (!isset($this->config[$prefix . 'enabled'])
@@ -171,8 +176,14 @@ class utility
 
 			throw $e;
 		}
+        
+        $this->credentials = $creds;
 
-		return $this->credentials = $creds;
+        if (is_string($key)) {
+            return $this->credentials[$key];
+        } else {
+            return $this->credentials;
+        } 
 	}
 
 	/**
@@ -578,7 +589,7 @@ class utility
 				$this->request->variable('rp_token', ''),
 				$this->hash_method(
 					$this->request->variable('creation_time', '') . 
-						$this->credentials()['account_no'] . 
+						$this->credentials('account_no') . 
 						$this->config['reply_push_notify_uri'],
 					array('sha1')
 				)
