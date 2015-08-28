@@ -79,7 +79,6 @@ class notify_controller
 	* @param   string   $code HTTP status code
 	* @return  Symfony\Component\HttpFoundation\Response
 	*/
-
 	public function leave($message = '', $code = 200)
 	{
 		$response = new Response($message, $code);
@@ -95,7 +94,6 @@ class notify_controller
 	* @param string $denied_msg message to output on exit
 	* @return  Symfony\Component\HttpFoundation\Response
 	*/
-
 	protected function denied($denied_msg = '')
 	{
 		return $this->leave($denied_msg, 403);
@@ -293,7 +291,6 @@ class notify_controller
 	* @param    string $message
 	* @return   null
 	*/
-
 	protected function process_post_notification($from_user_id, $post_id, $topic_id, $message)
 	{
 		$sql = "SELECT p.post_subject, t.forum_id FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t" .
@@ -332,7 +329,6 @@ class notify_controller
 	* @param    string $message
 	* @return   null
 	*/
-
 	protected function process_bookmark_notification($from_user_id, $post_id, $topic_id, $message)
 	{
 		$this->process_post_notification($from_user_id, $post_id, $topic_id, $message);
@@ -349,7 +345,6 @@ class notify_controller
 	* @param    string $message
 	* @return   null
 	*/
-
 	protected function process_quote_notification($from_user_id, $post_id, $topic_id, $message)
 	{
 		$this->process_post_notification($from_user_id, $post_id, $topic_id, $message);
@@ -365,7 +360,6 @@ class notify_controller
 	* @param int    $topic_id
 	* @param string $message
 	*/
-
 	protected function process_pm_notification($from_user_id, $message_id, $content_id, $message)
 	{
 		$sql = "SELECT pm.message_subject, pmt.user_id FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TO_TABLE . " pmt" .
@@ -414,7 +408,6 @@ class notify_controller
 	* @param    string $subject
 	* @return   null
 	*/
-
 	protected function process_topic_reply($topic_id, $forum_id, $message, $subject)
 	{
 
@@ -452,7 +445,6 @@ class notify_controller
 	* @param    string|array $to
 	* @return   null
 	*/
-
 	protected function process_pm_reply($message_id, $message, $subject, $to)
 	{
 
@@ -488,7 +480,6 @@ class notify_controller
 	* 
 	* @return null
 	*/
-
 	protected function post_process()
 	{
 		// trigger proccess of notification queue
@@ -512,7 +503,6 @@ class notify_controller
 	* @param string         $subject
 	* @param string         $ref
 	*/
-
 	protected function process_incoming_error($error, $user, $subject, $ref='')
 	{
 		$error_msg = isset($user->lang['REPLY_PUSH_ERROR_' . strtoupper($error)]) ? $user->lang['REPLY_PUSH_ERROR_' . strtoupper($error)] : $user->lang['REPLY_PUSH_ERROR_GENERAL'];
@@ -531,7 +521,6 @@ class notify_controller
 	* @param    string         $ref
 	* @return   null
 	*/
-
 	protected function send_reply_error($user, $error_msg, $subject, $ref='')
 	{
 		$lang = $user->lang;

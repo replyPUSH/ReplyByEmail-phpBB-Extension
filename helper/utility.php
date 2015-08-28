@@ -76,7 +76,6 @@ class utility
 	* @param string                               $php_ext                      phpEx
 	* @access public
 	*/
-
 	function __construct(\phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\factory $db, \phpbb\request\request $request, \phpbb\cache\service $cache, $phpbb_root_path, $php_ext)
 	{
 		$this->user = $user;
@@ -99,7 +98,6 @@ class utility
 	*
 	* @return bool
 	*/
-
 	protected function hash_cmp($a, $b)
 	{
 		if (strlen($a) != strlen($b))
@@ -295,7 +293,6 @@ class utility
 	* @param   string   $content
 	* @return  string
 	*/
-
 	public function pre_format_html_content($content)
 	{
 		return trim(
@@ -413,7 +410,6 @@ class utility
 	* @param   string   $address
 	* @return  string
 	*/
-
 	protected function parse_host($address)
 	{
 		if (strpos($address, '::1') === 0) 
@@ -431,7 +427,6 @@ class utility
 	*
 	* @return  bool
 	*/
-
 	public function can_access_site()
 	{
 		$can_access_site_stash = $this->cache->get('rp_can_access_site');
@@ -481,7 +476,6 @@ class utility
 	*
 	* @param    string  $url
 	*/
-	
 	public function proxy_init($url)
 	{
 		$ch = curl_init(); 
@@ -531,7 +525,6 @@ class utility
 	* @param    string  $url
 	* @return   string
 	*/
-	
 	public function is_ok($url)
 	{
 		$is_ok_stash = $this->cache->get('rp_is_ok');
@@ -561,7 +554,6 @@ class utility
 	*
 	* @return bool
 	*/
-	
 	public function is_proxy()
 	{
 		if ($this->is_proxy)

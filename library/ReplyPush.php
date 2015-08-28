@@ -7,7 +7,6 @@ namespace replyPUSH\replybyemail\library;
  * Custom error used in validation
  * of credentials, data and hash method
  */
-
 class ReplyPushError extends \Exception{
 
 	/**
@@ -29,7 +28,6 @@ class ReplyPushError extends \Exception{
 	 *
 	 * @return string
 	 */
-
 	public function getItem(){
 		return $this->item;
 	}
@@ -44,7 +42,6 @@ class ReplyPushError extends \Exception{
  * Including 56 bytes of data
  * for you own verification
  */
-
 class ReplyPush{
 
    /**
@@ -152,7 +149,6 @@ class ReplyPush{
 	 *
 	 * @return void
 	 */
-
 	protected function createIdentifier($email, $data, $hashMethod){
 
 		if(strlen($data)!=56)
@@ -180,7 +176,6 @@ class ReplyPush{
 	 *
 	 * @return string
 	 */
-
 	protected function hmac($hashMethod){
 		if(function_exists('hash_hmac')){
 			return hash_hmac($hashMethod, $this->securedData, $this->secretKey, true);
@@ -208,7 +203,6 @@ class ReplyPush{
 	 *
 	 * @return bool
 	 */
-
 	public function hashCheck(){
 		return (isset($this->hashCompare)) ? $this->hashCmp($this->securedHash, $this->hashCompare): false;
 	}
@@ -223,7 +217,6 @@ class ReplyPush{
 	 *
 	 * @return bool
 	 */
-
 	protected function hashCmp($a, $b){
 		if (strlen($a) != strlen($b))
 			return FALSE;
@@ -259,7 +252,6 @@ class ReplyPush{
 	 *
 	 * @return bool
 	 */
-
 	public static function isReference($reference){
 		return preg_match('`^<([A-Za-z0-9+/=]{92,})@replypush\.com>$`i', $reference);
 	}

@@ -66,7 +66,6 @@ class acp_listener implements EventSubscriberInterface
 	*
 	* return array[string]string
 	*/
-
 	static public function getSubscribedEvents()
 	{
 		return array(
@@ -169,7 +168,6 @@ class acp_listener implements EventSubscriberInterface
 	*
 	* @param phpbb\event\data  $event
 	*/
-
 	public function replybyemail_config_validate($event)
 	{        
 		if (!$this->validate_reply_push || $this->validation_failed)

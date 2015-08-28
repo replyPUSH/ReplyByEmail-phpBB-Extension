@@ -54,7 +54,6 @@ class reply_notification extends email
 	* @param string                                         $php_ext                      phpEx
 	* @access public
 	*/
-
 	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, \replyPUSH\replybyemail\helper\messenger $messenger, \replyPUSH\replybyemail\model\rp_model $rp_model, \replyPUSH\replybyemail\helper\utility $utility, $phpbb_root_path, $php_ext)
 	{
 		$this->messenger = $messenger;
@@ -246,7 +245,6 @@ class reply_notification extends email
 	* @param    \phpbb\notification\type\base   $notification
 	* @return   null
 	*/
-
 	public function collect_board_notifications($notification)
 	{
 		// collect post notifications
