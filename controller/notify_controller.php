@@ -558,7 +558,7 @@ class notify_controller
 			'USERNAME'  => $user['username'],
 			'MESSAGE'   => $error_msg,
 		));
-
+		
 		$this->messenger->template('error', $user['user_lang'], '', 'replybyemail');
 
 		$this->messenger->use_queue = false;
