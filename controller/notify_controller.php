@@ -480,6 +480,7 @@ class notify_controller
 	* 
 	* @return null
 	*/
+	
 	protected function post_process()
 	{
 		// trigger proccess of notification queue
