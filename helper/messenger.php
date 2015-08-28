@@ -98,7 +98,6 @@ class messenger extends \messenger
 			$template_paths = array(
 				$template_path,
 			);
-
 		}
 		else
 		{

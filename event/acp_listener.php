@@ -235,6 +235,5 @@ class acp_listener implements EventSubscriberInterface
 		$this->config->set('reply_push_secret_key', $cfg_array['reply_push_secret_key']);
 
 		$event['cfg_array'] = $cfg_array;
-
 	}
 }

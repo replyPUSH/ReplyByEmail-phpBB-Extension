@@ -287,7 +287,6 @@ class utility
 		);
 
 		return $message;
-
 	}
 
 	/**
@@ -593,5 +592,4 @@ class utility
 		
 		return false;
 	}
-
 }

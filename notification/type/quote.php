@@ -66,5 +66,4 @@ class quote extends quote_base implements reply_push_interface
 		$this->message = $this->utility->parse_message($type_data);
 		return parent::create_insert_array($type_data, $pre_create_data);
 	}
-
 }

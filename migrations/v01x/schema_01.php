@@ -73,5 +73,4 @@ class schema_01 extends \phpbb\db\migration\migration
 			)
 		);
 	}
-
 }

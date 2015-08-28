@@ -85,7 +85,6 @@ class notify_controller
 		$response = new Response($message, $code);
 		$response->setStatusCode($code);
 		return $response;
-		
 	}
 
 	/**
@@ -235,7 +234,6 @@ class notify_controller
 						$this->utility->pre_format_text_content($notification['content']['text/plain'])
 				);
 			}
-
 		}
 
 		// don't save actual message
@@ -481,7 +479,6 @@ class notify_controller
 
 		$response = $this->utility->post_request("ucp.{$this->php_ext}?i=pm&mode=compose&action=reply&p={$message_id}", $post);
 		$this->post_process();
-		
 	}
 	
 	/**

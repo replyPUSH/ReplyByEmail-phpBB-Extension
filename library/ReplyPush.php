@@ -125,7 +125,6 @@ class ReplyPush{
 				$this->hashCompare = $hashCompare;
 				$this->referenceData = $data;
 			}
-
 		}else{
 			//if only custom bytes prepend accountNo and hashMethod
 			if(strlen($data)==40){
@@ -169,7 +168,6 @@ class ReplyPush{
 		$this->securedData = "{$this->secretID}{$email}{$data}";
 		$this->securedHash = $this->hmac($hashMethod);
 		$this->identifier = base64_encode($data.$this->securedHash);
-
 	}
 
 	/**

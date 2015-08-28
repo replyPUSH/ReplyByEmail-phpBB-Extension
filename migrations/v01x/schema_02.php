@@ -25,7 +25,6 @@ class schema_02 extends \phpbb\db\migration\migration
 		return
 			$this->db_tools->sql_table_exists($this->table_prefix . 'reply_push_ref')
 			&& $this->db_tools->sql_table_exists($this->table_prefix . 'reply_push_log');
-
 	}
 
 	/**
@@ -85,5 +84,4 @@ class schema_02 extends \phpbb\db\migration\migration
 			)
 		);
 	}
-
 }

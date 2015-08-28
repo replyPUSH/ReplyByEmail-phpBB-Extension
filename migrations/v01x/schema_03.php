@@ -44,5 +44,4 @@ class schema_03 extends \phpbb\db\migration\migration
 			array('config.remove', array('reply_push_secret_key')),
 		);
 	}
-	
 }

@@ -198,7 +198,6 @@ class reply_notification extends email
 				), $notification->get_email_template_variables()));
 
 				 $this->messenger->template($template_dir_prefix . $notification->get_email_template(), $user['user_lang']);
-
 			}
 			$this->messenger->send($notify_method);
 		}
@@ -237,7 +236,6 @@ class reply_notification extends email
 				' SET ' . $this->db->sql_build_array('UPDATE', array('message'=>'', 'notification_read' => 1)).
 				' WHERE ' . $this->db->sql_in_set('item_id', $this->notified_ids);
 		$this->db->sql_query($sql);
-
 	}
 
 	/**
@@ -309,7 +307,5 @@ class reply_notification extends email
 				" AND " . $this->db->sql_in_set('forum_id', $this->notified_topics['forums']);
 			$this->db->sql_query($sql);
 		}
-
 	}
-
 }
