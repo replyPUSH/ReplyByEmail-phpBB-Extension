@@ -127,12 +127,11 @@ class utility
 
 		if ($this->credentials !== null)
 		{
-            if (is_string($key)) {
-                return $this->credentials[$key];
-            } else {
-                return $this->credentials;
-            } 
-			
+			if (is_string($key)) {
+				return $this->credentials[$key];
+			} else {
+				return $this->credentials;
+			}
 		}
 
 		if (!isset($this->config[$prefix . 'enabled'])
@@ -173,14 +172,14 @@ class utility
 
 			throw $e;
 		}
-        
-        $this->credentials = $creds;
 
-        if (is_string($key)) {
-            return $this->credentials[$key];
-        } else {
-            return $this->credentials;
-        } 
+		$this->credentials = $creds;
+
+		if (is_string($key)) {
+			return $this->credentials[$key];
+		} else {
+			return $this->credentials;
+		}
 	}
 
 	/**
@@ -578,8 +577,8 @@ class utility
 			$proxy = $this->hash_cmp(
 				$this->request->variable('rp_token', ''),
 				$this->hash_method(
-					$this->request->variable('creation_time', '') . 
-						$this->credentials('account_no') . 
+					$this->request->variable('creation_time', '') .
+						$this->credentials('account_no') .
 						$this->config['reply_push_notify_uri'],
 					array('sha1')
 				)
