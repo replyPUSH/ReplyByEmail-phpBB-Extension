@@ -32,10 +32,10 @@ class acp_listener implements EventSubscriberInterface
 
 	/** @var \phpbb\user $user */
 	protected $user;
-	
+
 	/** @var \phpbb\controller\helper $helper */
 	protected $helper;
-	
+
 	/** @var utility methods */
 	protected $utility;
 
@@ -66,7 +66,6 @@ class acp_listener implements EventSubscriberInterface
 	*
 	* return array[string]string
 	*/
-
 	static public function getSubscribedEvents()
 	{
 		return array(
@@ -74,15 +73,15 @@ class acp_listener implements EventSubscriberInterface
 			'core.validate_config_variable'  => 'replybyemail_config_validate',
 		);
 	}
-	
+
 	/**
 	* Not Public
 	*
 	* Display not public message
 	*/
 	public function not_public()
-	{        
-		return 
+	{
+		return
 			'<div class="errorbox" style="clear: none;">' . $this->user->lang['REPLY_PUSH_PUBLIC_REACH'] . '</div>';
 	}
 
@@ -99,7 +98,7 @@ class acp_listener implements EventSubscriberInterface
 		$url      = $this->helper->route('replyPUSH_replybyemail_notify', array('uri' => $key), true, null, UrlGeneratorInterface::ABSOLUTE_URL);
 		$ping_url = $this->helper->route('replyPUSH_replybyemail_notify_ping', array('uri' => $key), true, null, UrlGeneratorInterface::ABSOLUTE_URL);
 		$bord_url = generate_board_url();
-		
+
 		$is_found = $this->utility->is_ok($ping_url);
 		$is_found_img  = '<img style="vertical-align:middle;margin:0 4px;" src="' . $bord_url . '/ext/replyPUSH/replybyemail/adm/style/images/' . ($is_found ? '' : 'not_') . 'found.gif" />';
 		$not_found_img = '<img style="vertical-align:middle;margin:0 4px;" src="' . $bord_url . '/ext/replyPUSH/replybyemail/adm/style/images/not_found.gif" />';
@@ -140,7 +139,7 @@ class acp_listener implements EventSubscriberInterface
 			}
 
 			$display_vars['vars']['legend' . ($x-1)] = 'REPLY_BY_EMAIL_SETTINGS';
-		
+
 			if ($this->utility->can_access_site()) // if public
 			{
 				$display_vars['vars']['reply_push_enabled']       = array('lang' => 'REPLY_PUSH_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true);
@@ -153,7 +152,6 @@ class acp_listener implements EventSubscriberInterface
 			{
 				$display_vars['vars']['reply_push_disabled']      = array('lang' => 'REPLY_PUSH_DISABLED', 'type' => 'custom', 'function' => array($this, 'not_public'), 'explain' => true);
 			}
-			
 
 			$display_vars['vars']['legend' . $x] =  'ACP_SUBMIT_CHANGES';
 
@@ -169,14 +167,13 @@ class acp_listener implements EventSubscriberInterface
 	*
 	* @param phpbb\event\data  $event
 	*/
-
 	public function replybyemail_config_validate($event)
-	{        
+	{
 		if (!$this->validate_reply_push || $this->validation_failed)
 		{
 			return;
 		}
-		
+
 		$error = $event['error'];
 		$cfg_array = $event['cfg_array'];
 
@@ -228,13 +225,12 @@ class acp_listener implements EventSubscriberInterface
 			return;
 		}
 		$this->validate_reply_push = false;
-		
+
 		$this->config->set('reply_push_enabled', isset($cfg_array['reply_push_enabled']) ? (bool) $cfg_array['reply_push_enabled'] : false);
 		$this->config->set('reply_push_account_no', $cfg_array['reply_push_account_no']);
 		$this->config->set('reply_push_secret_id', $cfg_array['reply_push_secret_id']);
 		$this->config->set('reply_push_secret_key', $cfg_array['reply_push_secret_key']);
 
 		$event['cfg_array'] = $cfg_array;
-
 	}
 }

@@ -69,7 +69,7 @@ class notify_controller
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
-	
+
 	/**
 	* leave Request
 	*
@@ -79,13 +79,11 @@ class notify_controller
 	* @param   string   $code HTTP status code
 	* @return  Symfony\Component\HttpFoundation\Response
 	*/
-
 	public function leave($message = '', $code = 200)
 	{
 		$response = new Response($message, $code);
 		$response->setStatusCode($code);
 		return $response;
-		
 	}
 
 	/**
@@ -96,7 +94,6 @@ class notify_controller
 	* @param string $denied_msg message to output on exit
 	* @return  Symfony\Component\HttpFoundation\Response
 	*/
-
 	protected function denied($denied_msg = '')
 	{
 		return $this->leave($denied_msg, 403);
@@ -136,14 +133,14 @@ class notify_controller
 		{
 			return $this->denied();
 		}
-		
+
 		$notification = $this->utility->request->get_super_global(\phpbb\request\request_interface::POST);
-		
+
 		if (empty($notification))
 		{
 			return $this->leave(); // do nothing.
 		}
-		
+
 		// no credentials can't process
 		if (!$this->utility->credentials())
 		{
@@ -170,7 +167,7 @@ class notify_controller
 
 		// authenticate
 		$reply_push = new ReplyPush($account_no, $secret_id, $secret_key, $notification['from'], $notification['in_reply_to']);
-		
+
 		if ($reply_push->hashCheck())
 		{
 
@@ -215,16 +212,16 @@ class notify_controller
 			{
 				return $this->leave();
 			}
-			
+
 			$type = $this->notification_types[$type_id];
 
 			// valid function name
 			$type_process = 'process_' . preg_replace('`notification\.type\.|[^a-z_]`', '', $type) . '_notification';
-			
+
 			// better than switch statement
 			if (is_callable(array($this, $type_process)))
 			{
-				
+
 				// process
 				$this->$type_process(
 					$from_user_id,
@@ -235,7 +232,6 @@ class notify_controller
 						$this->utility->pre_format_text_content($notification['content']['text/plain'])
 				);
 			}
-
 		}
 
 		// don't save actual message
@@ -295,7 +291,6 @@ class notify_controller
 	* @param    string $message
 	* @return   null
 	*/
-
 	protected function process_post_notification($from_user_id, $post_id, $topic_id, $message)
 	{
 		$sql = "SELECT p.post_subject, t.forum_id FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t" .
@@ -334,7 +329,6 @@ class notify_controller
 	* @param    string $message
 	* @return   null
 	*/
-
 	protected function process_bookmark_notification($from_user_id, $post_id, $topic_id, $message)
 	{
 		$this->process_post_notification($from_user_id, $post_id, $topic_id, $message);
@@ -351,7 +345,6 @@ class notify_controller
 	* @param    string $message
 	* @return   null
 	*/
-
 	protected function process_quote_notification($from_user_id, $post_id, $topic_id, $message)
 	{
 		$this->process_post_notification($from_user_id, $post_id, $topic_id, $message);
@@ -367,7 +360,6 @@ class notify_controller
 	* @param int    $topic_id
 	* @param string $message
 	*/
-
 	protected function process_pm_notification($from_user_id, $message_id, $content_id, $message)
 	{
 		$sql = "SELECT pm.message_subject, pmt.user_id FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TO_TABLE . " pmt" .
@@ -401,7 +393,7 @@ class notify_controller
 		}
 
 		$this->db->sql_freeresult($result);
-		
+
 		$this->process_pm_reply($message_id, $message, $subject, $to);
 	}
 
@@ -416,7 +408,6 @@ class notify_controller
 	* @param    string $subject
 	* @return   null
 	*/
-
 	protected function process_topic_reply($topic_id, $forum_id, $message, $subject)
 	{
 
@@ -454,7 +445,6 @@ class notify_controller
 	* @param    string|array $to
 	* @return   null
 	*/
-
 	protected function process_pm_reply($message_id, $message, $subject, $to)
 	{
 
@@ -481,30 +471,28 @@ class notify_controller
 
 		$response = $this->utility->post_request("ucp.{$this->php_ext}?i=pm&mode=compose&action=reply&p={$message_id}", $post);
 		$this->post_process();
-		
 	}
-	
+
 	/**
 	* Post process
 	*
 	* Stuff that need to be done after post request
-	* 
+	*
 	* @return null
 	*/
-
 	protected function post_process()
 	{
 		// trigger proccess of notification queue
-		
+
 		// old school required
 		if (!class_exists('queue'))
 		{
 			require $this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext;
 		}
-		
+
 		$queue = new \queue();
 		$queue->queue();
-		$queue->process();  
+		$queue->process();
 	}
 
 	/**
@@ -515,7 +503,6 @@ class notify_controller
 	* @param string         $subject
 	* @param string         $ref
 	*/
-
 	protected function process_incoming_error($error, $user, $subject, $ref='')
 	{
 		$error_msg = isset($user->lang['REPLY_PUSH_ERROR_' . strtoupper($error)]) ? $user->lang['REPLY_PUSH_ERROR_' . strtoupper($error)] : $user->lang['REPLY_PUSH_ERROR_GENERAL'];
@@ -534,7 +521,6 @@ class notify_controller
 	* @param    string         $ref
 	* @return   null
 	*/
-
 	protected function send_reply_error($user, $error_msg, $subject, $ref='')
 	{
 		$lang = $user->lang;

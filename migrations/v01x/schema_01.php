@@ -55,7 +55,7 @@ class schema_01 extends \phpbb\db\migration\migration
 			)
 		);
 	}
-	
+
 	/**
 	* Revert schema
 	*
@@ -73,5 +73,4 @@ class schema_01 extends \phpbb\db\migration\migration
 			)
 		);
 	}
-
 }

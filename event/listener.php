@@ -32,7 +32,7 @@ class listener implements EventSubscriberInterface
 
 	/** @var \phpbb\symfony_request */
 	protected $request;
-	
+
 	/** @var \phpbb\controller\helper $helper */
 	protected $helper;
 
@@ -85,13 +85,13 @@ class listener implements EventSubscriberInterface
 			'core.user_setup'                        => 'load_language',
 		);
 	}
-	
+
 	/**
 	* Allow auto-login
 	*
 	* Forces autologin if posting
 	* with Reply by Email
-	* 
+	*
 	* @param phpbb\event\data  $event
 	*/
 	public function allow_autologin($event)
@@ -137,5 +137,4 @@ class listener implements EventSubscriberInterface
 		);
 		$event['lang_set_ext'] = $lang_set_ext;
 	}
-
 }

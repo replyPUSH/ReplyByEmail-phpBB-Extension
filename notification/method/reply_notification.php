@@ -54,7 +54,6 @@ class reply_notification extends email
 	* @param string                                         $php_ext                      phpEx
 	* @access public
 	*/
-
 	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, \replyPUSH\replybyemail\helper\messenger $messenger, \replyPUSH\replybyemail\model\rp_model $rp_model, \replyPUSH\replybyemail\helper\utility $utility, $phpbb_root_path, $php_ext)
 	{
 		$this->messenger = $messenger;
@@ -198,7 +197,6 @@ class reply_notification extends email
 				), $notification->get_email_template_variables()));
 
 				 $this->messenger->template($template_dir_prefix . $notification->get_email_template(), $user['user_lang']);
-
 			}
 			$this->messenger->send($notify_method);
 		}
@@ -237,7 +235,6 @@ class reply_notification extends email
 				' SET ' . $this->db->sql_build_array('UPDATE', array('message'=>'', 'notification_read' => 1)).
 				' WHERE ' . $this->db->sql_in_set('item_id', $this->notified_ids);
 		$this->db->sql_query($sql);
-
 	}
 
 	/**
@@ -248,7 +245,6 @@ class reply_notification extends email
 	* @param    \phpbb\notification\type\base   $notification
 	* @return   null
 	*/
-
 	public function collect_board_notifications($notification)
 	{
 		// collect post notifications
@@ -309,7 +305,5 @@ class reply_notification extends email
 				" AND " . $this->db->sql_in_set('forum_id', $this->notified_topics['forums']);
 			$this->db->sql_query($sql);
 		}
-
 	}
-
 }

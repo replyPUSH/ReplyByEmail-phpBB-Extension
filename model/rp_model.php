@@ -298,5 +298,4 @@ class rp_model
 			}
 		}
 	}
-
 }
