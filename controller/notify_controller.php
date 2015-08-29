@@ -69,7 +69,7 @@ class notify_controller
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
-	
+
 	/**
 	* leave Request
 	*
@@ -133,14 +133,14 @@ class notify_controller
 		{
 			return $this->denied();
 		}
-		
+
 		$notification = $this->utility->request->get_super_global(\phpbb\request\request_interface::POST);
-		
+
 		if (empty($notification))
 		{
 			return $this->leave(); // do nothing.
 		}
-		
+
 		// no credentials can't process
 		if (!$this->utility->credentials())
 		{
@@ -167,7 +167,7 @@ class notify_controller
 
 		// authenticate
 		$reply_push = new ReplyPush($account_no, $secret_id, $secret_key, $notification['from'], $notification['in_reply_to']);
-		
+
 		if ($reply_push->hashCheck())
 		{
 
@@ -212,16 +212,16 @@ class notify_controller
 			{
 				return $this->leave();
 			}
-			
+
 			$type = $this->notification_types[$type_id];
 
 			// valid function name
 			$type_process = 'process_' . preg_replace('`notification\.type\.|[^a-z_]`', '', $type) . '_notification';
-			
+
 			// better than switch statement
 			if (is_callable(array($this, $type_process)))
 			{
-				
+
 				// process
 				$this->$type_process(
 					$from_user_id,
@@ -393,7 +393,7 @@ class notify_controller
 		}
 
 		$this->db->sql_freeresult($result);
-		
+
 		$this->process_pm_reply($message_id, $message, $subject, $to);
 	}
 
@@ -472,28 +472,27 @@ class notify_controller
 		$response = $this->utility->post_request("ucp.{$this->php_ext}?i=pm&mode=compose&action=reply&p={$message_id}", $post);
 		$this->post_process();
 	}
-	
+
 	/**
 	* Post process
 	*
 	* Stuff that need to be done after post request
-	* 
+	*
 	* @return null
 	*/
-	
 	protected function post_process()
 	{
 		// trigger proccess of notification queue
-		
+
 		// old school required
 		if (!class_exists('queue'))
 		{
 			require $this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext;
 		}
-		
+
 		$queue = new \queue();
 		$queue->queue();
-		$queue->process();  
+		$queue->process();
 	}
 
 	/**
@@ -548,7 +547,7 @@ class notify_controller
 			'USERNAME'  => $user['username'],
 			'MESSAGE'   => $error_msg,
 		));
-		
+
 		$this->messenger->template('error', $user['user_lang'], '', 'replybyemail');
 
 		$this->messenger->use_queue = false;

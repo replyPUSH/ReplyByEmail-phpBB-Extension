@@ -67,7 +67,7 @@ class schema_02 extends \phpbb\db\migration\migration
 			)
 		);
 	}
-	
+
 	/**
 	* Revert schema
 	*

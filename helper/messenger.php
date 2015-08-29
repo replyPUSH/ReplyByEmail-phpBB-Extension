@@ -77,7 +77,7 @@ class messenger extends \messenger
 		{
 			return parent::template($template_file, $template_lang, $template_path, $name_space);
 		}
-		
+
 		$this->setup_template();
 
 		if (!trim($template_file))
@@ -245,7 +245,7 @@ class messenger extends \messenger
 			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
 			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
 		}
-		
+
 		// if replying via replyPUSH need to insert marker
 		if (stripos($this->replyto, 'replypush') !== FALSE)
 		{

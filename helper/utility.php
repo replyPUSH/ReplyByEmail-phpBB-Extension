@@ -9,7 +9,6 @@
 namespace replyPUSH\replybyemail\helper;
 use replyPUSH\replybyemail\library\ReplyPush;
 
-
 /**
 * Bunch of utility helpers
 */
@@ -44,7 +43,7 @@ class utility
 
 	/** @var \phpbb\request\request */
 	public $request;
-	
+
 	/** @var\phpbb\cache\service */
 	protected $cache;
 
@@ -59,7 +58,7 @@ class utility
 
 	/** @var string for references/checksums */
 	private $hash_function = 'md5';
-	
+
 	/** @var bool is proxy? */
 	public $is_proxy = false;
 
@@ -87,7 +86,7 @@ class utility
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
-	
+
 	/**
 	* Hash Compare
 	*
@@ -104,9 +103,9 @@ class utility
 		{
 			return false;
 		}
-		
+
 		$result = 0;
-		
+
 		foreach (array_combine(str_split($a), str_split($b)) as $x => $y)
 		{
 			$result |= ord($y) ^ ord($y);
@@ -401,25 +400,25 @@ class utility
 	{
 		return sprintf('=?UTF-8?B?%s?= <%s>', base64_encode($name), $email ? $email : $this->service_email());
 	}
-	
+
 	/**
 	* Parse host
 	*
-	* Strip port, etc from host 
+	* Strip port, etc from host
 	*
 	* @param   string   $address
 	* @return  string
 	*/
 	protected function parse_host($address)
 	{
-		if (strpos($address, '::1') === 0) 
+		if (strpos($address, '::1') === 0)
 		{
 			$address = '[::1]';
 		}
-		
+
 		return parse_url('scheme://' . $address, PHP_URL_HOST);
 	}
-	
+
 	/**
 	* Can access site ?
 	*
@@ -436,41 +435,41 @@ class utility
 		{
 			return $can_access_site_stash[$key];
 		}
-		
+
 		$local = array('localhost', '127.0.0.1', '::1', '[::1]');
 		$addresses = array();
-		
-		if (function_exists('gethostbyname')) 
+
+		if (function_exists('gethostbyname'))
 		{
 			$addresses[] = gethostbyname($this->parse_host($this->request->server('HTTP_HOST')));
 		} else {
-			$addresses[] = $this->parse_host($this->request->server('SERVER_ADDR')); 
-			$addresses[] = $this->parse_host($this->request->server('LOCAL_ADDR')); 
+			$addresses[] = $this->parse_host($this->request->server('SERVER_ADDR'));
+			$addresses[] = $this->parse_host($this->request->server('LOCAL_ADDR'));
 			$addresses[] = $this->parse_host(array_pop(explode(',', $this->request->server('HTTP_X_FORWARDED_FOR'))));
 			$addresses[] = $this->parse_host($this->request->server('HTTP_X_REAL_IP'));
 		}
 
 		$access = false;
-		
+
 		foreach ($addresses as $address)
 		{
 
 			$access = $address && !in_array($address, $local);
-			
+
 			if ($access)
 			{
 				break;
 			}
 		}
-		
+
 		// stash
 		$this->cache->put('rp_can_access_site', array($key => $access));
-		
+
 		return $access;
 	}
-	
+
 	/**
-	* Proxy Init 
+	* Proxy Init
 	*
 	* Setup up cURL
 	*
@@ -478,13 +477,13 @@ class utility
 	*/
 	public function proxy_init($url)
 	{
-		$ch = curl_init(); 
+		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'phpBB replyPUSH Proxy/0.1');
 		return $ch;
 	}
-	
+
 	/**
 	* Post request
 	*
@@ -499,8 +498,8 @@ class utility
 		$url = generate_board_url() . '/'. ltrim($url, '/');
 		$ch = $this->proxy_init($url);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
-		
-		$cookies = $this->request->get_super_global(self::COOKIE_REQ); 
+
+		$cookies = $this->request->get_super_global(self::COOKIE_REQ);
 
 		$cookie_array = array();
 		foreach ($cookies as $cookie_name => $cookie_value)
@@ -510,13 +509,13 @@ class utility
 
 		$cookie_string = implode('; ', $cookie_array);
 		curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
-		
+
 		$response = curl_exec($ch);
-		
+
 		curl_close($ch);
 		return $response;
 	}
-	
+
 	/**
 	* Is OK
 	*
@@ -534,19 +533,19 @@ class utility
 		{
 			return $is_ok_stash[$key];
 		}
-		
+
 		$ch = $this->proxy_init($url);
 		$response = curl_exec($ch);
 		curl_close($ch);
-		
+
 		$is_ok = $response == 'OK';
-		
+
 		// stash
 		$this->cache->put('rp_is_ok', array($key => $is_ok));
-		
+
 		return $is_ok;
 	}
-	
+
 	/**
 	* Is Proxy ?
 	*
@@ -560,7 +559,7 @@ class utility
 		{
 			return true;
 		}
-		
+
 		if ($this->request->variable('form_token', '')
 			&& $this->request->variable('creation_time', '')
 			&& $this->request->variable('rp_token', ''))
@@ -568,20 +567,20 @@ class utility
 			$proxy = $this->hash_cmp(
 				$this->request->variable('rp_token', ''),
 				$this->hash_method(
-					$this->request->variable('creation_time', '') . 
-						$this->credentials()['account_no'] . 
+					$this->request->variable('creation_time', '') .
+						$this->credentials()['account_no'] .
 						$this->config['reply_push_notify_uri'],
 					array('sha1')
 				)
 			);
-			
+
 			if ($proxy)
 			{
 				$this->is_proxy = true;
 				return true;
-			} 
+			}
 		}
-		
+
 		return false;
 	}
 }
