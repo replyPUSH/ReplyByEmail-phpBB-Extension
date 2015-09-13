@@ -35,6 +35,7 @@ services:
             - @dbal.conn
             - @request
             - @cache
+            - @log
             - %core.root_path%
             - %core.php_ext%
 

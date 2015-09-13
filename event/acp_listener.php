@@ -73,6 +73,19 @@ class acp_listener implements EventSubscriberInterface
 			'core.validate_config_variable'  => 'replybyemail_config_validate',
 		);
 	}
+	
+	
+	/**
+	* No cURL
+	*
+	* Display no cURL message
+	*/
+	public function no_curl()
+	{
+		return
+			'<div class="errorbox" style="clear: none;">' . $this->user->lang['REPLY_PUSH_NO_CURL'] . '</div>';
+	}
+
 
 	/**
 	* Not Public
@@ -139,18 +152,23 @@ class acp_listener implements EventSubscriberInterface
 			}
 
 			$display_vars['vars']['legend' . ($x-1)] = 'REPLY_BY_EMAIL_SETTINGS';
-
-			if ($this->utility->can_access_site()) // if public
+			
+			if (!$this->utility->curl_installed()) 
 			{
-				$display_vars['vars']['reply_push_enabled']       = array('lang' => 'REPLY_PUSH_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true);
-				$display_vars['vars']['reply_push_account_no']    = array('lang' => 'REPLY_PUSH_ACCOUNT_NO', 'validate' => 'reply_push',  'type' => 'text:8:8', 'explain' => true);
-				$display_vars['vars']['reply_push_secret_id']     = array('lang' => 'REPLY_PUSH_SECRET_ID', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
-				$display_vars['vars']['reply_push_secret_key']    = array('lang' => 'REPLY_PUSH_SECRET_KEY', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
-				$display_vars['vars']['reply_push_uri']           = array('lang' => 'REPLY_PUSH_URI', 'type' => 'custom', 'function' => array($this, 'uri_boxes'), 'params' => array($this->config['reply_push_notify_uri']), 'explain' => true);
+				$display_vars['vars']['reply_push_disabled']      = array('lang' => 'REPLY_PUSH_DISABLED', 'type' => 'custom', 'function' => array($this, 'no_curl'), 'explain' => true);
+			}
+			else if (!$this->utility->can_access_site()) // not public
+			{
+				$display_vars['vars']['reply_push_disabled']      = array('lang' => 'REPLY_PUSH_DISABLED', 'type' => 'custom', 'function' => array($this, 'not_public'), 'explain' => true);
 			}
 			else
 			{
-				$display_vars['vars']['reply_push_disabled']      = array('lang' => 'REPLY_PUSH_DISABLED', 'type' => 'custom', 'function' => array($this, 'not_public'), 'explain' => true);
+				$display_vars['vars']['reply_push_enabled']             = array('lang' => 'REPLY_PUSH_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true);
+				$display_vars['vars']['reply_push_account_no']          = array('lang' => 'REPLY_PUSH_ACCOUNT_NO', 'validate' => 'reply_push',  'type' => 'text:8:8', 'explain' => true);
+				$display_vars['vars']['reply_push_secret_id']           = array('lang' => 'REPLY_PUSH_SECRET_ID', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
+				$display_vars['vars']['reply_push_secret_key']          = array('lang' => 'REPLY_PUSH_SECRET_KEY', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
+				$display_vars['vars']['reply_push_uri']                 = array('lang' => 'REPLY_PUSH_URI', 'type' => 'custom', 'function' => array($this, 'uri_boxes'), 'params' => array($this->config['reply_push_notify_uri']), 'explain' => true);
+				$display_vars['vars']['reply_push_notify_default']      = array('lang' => 'REPLY_PUSH_NOTIFY_DEFAULT', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true);
 			}
 
 			$display_vars['vars']['legend' . $x] =  'ACP_SUBMIT_CHANGES';
@@ -230,6 +248,7 @@ class acp_listener implements EventSubscriberInterface
 		$this->config->set('reply_push_account_no', $cfg_array['reply_push_account_no']);
 		$this->config->set('reply_push_secret_id', $cfg_array['reply_push_secret_id']);
 		$this->config->set('reply_push_secret_key', $cfg_array['reply_push_secret_key']);
+		$this->config->set('reply_push_notify_default', isset($cfg_array['reply_push_notify_default']) ? (bool) $cfg_array['reply_push_notify_default'] : false);
 
 		$event['cfg_array'] = $cfg_array;
 	}

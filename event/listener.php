@@ -83,6 +83,7 @@ class listener implements EventSubscriberInterface
 			'core.posting_modify_submit_post_after'  => 'submit_post',
 			'core.submit_pm_after'                   => 'submit_post',
 			'core.user_setup'                        => 'load_language',
+			'core.user_add_modify_data'              => 'notify_default',
 		);
 	}
 
@@ -96,10 +97,14 @@ class listener implements EventSubscriberInterface
 	*/
 	public function allow_autologin($event)
 	{
-		// replyPUSH proxy?
+		// check security token is replyPUSH internal proxy?
 		if ($this->utility->is_proxy())
 		{
+			// set session assurances (not permanent)
 			$this->config->set('allow_autologin', true);
+			$this->config->set('ip_check', 0);
+			$this->config->set('browser_check', false);
+			$this->config->set('forwarded_for_check', false);
 		}
 	}
 
@@ -113,7 +118,7 @@ class listener implements EventSubscriberInterface
 	*/
 	public function submit_post($event)
 	{
-		// replyPUSH proxy?
+		// check security token is replyPUSH proxy?
 		if ($this->utility->is_proxy())
 		{
 			send_status_line(200, 'OK');
@@ -136,5 +141,27 @@ class listener implements EventSubscriberInterface
 			'lang_set' => 'main',
 		);
 		$event['lang_set_ext'] = $lang_set_ext;
+	}
+	
+	/**
+	* Notify Default
+	*
+	* If notify default is on
+	* then set user_notify for user
+	* as default on
+	*
+	* @param phpbb\event\data  $event
+	*/
+	public function notify_default($event)
+	{
+		$user_row = $event['user_row'];
+		$sql_ary = $event['sql_ary'];
+		
+		if (!isset($user_row['user_notify']))
+		{
+			$sql_ary['user_notify'] = 1;
+			$event['sql_ary'] = $sql_ary;
+		}
+		
 	}
 }

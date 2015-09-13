@@ -70,8 +70,9 @@ class rp_model
 			return self::$ref[$ref_hash];
 		}
 
-		$sql = "SELECT ref FROM {$this->table_prefix}reply_push_ref" .
-				" WHERE ref_hash = '" . $this->db->sql_escape($ref_hash). "'";
+		$sql = 'SELECT ref 
+				FROM ' . $this->table_prefix . 'reply_push_ref' . "
+				WHERE ref_hash = '" . $this->db->sql_escape($ref_hash) . "'";
 
 		$result = $this->db->sql_query($sql);
 
@@ -101,13 +102,14 @@ class rp_model
 
 		if ($this->get_ref($ref_hash))
 		{
-			$sql = "UPDATE {$this->table_prefix}reply_push_ref SET " .
+			$sql = 'UPDATE ' . $this->table_prefix . 'reply_push_ref 
+				SET ' .
 				$this->db->sql_build_array('UPDATE',
 					array(
 						'ref' => $ref
 					)
-				).
-				" WHERE ref_hash = '" . $this->db->sql_escape($ref_hash). "'";
+				). "
+				WHERE ref_hash = '" . $this->db->sql_escape($ref_hash). "'";
 
 			$result = $this->db->sql_query($sql);
 
@@ -116,7 +118,7 @@ class rp_model
 		else
 		{
 
-			$sql = "INSERT INTO {$this->table_prefix}reply_push_ref " .
+			$sql = 'INSERT INTO ' . $this->table_prefix . 'reply_push_ref ' .
 				$this->db->sql_build_array('INSERT',
 					array(
 						'ref' => $ref,
@@ -136,8 +138,9 @@ class rp_model
 	*/
 	public function get_transaction($msg_id)
 	{
-		$sql = "SELECT message_id FROM {$this->table_prefix}reply_push_log" .
-				" WHERE message_id = " . (int) $msg_id;
+		$sql = 'SELECT message_id
+				FROM ' . $this->table_prefix .'reply_push_log
+				WHERE message_id = ' . (int) $msg_id;
 
 		$result = $this->db->sql_query($sql);
 
@@ -155,7 +158,8 @@ class rp_model
 		try
 		{
 			$this->db->sql_transaction('begin');
-			"INSERT INTO {$this->table_prefix}reply_push_log " . $this->db->sql_build_array('INSERT', array(
+			'INSERT INTO ' . $this->table_prefix . 'reply_push_log ' . 
+			$this->db->sql_build_array('INSERT', array(
 				'message_id'    => $notification['msg_id'],
 				'notification'  => serialize($notification),
 			));
@@ -182,8 +186,8 @@ class rp_model
 			return $this->notification_types;
 		}
 
-		$sql = "SELECT notification_type_id, notification_type_name
-				FROM " . $this->notification_types_table;
+		$sql = 'SELECT notification_type_id, notification_type_name
+				FROM ' . $this->notification_types_table;
 
 		$result = $this->db->sql_query($sql);
 

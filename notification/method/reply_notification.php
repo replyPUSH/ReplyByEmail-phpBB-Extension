@@ -231,9 +231,9 @@ class reply_notification extends email
 		}
 		// currently marked as read to liberalise sending restrictions
 
-		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE .
-				' SET ' . $this->db->sql_build_array('UPDATE', array('message'=>'', 'notification_read' => 1)).
-				' WHERE ' . $this->db->sql_in_set('item_id', $this->notified_ids);
+		$sql = 'UPDATE ' . NOTIFICATIONS_TABLE . '
+				SET ' . $this->db->sql_build_array('UPDATE', array('message'=>'', 'notification_read' => 1)). '
+				WHERE ' . $this->db->sql_in_set('item_id', $this->notified_ids);
 		$this->db->sql_query($sql);
 	}
 
@@ -288,21 +288,19 @@ class reply_notification extends email
 	{
 		if (!empty($this->notified_posts['users']))
 		{
-			$sql = "UPDATE " . TOPICS_WATCH_TABLE .
-				" SET notify_status = " . NOTIFY_YES .
-				//" , notifiy_ease = notifiy_ease + 1" .
-				" WHERE " . $this->db->sql_in_set('user_id', $this->notified_posts['users']) .
-				" AND " . $this->db->sql_in_set('topic_id', $this->notified_posts['topics']);
+			$sql = 'UPDATE ' . TOPICS_WATCH_TABLE . '
+				SET notify_status = ' . NOTIFY_YES . '
+				WHERE ' . $this->db->sql_in_set('user_id', $this->notified_posts['users']) . '
+					AND ' . $this->db->sql_in_set('topic_id', $this->notified_posts['topics']);
 			$this->db->sql_query($sql);
 		}
 
 		if (!empty($this->notified_topics['users']))
 		{
-			$sql = "UPDATE " . FORUMS_WATCH_TABLE .
-				" SET notify_status = " . NOTIFY_YES .
-				//" , notifiy_ease = notifiy_ease + 1" .
-				" WHERE " . $this->db->sql_in_set('user_id', $this->notified_topics['users']) .
-				" AND " . $this->db->sql_in_set('forum_id', $this->notified_topics['forums']);
+			$sql = 'UPDATE ' . FORUMS_WATCH_TABLE . '
+				SET notify_status = ' . NOTIFY_YES . '
+				WHERE ' . $this->db->sql_in_set('user_id', $this->notified_topics['users']) . '
+					AND ' . $this->db->sql_in_set('forum_id', $this->notified_topics['forums']);
 			$this->db->sql_query($sql);
 		}
 	}

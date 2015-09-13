@@ -44,8 +44,11 @@ class utility
 	/** @var \phpbb\request\request */
 	public $request;
 
-	/** @var\phpbb\cache\service */
+	/** @var \phpbb\cache\service */
 	protected $cache;
+	
+	/** @var \phpbb\log\log */
+	protected $log;
 
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
@@ -55,6 +58,9 @@ class utility
 
 	/** @var array[string] stash credentials */
 	private $credentials = null;
+	
+	/** @var array[string] cookies for proxy */
+	private $cookies = array();
 
 	/** @var string for references/checksums */
 	private $hash_function = 'md5';
@@ -75,7 +81,7 @@ class utility
 	* @param string                               $php_ext                      phpEx
 	* @access public
 	*/
-	function __construct(\phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\factory $db, \phpbb\request\request $request, \phpbb\cache\service $cache, $phpbb_root_path, $php_ext)
+	function __construct(\phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\factory $db, \phpbb\request\request $request, \phpbb\cache\service $cache, \phpbb\log\log $log, $phpbb_root_path, $php_ext)
 	{
 		$this->user = $user;
 		$this->auth = $auth;
@@ -83,6 +89,7 @@ class utility
 		$this->db = $db;
 		$this->request = $request;
 		$this->cache = $cache;
+		$this->log = $log;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -205,7 +212,9 @@ class utility
 	*/
 	public function get_user_id_by_email($email)
 	{
-		$sql = "SELECT user_id FROM " . USERS_TABLE . " WHERE user_email = '" . $this->db->sql_escape($email) . "'";
+		$sql = 'SELECT user_id
+			FROM ' . USERS_TABLE . "
+			WHERE user_email = '" . $this->db->sql_escape($email) . "'";
 
 		$result = $this->db->sql_query($sql);
 		$member = $this->db->sql_fetchrow($result);
@@ -231,10 +240,11 @@ class utility
 		// init permissions
 		$this->auth->acl($this->user->data);
 
-		// create session cookies for persistance
-		$this->request->overwrite($this->config['cookie_name'] . '_u', $this->user->cookie_data['u'], self::COOKIE_REQ);
-		$this->request->overwrite($this->config['cookie_name'] . '_k', $this->user->cookie_data['k'], self::COOKIE_REQ);
-		$this->request->overwrite($this->config['cookie_name'] . '_sid', $this->user->session_id, self::COOKIE_REQ);
+		// set private cookie variable for proxying
+		$this->cookies = $this->request->get_super_global(self::COOKIE_REQ);
+		$this->cookies[$this->config['cookie_name'] . '_u']   = $this->user->cookie_data['u'];
+		$this->cookies[$this->config['cookie_name'] . '_k']   = $this->user->cookie_data['k'];
+		$this->cookies[$this->config['cookie_name'] . '_sid'] = $this->user->session_id;
 	}
 
 	/**
@@ -249,17 +259,17 @@ class utility
 	*/
 	public function update_notify_status($forum_id, $topic_id)
 	{
-		$sql = "UPDATE " . FORUMS_WATCH_TABLE .
-			" SET notify_status = " . NOTIFY_YES .
-			" WHERE forum_id = " . (int) $forum_id .
-			" AND user_id = " . (int) $this->user->data['user_id'];
+		$sql = 'UPDATE ' . FORUMS_WATCH_TABLE . '
+			SET notify_status = ' . NOTIFY_YES . '
+			WHERE forum_id = ' . (int) $forum_id . '
+				AND user_id = ' . (int) $this->user->data['user_id'];
 
 		$this->db->sql_query($sql);
 
-		$sql = "UPDATE " . TOPICS_WATCH_TABLE .
-			" SET notify_status = " . NOTIFY_YES .
-			" WHERE topic_id = " . (int) $topic_id .
-			" AND user_id = " . (int) $this->user->data['user_id'];
+		$sql = 'UPDATE ' . TOPICS_WATCH_TABLE . '
+			SET notify_status = ' . NOTIFY_YES . '
+			WHERE topic_id = ' . (int) $topic_id . '
+				AND user_id = ' . (int) $this->user->data['user_id'];
 
 		$this->db->sql_query($sql);
 	}
@@ -477,6 +487,55 @@ class utility
 
 		return $access;
 	}
+	
+	/**
+	* Log
+	*
+	* Log errors and warnings
+	*
+	* @param  string              $code
+	* @param  array[string]mixed  $additional_data
+	* @param  string              $type
+	*/    
+	public function log($code, $additional_data = array(), $type = 'critical')
+	{
+		switch($type)
+		{
+			case 'admin':
+				$operation_prefix  = 'REPLY_PUSH_LOG_NOTICE_';
+				break;
+			case 'critical':
+			default:
+				$type = 'critical';
+				$operation_prefix  = 'REPLY_PUSH_LOG_ERROR_';
+				break;
+		}
+		
+		$this->log->add(
+			$type,
+			isset($this->user->user_id) ? $this->user->user_id : 1,
+			$this->user->ip,
+			$operation_prefix . $code,
+			true,
+			$additional_data
+		);
+	}
+	
+	/**
+	* cURL installed?
+	*
+	* Is cURL installed?
+	*
+	* @return bool
+	*/    
+	public function curl_installed()
+	{
+		return
+			function_exists('curl_init')
+			&& function_exists('curl_setopt')
+			&& function_exists('curl_exec')
+			&& function_exists('curl_close');
+	}
 
 	/**
 	* Proxy Init
@@ -484,6 +543,7 @@ class utility
 	* Setup up cURL
 	*
 	* @param    string  $url
+	* @return   object
 	*/
 	public function proxy_init($url)
 	{
@@ -509,10 +569,8 @@ class utility
 		$ch = $this->proxy_init($url);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
 
-		$cookies = $this->request->get_super_global(self::COOKIE_REQ);
-
 		$cookie_array = array();
-		foreach ($cookies as $cookie_name => $cookie_value)
+		foreach ($this->cookies as $cookie_name => $cookie_value)
 		{
 			$cookie_array[] = "{$cookie_name}={$cookie_value}";
 		}

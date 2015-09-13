@@ -128,6 +128,14 @@ class notify_controller
 	*/
 	public function process_incoming_notification($uri)
 	{
+
+		// if curl not installed log and leave
+		if (!$this->utility->curl_installed())
+		{
+			$this->utility->log('NO_CURL');
+			return $this->leave();
+		}
+ 
 		// spoofed
 		if (!$this->utility->check_uri($uri))
 		{
@@ -138,18 +146,21 @@ class notify_controller
 
 		if (empty($notification))
 		{
+			$this->utility->log('EMPTY');
 			return $this->leave(); // do nothing.
 		}
 
 		// no credentials can't process
 		if (!$this->utility->credentials())
 		{
+			$this->utility->log('NO_CREDS');
 			return $this->denied();
 		}
 
 		// is valid?
 		if (!$this->rp_model->has_required($notification))
 		{
+			$this->utility->log('INVALID_SCHEMA');
 			return $this->denied();
 		}
 
@@ -170,6 +181,7 @@ class notify_controller
 
 		if ($reply_push->hashCheck())
 		{
+			
 
 			// find user
 			$user_id = $this->utility->get_user_id_by_email($notification['from']);
@@ -177,6 +189,7 @@ class notify_controller
 			// don't know you go away
 			if (!$user_id)
 			{
+				$this->utility->log('INVALID_USER', compact('user_id'), 'admin');
 				return $this->denied();
 			}
 
@@ -210,6 +223,7 @@ class notify_controller
 			// don't know what you are talking about
 			if (!isset($this->notification_types[$type_id]))
 			{
+				$this->utility->log('INVALID_TYPE', compact('type_id'));
 				return $this->leave();
 			}
 
@@ -232,8 +246,16 @@ class notify_controller
 						$this->utility->pre_format_text_content($notification['content']['text/plain'])
 				);
 			}
+			else
+			{
+				$this->utility->log('INVALID_PROCESS', compact('type_process'));
+			}
 		}
-
+		else
+		{
+			$this->utility->log('INVALID_CHECK');
+		}
+				
 		// don't save actual message
 		unset($notification['content']);
 
@@ -257,10 +279,11 @@ class notify_controller
 	*/
 	protected function process_topic_notification($from_user_id, $topic_id, $forum_id, $message, $in_reply_to)
 	{
-		$sql = "SELECT topic_title FROM " . TOPICS_TABLE .
-				" WHERE topic_id = " . (int) $topic_id .
-				" AND forum_id = " . (int) $forum_id .
-				" AND topic_poster = " . (int) $from_user_id;
+		$sql = 'SELECT topic_title 
+				FROM ' . TOPICS_TABLE . '
+				WHERE topic_id = ' . (int) $topic_id . '
+					AND forum_id = ' . (int) $forum_id . '
+					AND topic_poster = ' . (int) $from_user_id;
 
 		$result = $this->db->sql_query($sql);
 
@@ -268,6 +291,7 @@ class notify_controller
 		// better safe than sorry
 		if (!$result)
 		{
+			$this->utility->log('INVALID_TOPIC', compact('from_user_id', 'topic_id', 'forum_id'), 'admin');
 			return;
 		}
 
@@ -293,11 +317,12 @@ class notify_controller
 	*/
 	protected function process_post_notification($from_user_id, $post_id, $topic_id, $message)
 	{
-		$sql = "SELECT p.post_subject, t.forum_id FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t" .
-				" WHERE p.topic_id = t.topic_id" .
-				" AND p.post_id = " . (int) $post_id .
-				" AND p.topic_id = " . (int) $topic_id .
-				" AND p.poster_id = " . (int) $from_user_id;
+		$sql = 'SELECT p.post_subject, t.forum_id 
+				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
+				WHERE p.topic_id = t.topic_id
+					AND p.post_id = ' . (int) $post_id . '
+					AND p.topic_id = ' . (int) $topic_id . '
+					AND p.poster_id = ' . (int) $from_user_id;
 
 		$result = $this->db->sql_query($sql);
 
@@ -305,6 +330,7 @@ class notify_controller
 		// better safe than sorry
 		if (!$result)
 		{
+			$this->utility->log('INVALID_POST', compact('from_user_id', 'post_id', 'topic_id'), 'admin');
 			return;
 		}
 
@@ -362,11 +388,12 @@ class notify_controller
 	*/
 	protected function process_pm_notification($from_user_id, $message_id, $content_id, $message)
 	{
-		$sql = "SELECT pm.message_subject, pmt.user_id FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TO_TABLE . " pmt" .
-				" WHERE pm.msg_id = pmt.msg_id" .
-				" AND pm.msg_id = " . (int) $message_id .
-				" AND pm.author_id = " . (int) $from_user_id.
-				" AND pmt.user_id <> " . (int) $this->user->data['user_id'];
+		$sql = 'SELECT pm.message_subject, pmt.user_id
+				FROM ' . PRIVMSGS_TABLE . ' pm, ' . PRIVMSGS_TO_TABLE . ' pmt
+				WHERE pm.msg_id = pmt.msg_id
+					AND pm.msg_id = ' . (int) $message_id . '
+					AND pm.author_id = ' . (int) $from_user_id . '
+					AND pmt.user_id <> ' . (int) $this->user->data['user_id'];
 
 		$result = $this->db->sql_query($sql);
 
@@ -389,6 +416,7 @@ class notify_controller
 		// better safe than sorry
 		if (!empty($row))
 		{
+			$this->utility->log('INVALID_PM', compact('from_user_id', 'message_id', 'content_id'), 'admin');
 			return;
 		}
 
@@ -410,9 +438,6 @@ class notify_controller
 	*/
 	protected function process_topic_reply($topic_id, $forum_id, $message, $subject)
 	{
-
-		$table_sql = ($mode == 'forum') ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
-		$where_sql = ($mode == 'forum') ? 'forum_id' : 'topic_id';
 
 		// anti-constipation
 		$this->utility->update_notify_status($topic_id, $forum_id);
@@ -501,13 +526,13 @@ class notify_controller
 	* @param int            $error
 	* @param \phpbb\user    $user
 	* @param string         $subject
-	* @param string         $ref
 	*/
-	protected function process_incoming_error($error, $user, $subject, $ref='')
+	protected function process_incoming_error($error, $user, $subject)
 	{
 		$error_msg = isset($user->lang['REPLY_PUSH_ERROR_' . strtoupper($error)]) ? $user->lang['REPLY_PUSH_ERROR_' . strtoupper($error)] : $user->lang['REPLY_PUSH_ERROR_GENERAL'];
 		if ($error_msg)
 		{
+			$this->utility->log('USER_ERROR', compact('user', 'error_msg', 'subject'), 'admin');
 			$this->send_reply_error($user, $error_msg, $subject);
 		}
 	}
