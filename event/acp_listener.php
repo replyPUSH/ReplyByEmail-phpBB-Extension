@@ -38,6 +38,9 @@ class acp_listener implements EventSubscriberInterface
 
 	/** @var utility methods */
 	protected $utility;
+	
+	/** @var string phpBB table prefix */
+	protected $table_prefix;
 
 	/**
 	* Constructor
@@ -50,13 +53,14 @@ class acp_listener implements EventSubscriberInterface
 	* @param \replyPUSH\replybyemail\helper\utility     $utility                      Reply By Email utility helper
 	* @access public
 	*/
-	function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\controller\helper $helper, \replyPUSH\replybyemail\helper\utility $utility)
+	function __construct(\phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\controller\helper $helper, \replyPUSH\replybyemail\helper\utility $utility, $table_prefix)
 	{
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
 		$this->helper = $helper;
 		$this->utility = $utility;
+		$this->table_prefix =  $table_prefix;
 	}
 
 	/**
@@ -73,8 +77,7 @@ class acp_listener implements EventSubscriberInterface
 			'core.validate_config_variable'  => 'replybyemail_config_validate',
 		);
 	}
-	
-	
+
 	/**
 	* No cURL
 	*
@@ -85,7 +88,6 @@ class acp_listener implements EventSubscriberInterface
 		return
 			'<div class="errorbox" style="clear: none;">' . $this->user->lang['REPLY_PUSH_NO_CURL'] . '</div>';
 	}
-
 
 	/**
 	* Not Public
@@ -121,6 +123,19 @@ class acp_listener implements EventSubscriberInterface
 			$is_found_img .
 			str_replace('{NOT_FOUND_IMG}', $not_found_img, $this->user->lang['REPLY_PUSH_URI_BLURB']);
 	}
+	
+	/**
+	* User Notify Suggestion
+	*
+	* Suggested SQL for setting
+	* user_notify for all users
+	*
+	*/
+	public function user_notify_suggestion()
+	{
+		return
+			str_replace('{TABLE_PREFIX}',  $this->table_prefix, $this->user->lang['REPLY_PUSH_USER_NOTIFY_SUGGEST']);
+	}
 
 	/**
 	* Reply By Email config
@@ -152,8 +167,8 @@ class acp_listener implements EventSubscriberInterface
 			}
 
 			$display_vars['vars']['legend' . ($x-1)] = 'REPLY_BY_EMAIL_SETTINGS';
-			
-			if (!$this->utility->curl_installed()) 
+
+			if (!$this->utility->curl_installed())
 			{
 				$display_vars['vars']['reply_push_disabled']      = array('lang' => 'REPLY_PUSH_DISABLED', 'type' => 'custom', 'function' => array($this, 'no_curl'), 'explain' => true);
 			}
@@ -168,7 +183,7 @@ class acp_listener implements EventSubscriberInterface
 				$display_vars['vars']['reply_push_secret_id']           = array('lang' => 'REPLY_PUSH_SECRET_ID', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
 				$display_vars['vars']['reply_push_secret_key']          = array('lang' => 'REPLY_PUSH_SECRET_KEY', 'validate' => 'reply_push',  'type' => 'text:32:32', 'explain' => true);
 				$display_vars['vars']['reply_push_uri']                 = array('lang' => 'REPLY_PUSH_URI', 'type' => 'custom', 'function' => array($this, 'uri_boxes'), 'params' => array($this->config['reply_push_notify_uri']), 'explain' => true);
-				$display_vars['vars']['reply_push_notify_default']      = array('lang' => 'REPLY_PUSH_NOTIFY_DEFAULT', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true);
+				$display_vars['vars']['reply_push_notify_default']      = array('lang' => 'REPLY_PUSH_NOTIFY_DEFAULT', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true, 'append' => $this->user_notify_suggestion());
 			}
 
 			$display_vars['vars']['legend' . $x] =  'ACP_SUBMIT_CHANGES';

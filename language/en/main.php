@@ -32,7 +32,7 @@ $lang = array_merge($lang, array(
 	'REPLY_PUSH_SECRET_ID'                      => 'API Secret ID',
 	'REPLY_PUSH_SECRET_KEY'                     => 'API Secret Key',
 	'REPLY_PUSH_URI'                            => 'Notify Url',
-	'REPLY_PUSH_NOTIFY_DEFAULT'                 => 'Notify on Reply by Default', 
+	'REPLY_PUSH_NOTIFY_DEFAULT'                 => 'Notify on Reply by Default',
 	'REPLY_PUSH_ENABLE_EXPLAIN'                 => 'If set it will use the credentials bellow to send out emails that can be replied to through the replyPUSH service.',
 	'REPLY_PUSH_ACCOUNT_NO_EXPLAIN'             => 'The Account No found <a href="http://replyPUSH.com/profile">here</a>. Sign up for an account first.',
 	'REPLY_PUSH_SECRET_ID_EXPLAIN'              => 'The API ID found <a href="http://replyPUSH.com/profile">here</a>.',
@@ -71,20 +71,32 @@ Then you can route the urls
 </pre>
 replacing any <code>/forum</code> text to reflect the relative location of the forum to the root directory or simply <code>/</code> if using the root.
 ',
+	'REPLY_PUSH_USER_NOTIFY_SUGGEST'            => '
+<br>
+<br>
+<u>tip:</u>
+<br>
+If you want to force current users to have this setting, you could run the following MySQL query using database:
+<br>
+<br>
+<pre>UPDATE `{TABLE_PREFIX}users` SET `user_notify` = 1 WHERE `user_type` <> 2;</pre>
+',
 	'REPLY_PUSH_ERROR_GENERAL'                  => 'An error has occurred',
 	'REPLY_PUSH_ERROR_NOEOM'                    => 'Could not find /eom so can’t send message!  Make sure to end your reply with /eom (on new line) to use this service.',
 	'REPLY_PUSH_ERROR_NOMSG'                    => 'We could not find a message in your reply.',
 	'REPLY_PUSH_ERROR_NOMARK'                   => 'We could not process your reply, please reply above the quoted message.',
-	'REPLY_PUSH_LOG_ERROR_NO_CURL'              => 'replyPUSH Error: cURL is not installed/enabled',
-	'REPLY_PUSH_LOG_ERROR_EMPTY'                => 'replyPUSH Error: Empty notification',
-	'REPLY_PUSH_LOG_ERROR_NO_CREDS'             => 'replyPUSH Error: Empty credentials',
-	'REPLY_PUSH_LOG_ERROR_INVALID_TYPE'         => 'replyPUSH Error: Invalid notification type',
-	'REPLY_PUSH_LOG_ERROR_INVALID_PROCESS'      => 'replyPUSH Error: Invalid notification process',
-	'REPLY_PUSH_LOG_ERROR_INVALID_CHECK'        => 'replyPUSH Error: Invalid notification check / credentials',
-	'REPLY_PUSH_LOG_NOTICE_INVALID_USER'        => 'replyPUSH Notice: Invalid User',
-	'REPLY_PUSH_LOG_NOTICE_INVALID_TOPIC'       => 'replyPUSH Notice: Invalid topic notification',
-	'REPLY_PUSH_LOG_NOTICE_INVALID_POST'        => 'replyPUSH Notice: Invalid topic notification',
-	'REPLY_PUSH_LOG_NOTICE_USER_ERROR'          => 'replyPUSH Notice: User notification error returned',
+	'REPLY_PUSH_LOG_ERROR_NO_CURL'              => '[replyPUSH Error] cURL is not installed/enabled',
+	'REPLY_PUSH_LOG_ERROR_CURL_ERROR'           => '[replyPUSH Error] A cURL error occurred: %s',
+	'REPLY_PUSH_LOG_ERROR_EMPTY'                => '[replyPUSH Error] Empty notification',
+	'REPLY_PUSH_LOG_ERROR_NO_CREDS'             => '[replyPUSH Error] Empty credentials',
+	'REPLY_PUSH_LOG_ERROR_INVALID_TYPE'         => '[replyPUSH Error] Invalid notification type: type_id=%s',
+	'REPLY_PUSH_LOG_ERROR_INVALID_PROCESS'      => '[replyPUSH Error] Invalid notification process: type_process=%s',
+	'REPLY_PUSH_LOG_ERROR_INVALID_CHECK'        => '[replyPUSH Error] Invalid notification check / credentials',
+	'REPLY_PUSH_LOG_NOTICE_INVALID_USER'        => '[replyPUSH Notice] Invalid User',
+	'REPLY_PUSH_LOG_NOTICE_INVALID_TOPIC'       => '[replyPUSH Notice] Invalid topic notification: from_user_id=%s, topic_id=%s, forum_id=%s',
+	'REPLY_PUSH_LOG_NOTICE_INVALID_POST'        => '[replyPUSH Notice] Invalid post notification: from_user_id=%s, post_id=%s, topic_id=%s',
+	'REPLY_PUSH_LOG_NOTICE_INVALID_PM'          => '[replyPUSH Notice] Invalid post notification: from_user_id=%s, message_id=%s, content_id=%s',
+	'REPLY_PUSH_LOG_NOTICE_USER_ERROR'          => '[replyPUSH Notice] User notification error returned: user=%s, error_msg=%s, subject=%s',
 	'REPLY_PUSH_SETUP_MSG'                      => '<h4>Reply By Email has not been set up yet!</h4><hr>Please set it up <a href="%s">here</a>.',
 	'REPLY_PUSH_SETUP_MSG_DISMISS'              => 'dismiss',
 	'REPLY_PUSH_EMAIL_SIG'                      => '

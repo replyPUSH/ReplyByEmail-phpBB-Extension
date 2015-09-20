@@ -62,6 +62,7 @@ services:
             - @user
             - @controller.helper
             - @replyPUSH.replybyemail.utility
+            - %core.table_prefix%
         tags:
             - { name: event.listener }
 

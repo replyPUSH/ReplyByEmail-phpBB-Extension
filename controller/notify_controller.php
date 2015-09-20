@@ -128,14 +128,13 @@ class notify_controller
 	*/
 	public function process_incoming_notification($uri)
 	{
-
 		// if curl not installed log and leave
 		if (!$this->utility->curl_installed())
 		{
 			$this->utility->log('NO_CURL');
 			return $this->leave();
 		}
- 
+
 		// spoofed
 		if (!$this->utility->check_uri($uri))
 		{
@@ -181,7 +180,6 @@ class notify_controller
 
 		if ($reply_push->hashCheck())
 		{
-			
 
 			// find user
 			$user_id = $this->utility->get_user_id_by_email($notification['from']);
@@ -189,7 +187,7 @@ class notify_controller
 			// don't know you go away
 			if (!$user_id)
 			{
-				$this->utility->log('INVALID_USER', compact('user_id'), 'admin');
+				$this->utility->log('INVALID_USER', array(), 'admin');
 				return $this->denied();
 			}
 
@@ -255,7 +253,7 @@ class notify_controller
 		{
 			$this->utility->log('INVALID_CHECK');
 		}
-				
+
 		// don't save actual message
 		unset($notification['content']);
 
@@ -279,7 +277,7 @@ class notify_controller
 	*/
 	protected function process_topic_notification($from_user_id, $topic_id, $forum_id, $message, $in_reply_to)
 	{
-		$sql = 'SELECT topic_title 
+		$sql = 'SELECT topic_title
 				FROM ' . TOPICS_TABLE . '
 				WHERE topic_id = ' . (int) $topic_id . '
 					AND forum_id = ' . (int) $forum_id . '
@@ -317,7 +315,7 @@ class notify_controller
 	*/
 	protected function process_post_notification($from_user_id, $post_id, $topic_id, $message)
 	{
-		$sql = 'SELECT p.post_subject, t.forum_id 
+		$sql = 'SELECT p.post_subject, t.forum_id
 				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
 				WHERE p.topic_id = t.topic_id
 					AND p.post_id = ' . (int) $post_id . '

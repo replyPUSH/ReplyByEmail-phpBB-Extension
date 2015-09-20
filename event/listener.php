@@ -142,7 +142,7 @@ class listener implements EventSubscriberInterface
 		);
 		$event['lang_set_ext'] = $lang_set_ext;
 	}
-	
+
 	/**
 	* Notify Default
 	*
@@ -156,12 +156,11 @@ class listener implements EventSubscriberInterface
 	{
 		$user_row = $event['user_row'];
 		$sql_ary = $event['sql_ary'];
-		
+
 		if (!isset($user_row['user_notify']))
 		{
 			$sql_ary['user_notify'] = 1;
 			$event['sql_ary'] = $sql_ary;
 		}
-		
 	}
 }

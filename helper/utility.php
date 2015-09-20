@@ -46,7 +46,7 @@ class utility
 
 	/** @var \phpbb\cache\service */
 	protected $cache;
-	
+
 	/** @var \phpbb\log\log */
 	protected $log;
 
@@ -58,7 +58,7 @@ class utility
 
 	/** @var array[string] stash credentials */
 	private $credentials = null;
-	
+
 	/** @var array[string] cookies for proxy */
 	private $cookies = array();
 
@@ -487,7 +487,7 @@ class utility
 
 		return $access;
 	}
-	
+
 	/**
 	* Log
 	*
@@ -496,7 +496,7 @@ class utility
 	* @param  string              $code
 	* @param  array[string]mixed  $additional_data
 	* @param  string              $type
-	*/    
+	*/
 	public function log($code, $additional_data = array(), $type = 'critical')
 	{
 		switch($type)
@@ -510,24 +510,24 @@ class utility
 				$operation_prefix  = 'REPLY_PUSH_LOG_ERROR_';
 				break;
 		}
-		
+
 		$this->log->add(
 			$type,
 			isset($this->user->user_id) ? $this->user->user_id : 1,
 			$this->user->ip,
 			$operation_prefix . $code,
-			true,
+			false,
 			$additional_data
 		);
 	}
-	
+
 	/**
 	* cURL installed?
 	*
 	* Is cURL installed?
 	*
 	* @return bool
-	*/    
+	*/
 	public function curl_installed()
 	{
 		return
@@ -552,6 +552,26 @@ class utility
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'phpBB replyPUSH Proxy/0.1');
 		return $ch;
+	}
+	
+	/**
+	* Proxy Exec
+	*
+	* Execute cURL with error log
+	*
+	* @param    string  $ch
+	* @return   string|bool
+	*/
+	public function proxy_exec($ch)
+	{
+		$result = curl_exec($ch);
+		
+		if ($response === false) {
+			$this->log('CURL_ERROR', array('error' => curl_error($ch)));
+		}
+		
+		curl_close($ch);
+		return $result;
 	}
 
 	/**
@@ -578,9 +598,8 @@ class utility
 		$cookie_string = implode('; ', $cookie_array);
 		curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
 
-		$response = curl_exec($ch);
+		$response = $this->proxy_exec($ch);
 
-		curl_close($ch);
 		return $response;
 	}
 
@@ -603,8 +622,7 @@ class utility
 		}
 
 		$ch = $this->proxy_init($url);
-		$response = curl_exec($ch);
-		curl_close($ch);
+		$response = $this->proxy_exec($ch);
 
 		$is_ok = $response == 'OK';
 

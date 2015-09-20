@@ -18,9 +18,15 @@ class rp_model
 
 	/** @var string notification_types_table */
 	protected $notification_types_table;
+	
+	/** @var utility methods */
+	protected $utility;
 
 	/** @var array[int]string notification types id => value */
 	protected $notification_types = array();
+	
+	/** @var string phpBB table prefix */
+	protected $table_prefix;
 
 	/** @var array[string]string notification types that will be collated under a parent type */
 	protected $collate_types  = array(
@@ -33,9 +39,6 @@ class rp_model
 
 	/** @var array[mixed] optional schema for population */
 	protected $optional_schema = array('error', 'content' => array('text/html'));
-
-	/** @var utility methods */
-	protected $utility;
 
 	/** @staticvar array[string]string cache of references */
 	public static $ref = array();
@@ -70,7 +73,7 @@ class rp_model
 			return self::$ref[$ref_hash];
 		}
 
-		$sql = 'SELECT ref 
+		$sql = 'SELECT ref
 				FROM ' . $this->table_prefix . 'reply_push_ref' . "
 				WHERE ref_hash = '" . $this->db->sql_escape($ref_hash) . "'";
 
@@ -102,7 +105,7 @@ class rp_model
 
 		if ($this->get_ref($ref_hash))
 		{
-			$sql = 'UPDATE ' . $this->table_prefix . 'reply_push_ref 
+			$sql = 'UPDATE ' . $this->table_prefix . 'reply_push_ref
 				SET ' .
 				$this->db->sql_build_array('UPDATE',
 					array(
@@ -158,7 +161,7 @@ class rp_model
 		try
 		{
 			$this->db->sql_transaction('begin');
-			'INSERT INTO ' . $this->table_prefix . 'reply_push_log ' . 
+			'INSERT INTO ' . $this->table_prefix . 'reply_push_log ' .
 			$this->db->sql_build_array('INSERT', array(
 				'message_id'    => $notification['msg_id'],
 				'notification'  => serialize($notification),
