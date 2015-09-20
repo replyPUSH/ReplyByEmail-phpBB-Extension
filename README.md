@@ -89,7 +89,7 @@ Assuming phpBB is able to send emails normally, and the correct notification set
 the users ucp, the user needs to have selected a way of being notified e.g. Subscribing to forum or topic,
 bookmarking, etc to receive anything. This is not phpBB facility, rather than controlled by this extension.
 
-Reply by Email Settings does provide a way to turn on the "Notify me when a reply is posted" for topic posts,
+Reply by Email Settings does provide a way to turn on the "Notify me when a reply is posted" for topic posts
 automatically for NEW users. It also provides a suggested query to turn this on for existing users,
 which mush be executed using the database manually (e.g through mySQL cli or phpMyAdmin). Use sparingly.
 
