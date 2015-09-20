@@ -145,7 +145,6 @@ class notify_controller
 
 		if (empty($notification))
 		{
-			$this->utility->log('EMPTY');
 			return $this->leave(); // do nothing.
 		}
 

@@ -87,7 +87,6 @@ If you want to force current users to have this setting, you could run the follo
 	'REPLY_PUSH_ERROR_NOMARK'                   => 'We could not process your reply, please reply above the quoted message.',
 	'REPLY_PUSH_LOG_ERROR_NO_CURL'              => '[replyPUSH Error] cURL is not installed/enabled',
 	'REPLY_PUSH_LOG_ERROR_CURL_ERROR'           => '[replyPUSH Error] A cURL error occurred: %s',
-	'REPLY_PUSH_LOG_ERROR_EMPTY'                => '[replyPUSH Error] Empty notification',
 	'REPLY_PUSH_LOG_ERROR_NO_CREDS'             => '[replyPUSH Error] Empty credentials',
 	'REPLY_PUSH_LOG_ERROR_INVALID_TYPE'         => '[replyPUSH Error] Invalid notification type: type_id=%s',
 	'REPLY_PUSH_LOG_ERROR_INVALID_PROCESS'      => '[replyPUSH Error] Invalid notification process: type_process=%s',
